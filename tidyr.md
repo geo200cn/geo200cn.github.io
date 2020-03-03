@@ -1,5 +1,5 @@
 ---
-title: "Introduction to Tidy R"
+title: "Introduction to the Tidyverse"
 subtitle: <h4 style="font-style:normal">GEO 200CN - Quantitative Geography</h4>
 author: <h4 style="font-style:normal">Professor Noli Brazil</h4>
 date: <h4 style="font-style:normal">April 7, 2020</h4>
@@ -53,18 +53,18 @@ h2.title {
 
 
 
-In Week 1, you went through the basic fundamentals of processing data in R. The functions and the overall approach to programming you learned last week are a part R's "base" language.  Base R is the set of R tools, packages and functions that are pre-installed into R.  In simple terms, it represents the building blocks of the language. Folks who learned R more than 5 or so years ago, started out in the same way you did last week. However, starting around 2014 or thereabouts, a new way of approaching R was born.  This approach is known as tidy R or the tidyverse.  Cue [dramatic sound effect](https://www.youtube.com/watch?v=cphNpqKpKc4).
+In Week 1, you went through the basic fundamentals of processing data in R. The functions and the overall approach to programming you learned last week are a part R's "base" language.  Base R is the set of R tools, packages and functions that are pre-installed into R.  In simple terms, it represents the building blocks of the language. Folks who learned R more than 5 or so years ago, started out in the same way you did last week. However, starting around 2014 or thereabouts, a new way of approaching R was born.  This approach is known as tidy R or the **tidyverse**.  Cue [dramatic sound effect](https://www.youtube.com/watch?v=cphNpqKpKc4).
 
-[Tidyverse](https://www.tidyverse.org/) is a collection of high-powered, consistent, and easy-to-use packages developed by a number of thoughtful and talented R developers.  It makes many of the base functions and approaches from last week more user friendly and, well, tidy.  
+[Tidyverse](https://www.tidyverse.org/) is a collection of high-powered, consistent, and easy-to-use packages developed by a number of thoughtful and talented R developers.  It makes many of the base functions and approaches from last week more user friendly and, well, *tidy*.  
 
 Now, you might be asking yourself, "is he asking me to learn ANOTHER language??!" Yes and no. Tidy R is built off of base R functions, so there is a natural connection.  But, code written in the tidyverse style is much easier to read. For example, if you want to select certain variables from your data frame, you use an actual tidy function named `select()`. Base R, on the other hand, has a somewhat inconsistent and sometimes incomprehensible mish-mash of function and argument styles.
 
-The consistency of the tidyverse, together with the goal of increasing productivity, mean that the syntax of tidyverse functions is typically straightforward to learn.  You now might be asking yourself "why didn't he just cut straight to the tidyverse?"  First, many of the topics you learned last week are fundamental to understanding R, tidy or not. For example, the data types remain the same whether in base or tidy world. Second, tidyverse is growing, but has not taken over. You need to know base R to do some of the data management and analysis procedures that we will be learning later in the class, particularly those that are specific to raster analysis.  
+The consistency of the tidyverse, together with the goal of increasing productivity, mean that the syntax of tidy functions is typically straightforward to learn.  You now might be asking yourself "why didn't he just cut straight to the tidyverse?"  First, many of the topics you learned last week are fundamental to understanding R, tidy or not. For example, the data types remain the same whether in base or tidy world. Second, tidyverse is growing, but has not taken over. You need to know base R to do some of the data management and analysis procedures that we will be learning later in the class, particularly those that are specific to raster analysis.  
 
 With that said, my approach to this course is to lean towards the tidy way of doing things.  This guide will provide you the basic fundamentals of processing nonspatial data in R using tidyverse functions. I will highlight in places where tidy R differs from the base R approach that you learned last week. Because of time constraints, we will not be able to go through all of tidyverse's functions in this guide.  Some you will encounter in later lab guides. Others you may need to learn on your own.  The best resource is the book [R for Data Science](http://r4ds.had.co.nz/index.html) (RDS), which is free online and was written by tidyverse's creators.  You can also go straight to the tidyverse official [website](https://www.tidyverse.org/).
 
 
-Are you ready to enter the tidyverse? Yes, of course, so here is your first badge.  Wear it proudly my young friends!
+Are you ready to enter the tidyverse? Yes, of course, so here is your first badge.  Wear it proudly my young friends! And away we go!
 
 <center>
 ![](/Users/noli/Documents/UCD/teaching/GEO 200CN/lab/geo200cn.github.io/tidyverse.png){ width=25% }
@@ -109,7 +109,7 @@ counties <- read_csv("https://raw.githubusercontent.com/geo200cn/data/master/wee
 
 To write or save data, you would use the function `write_csv()`.
 
-Note the difference between the tidy r and base r reading functions - tidy is `read_csv()` and base is `read.csv()`. What is the difference? The function `read.csv()` stores your data into a regular data frame. The function `read_csv()` stores your data in a special tidy r object - a tibble, which we discuss next. Before you move on, by learning how to read and write data the tidy R way, you've earned another badge!
+Note the difference between the tidy r and base r reading functions - tidy is `read_csv()` and base is `read.csv()`. What is the difference? The function `read.csv()` stores your data into a regular data frame. The function `read_csv()` stores your data in a special tidy r object - a tibble, which we discuss next. Before you move on, by learning how to read and write data the tidy R way, you've earned another badge! Hooray!
 
 <center>
 ![](/Users/noli/Documents/UCD/teaching/GEO 200CN/lab/geo200cn.github.io/readr.png){ width=25% }
@@ -167,7 +167,7 @@ counties.df
 
 Ugly, right? 
 
-You may have also noticed the *NAME* variable in the tibble was stored (by default) as a character vector and not a factor, as was done in *counties.df*. 
+You may have also noticed that the *NAME* variable in the tibble was stored (by default) as a character vector and not a factor, as was done in *counties.df*. 
 
 
 ```r
@@ -186,9 +186,9 @@ is.factor(counties.df$NAME)
 ## [1] TRUE
 ```
 
-This is another important difference between tidy and base R. `read_csv()` will always read variables containing text as character variables. In contrast, the base R function `read.csv()` will, by default, convert any character variable to a factor. Tidy r figures that if you really wanted a character, you can easily convert it when you load it in. `read_csv()` will also not convert numbers with a leading zero into an integer.  It figures that if you want to convert it into an integer, you can do it after the data are read in.  In contrast, `read.csv()` will assume you want it in an integer.   
+This is another important difference between tidy and base R. `read_csv()` will always read variables containing text as character variables. In contrast, the base R function `read.csv()` will, by default, convert any character variable to a factor. Tidy r figures that if you really wanted a character, you can easily convert it when you load it in. `read_csv()` will also not convert numbers with a leading zero into an integer.  It figures that if you want to convert it into an integer, you can do it after the data are read in.  In contrast, `read.csv()` will assume you want it in an integer.   And you know what they say about assuming.
 
-Anyway, you earned another badge.
+Anyway, you earned another badge. 
 
 <center>
 ![](/Users/noli/Documents/UCD/teaching/GEO 200CN/lab/geo200cn.github.io/tibble.png){ width=25% }
@@ -231,7 +231,7 @@ counties
 ## # … with 48 more rows
 ```
 
-We now have rows as counties and columns as variables.  To go from wide to long form, you use the `gather()` function.
+We now have rows as counties and columns as variables.  To go from wide to long form, you use the `gather()` function.  Use it to get *counties* back to long.
 
 Your data are now in tidy form! Here's a badge for you.
 
@@ -249,14 +249,14 @@ Your data are now in tidy form! Here's a badge for you.
 
 One of the clear advantages of tidy R, at least when you are first learning R, is its assortment of data manipulation functions, which is a part of its **dplyr** package.Compared to base R, the beauty of these **dplyr** functions is that they feature consistent design principles and easily work with non-standard evaluation (i.e., you don’t have to put quotes around variable names).
 
-In the tidyverse, you will almost never use the `[,]` indexing nor the `$` data frame column indexing that are pervasive throughout base R code. So, to subset (filter) rows, use the `filter()` function. For example, to get Yolo county
+In the tidyverse, you will almost never use the `[,]` indexing nor the `$` data frame column indexing that are pervasive throughout base R code. So, to subset (filter) rows, use the `filter()` function. For example, to get Yolo county, which has a [FIPS](https://transition.fcc.gov/oet/info/maps/census/fips/fips.txt) code of "06113"
 
 
 ```r
 filter(counties, GEOID == "06113")
 ```
 
-The name `filter` tells you exactly what you are doing. The first argument is the data object you want to filter on And the third argument is your filtering criteria.  See how easy that was? 
+The name `filter` tells you exactly what you are doing. The first argument is the data object you want to filter on and the second argument is your filtering criteria.  See how easy that was? 
 
 Before we compare how filtering is done in base R, let's duplicate *counties* so we don't lose it.
 
@@ -265,7 +265,7 @@ Before we compare how filtering is done in base R, let's duplicate *counties* so
 counties2 <- counties
 ```
 
-And now base R filtering
+And now let's filter Yolo county use the base R approach
 
 
 ```r
@@ -348,7 +348,7 @@ Base R
 counties2[order(counties2$tpopr),]
 ```
 
-Note that will all the tidy functions, we haven’t re-defined the *counties* data frame, so all we have done here is print out the data frame with changes.  To redefine the data frame with the changes, assign it back to *counties* using the arrow operator.
+Note that with all the tidy functions, we haven’t re-defined the *counties* data frame, so all we have done here is print out the data frame with changes.  To redefine the data frame with the changes, assign it back to *counties* using the arrow operator.
 
 We covered the main data manipulation functions that you will routinely encounter in this class, but there are a number of other useful **dplyr** functions, which you can look up in the RDS textbook linked in the introduction.  
 
@@ -361,14 +361,141 @@ You've now earned another Tidy badge. Congratulations!
 
 \
 
+
+<div style="margin-bottom:25px;">
+</div>
+### **Function conflicts**
+\
+
+You'll learn to understand that R is beautiful.  But, it isn't perfect. One of its annoyances is that because R is open source, R users who contribute packages sometimes create functions with the same names. To demonstrate this, let's load in the package **MASS**
+
+
+```r
+library(MASS)
+```
+
+```
+## 
+## Attaching package: 'MASS'
+```
+
+```
+## The following object is masked from 'package:dplyr':
+## 
+##     select
+```
+
+You see the warning? Keep it in mind. 
+
+Let's use the function `select()` again to keep the variables *GEOID*, *NAME*, and *tpopr* from *counties*
+
+
+```r
+select(counties, GEOID, NAME, tpopr)
+```
+
+```
+## Error in select(counties, GEOID, NAME, tpopr): unused arguments (GEOID, NAME, tpopr)
+```
+
+What in the world just happened? By loading **MASS**, we have overwritten dplyr’s `select()` function (hence the warning when you loaded **MASS**). R will choose the function from the package that was most recently loaded. The normal workaround is to be explicit about which `select()` function you want by using `dplyr::select()` as in
+
+
+```r
+dplyr::select(counties, GEOID, NAME, tpopr)
+```
+
+```
+## # A tibble: 58 x 3
+##    GEOID NAME                              tpopr
+##    <chr> <chr>                             <dbl>
+##  1 06001 Alameda County, California      1629615
+##  2 06003 Alpine County, California          1203
+##  3 06005 Amador County, California         37306
+##  4 06007 Butte County, California         225207
+##  5 06009 Calaveras County, California      45057
+##  6 06011 Colusa County, California         21479
+##  7 06013 Contra Costa County, California 1123678
+##  8 06015 Del Norte County, California      27442
+##  9 06017 El Dorado County, California     185015
+## 10 06019 Fresno County, California        971616
+## # … with 48 more rows
+```
+
+But this can be really annoying if you have a lot of `select()` commands in your code (because you have to go through and apply `dplyr::` to each one).  A workaround is to set conflict hierarchies at the top of your document (`conflict_prefer("select", "dplyr")`) to specify that the `select()` function should always come from the dplyr package. The `conflict_prefer()` function is in the **conflicted** package, which we need to install.
+
+
+```r
+if (!require("conflicted")) install.packages("conflicted")
+```
+
+```
+## Loading required package: conflicted
+```
+
+Then load 
+
+
+```r
+library(conflicted)
+```
+
+Then set your conflict preferences
+
+
+```r
+conflict_prefer("select", "dplyr")
+```
+
+```
+## [conflicted] Will prefer dplyr::select over any other package
+```
+
+The above code tells R that the function `select` will always come from the package **dplyr**.  Now use `select()` without the `dplyr::`
+
+
+```r
+select(counties, GEOID, NAME, tpopr)
+```
+
+```
+## # A tibble: 58 x 3
+##    GEOID NAME                              tpopr
+##    <chr> <chr>                             <dbl>
+##  1 06001 Alameda County, California      1629615
+##  2 06003 Alpine County, California          1203
+##  3 06005 Amador County, California         37306
+##  4 06007 Butte County, California         225207
+##  5 06009 Calaveras County, California      45057
+##  6 06011 Colusa County, California         21479
+##  7 06013 Contra Costa County, California 1123678
+##  8 06015 Del Norte County, California      27442
+##  9 06017 El Dorado County, California     185015
+## 10 06019 Fresno County, California        971616
+## # … with 48 more rows
+```
+
+
+We'll run into another function conflict later when we use the `filter()` command, which is now sent to the back after you loaded in **MASS**.  
+
+
+```r
+conflict_prefer("filter", "dplyr")
+```
+
+```
+## [conflicted] Will prefer dplyr::filter over any other package
+```
+
+
 <div style="margin-bottom:25px;">
 </div>
 ## **Pipes**
 \
 
-One of the important innovations from the tidy verse is the pipe operator `%>%`. Pipes are the workhorse of tidy analyses. Piping allows you to chain together many functions, eliminating the need to define multiple intermediate objects to use as the input to subsequent functions. Pipes are also the primary reason that tidyverse code is fundamentally easier to read than base R code.
+One of the important innovations from the tidyverse is the pipe operator `%>%`. Pipes are the workhorse of tidy analyses. Piping allows you to chain together many functions, eliminating the need to define multiple intermediate objects to use as the input to subsequent functions. Pipes are also the primary reason that tidyverse code is fundamentally easier to read than base R code.
 
-It may seem complicated at first, but what the pipe does is actually quite simple. That is, it allows users to write linear code. To illustrate use of the pipe, consider the following base R code that takes the mean of the log of three numbers
+It may seem complicated at first, but what the pipe does is actually quite simple. That is, it allows users to write linear code. To illustrate the use of the pipe, consider the following base R code that takes the mean of the log of three numbers
 
 
 ```r
@@ -379,7 +506,7 @@ mean(log(c(1, 3, 9)))
 ## [1] 1.098612
 ```
 
-Notice how the numbers *c(1, 3, 9)* are nested inside `log()`, which is then nested inside `mean()`? If you’re reading the code from left-to-right, it means the functions are performed in reverse order from how they are written. If we broke the code down into its three functions, we would actually expect the order of operations to proceed as follows
+Notice how the numbers *c(1, 3, 9)* are nested inside `log()`, which is then nested inside `mean()`. If you’re reading the code from left-to-right, it means the functions are performed in reverse order from how they are written. If we broke the code down into its three functions, we would actually expect the order of operations to proceed as follows
 
 1. Concatenate numbers into vector `c(...)`
 2. Log the numeric vector `log(...)`
@@ -409,7 +536,20 @@ counties3 <- counties %>%
   select(GEOID, County, pwhite, phisp, pasn, pblk, tpopr)
 ```
 
-In the code above, the tibble *counties* is piped into the command `mutate()`.  This command creates the percent race/ethnicity variables. Once `mutate()` is done doing its thing, the result gets piped into the function `rename()`, which renames *NAME* to *County*. This result gets piped in `select()`, which keeps the appropriate variables.  Finally, the final result gets saved into the data object *counties3*.
+In the code above, the tibble *counties* is piped into the command `mutate()`.  This command creates the percent race/ethnicity variables. Once `mutate()` is done doing its thing, the result gets piped into the function `rename()`, which renames *NAME* to *County*. This result gets piped into `select()`, which keeps the appropriate variables.  Finally, the final result gets saved into the data object *counties3*.
+
+One more neat thing about piping.  Notice that saving the result into an object named *counties3* happened in the beginning.  So, it's not exactly linear or reading left to right.  So, why don't we make it that way?
+
+
+```r
+counties %>%
+  mutate(pwhite = nhwhite/tpopr, phisp = hisp/tpopr,
+                  pasn = nhasn/tpopr, pblk = nhblk/tpopr) %>%
+  rename(County = NAME) %>%
+  select(GEOID, County, pwhite, phisp, pasn, pblk, tpopr) -> counties4
+```
+
+At the end of the pipe, we use the `->` operator.  This is somewhat blasphemous, because long time R users are used to the `<-` operator to assign or save a result.  But, boo hoo for you, we've got a new toy now!  The `->` makes complete sense in the tidyverse piping world.
 
 Piping makes code clearer, and simultaneously gets rid of the need to define any intermediate objects that you would have needed to keep track of while reading the code. PIPE, Pipe, and pipe whenever you can. Badge it!
 
@@ -497,16 +637,16 @@ ggplot(data = <DATA>) +
 
 The basic idea is that a ggplot graphic layers geometric objects (circles, lines, etc), themes, and scales on top of data.
 
-The base layer of any ggplot graph is the empty ggplot layer defined by the `ggplot()` function, which describes the data frame that the plot will be based on. 
+You first start out with the base layer.  It represents the empty ggplot layer defined by the `ggplot()` function. 
 
 
 ```r
 ggplot(counties3)
 ```
 
-![](tidyr_files/figure-html/unnamed-chunk-28-1.png)<!-- -->
+![](tidyr_files/figure-html/unnamed-chunk-37-1.png)<!-- -->
 
-We haven’t told `ggplot()` what type of geometric object(s) we want to plot, nor how the variables should be mapped to the geometric objects, so we just have a blank plot.
+We haven’t told `ggplot()` what type of geometric object(s) we want to plot, nor how the variables should be mapped to the geometric objects, so we just have a blank plot. We had geoms to paint the blank canvas.
 
 From here, we add a “geom” layer to the ggplot object.  Layers are added to ggplot objects using `+`, instead of `%>%`, since you are not explicitly piping an object into each subsequent layer, but adding layers on top of one another.
 
@@ -523,11 +663,11 @@ ggplot(counties3) +
 ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 ```
 
-![](tidyr_files/figure-html/unnamed-chunk-29-1.png)<!-- -->
+![](tidyr_files/figure-html/unnamed-chunk-38-1.png)<!-- -->
 
-The above code first specifies the data, then the mapping geometric object (the histogram), and then other aspects of the plot, in the above case, a x-axis label.
+The above code first specifies the data, then the mapping geometric object (the histogram), and then other aspects of the plot, in the above case, an x-axis label.
 
-What about plotting two numeric variables? A common plot for this is the scatter plot.  Let's plot *pwhite* and *phisp*
+What about plotting two numeric variables? A common plot for this is the scatter plot.  Let's plot *pwhite* and *phisp* using the geom `geom_point()`
 
 
 ```r
@@ -537,7 +677,7 @@ ggplot(counties3) +
     ylab("Percent white")
 ```
 
-![](tidyr_files/figure-html/unnamed-chunk-30-1.png)<!-- -->
+![](tidyr_files/figure-html/unnamed-chunk-39-1.png)<!-- -->
 
 Here, we specify both a x and y axis in `aes()`. Want to change the color of the points? Add a `col` argument to the `geom_point()` function
 
@@ -549,7 +689,7 @@ ggplot(counties3) +
     ylab("Percent white")
 ```
 
-![](tidyr_files/figure-html/unnamed-chunk-31-1.png)<!-- -->
+![](tidyr_files/figure-html/unnamed-chunk-40-1.png)<!-- -->
 
 What if you wanted to establish separate colors for counties that are large and not large?  You will need to include the color argument inside the `aes()` function.
 
@@ -561,7 +701,7 @@ ggplot(counties3) +
     ylab("Percent white")
 ```
 
-![](tidyr_files/figure-html/unnamed-chunk-32-1.png)<!-- -->
+![](tidyr_files/figure-html/unnamed-chunk-41-1.png)<!-- -->
 
 
 You can pipe in a dataset into `ggplot()`.  For example, a scatterplot of *pwhite* and *phisp* just for large counties
@@ -576,7 +716,7 @@ counties3 %>%
       ylab("Percent white")
 ```
 
-![](tidyr_files/figure-html/unnamed-chunk-33-1.png)<!-- -->
+![](tidyr_files/figure-html/unnamed-chunk-42-1.png)<!-- -->
 
 Why not show scatterplots for both large and not large counties? To do this, add the function `facet_wrap()` 
 
@@ -589,7 +729,7 @@ Why not show scatterplots for both large and not large counties? To do this, add
       facet_wrap(~large) 
 ```
 
-![](tidyr_files/figure-html/unnamed-chunk-34-1.png)<!-- -->
+![](tidyr_files/figure-html/unnamed-chunk-43-1.png)<!-- -->
     
 
 Boxplots are another common exploratory tool. Boxplots are particularly useful for examining the relationship between a categorical and numeric variable. The `<GEOM_FUNCTION>()` is `geom_boxplot()`. Boxplots are automatically grouped by the x-aesthetic provided. To color boxplots, use the `fill` argument.
@@ -601,13 +741,13 @@ counties3 %>%
   geom_boxplot(aes(x = large, y = pwhite, fill = large))
 ```
 
-![](tidyr_files/figure-html/unnamed-chunk-35-1.png)<!-- -->
+![](tidyr_files/figure-html/unnamed-chunk-44-1.png)<!-- -->
 
 
 `ggplot()` is a powerful function, and you can make a lot of really visually captivating graphs. You can change colors, add text labels, layer different plots on top of one another or side by side. You can also make maps with the function, which we'll cover next week.  We have just scratched the surface of its functions and features.  The list of all possible plots for `<GEOM_FUNCTION>()` can be found [here](https://ggplot2.tidyverse.org/reference/).  You can also make your graphs really "pretty" and professional looking by altering graphing features using `<OPTIONS()`, including colors, labels, titles and axes.  For a list of `ggplot()` functions that alter various features of a graph, check out [Chapter 22 in RDS](http://r4ds.had.co.nz/graphics-for-communication.html).  
     
 
-Here's your **ggplot2** badge. 
+Here's your **ggplot2** badge. Wear it with pride!
 
 
 <center>
@@ -617,12 +757,13 @@ Here's your **ggplot2** badge.
 
 \
 
+
 <div style="margin-bottom:25px;">
 </div>
 ## **Iterations and Loops**
 \
 
-The tidy version of the `apply()` function, and more generally tidy's way of iterating and looping, comes from the package **purrr**.  The specific tidy function is `map()`.
+The tidy version of the `apply()` function, and more generally tidy's way of iterating and looping, comes from the package **purrr** (like a cat).  The specific tidy function is `map()`.
 
 Fundamentally, maps are for iteration. In the example below I will iterate through the vector `c(1, 4, 7)` by adding 10 to each entry. The following code is how you would do this using the base R apply functions
 
