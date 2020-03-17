@@ -2,7 +2,6 @@
 title: "Getting Started"
 subtitle: <h4 style="font-style:normal">GEO 200CN - Quantitative Geography</h4>
 author: <h4 style="font-style:normal">Professor Noli Brazil</h4>
-date: <h4 style="font-style:normal">Spring 2020</h4>
 output: 
   html_document:
     toc: true

@@ -2,7 +2,6 @@
 title: "Central Limit Theorem"
 subtitle: <h4 style="font-style:normal">GEO 200CN - Quantitative Geography</h4>
 author: <h4 style="font-style:normal">Professor Noli Brazil</h4>
-date: <h4 style="font-style:normal">Spring 2020</h4>
 output: 
   html_document:
     toc: true
@@ -197,16 +196,16 @@ sample_means
 ## # A tibble: 10 x 2
 ##    replicate means
 ##        <int> <dbl>
-##  1         1  45.5
-##  2         2  55  
-##  3         3  51.2
-##  4         4  49  
-##  5         5  58.2
-##  6         6  57.0
-##  7         7  56.4
-##  8         8  53.2
-##  9         9  53.2
-## 10        10  50.8
+##  1         1  47.4
+##  2         2  59.8
+##  3         3  59.9
+##  4         4  53.0
+##  5         5  59.7
+##  6         6  52.3
+##  7         7  54.0
+##  8         8  53.4
+##  9         9  54.4
+## 10        10  60.8
 ```
 
 A histogram gives a visual depiction of the distribution
@@ -260,7 +259,7 @@ mean(sample_means1000$means)
 ```
 
 ```
-## [1] 54.0272
+## [1] 54.0279
 ```
 
 And the standard deviation? 
@@ -271,7 +270,7 @@ sd(sample_means1000$means)
 ```
 
 ```
-## [1] 3.900323
+## [1] 3.959504
 ```
 
 

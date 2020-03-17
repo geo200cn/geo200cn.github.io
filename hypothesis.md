@@ -2,7 +2,6 @@
 title: "Hypothesis Testing"
 subtitle: <h4 style="font-style:normal">GEO 200CN - Quantitative Geography</h4>
 author: <h4 style="font-style:normal">Professor Noli Brazil</h4>
-date: <h4 style="font-style:normal">Spring 2020</h4>
 output: 
   html_document:
     toc: true
@@ -590,7 +589,7 @@ table(samps >= diff)/length(samps)
 ```
 ## 
 ##  FALSE   TRUE 
-## 0.4697 0.5303
+## 0.4789 0.5211
 ```
 
 <br>
