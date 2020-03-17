@@ -1,0 +1,286 @@
+---
+title: "Central Limit Theorem"
+subtitle: <h4 style="font-style:normal">GEO 200CN - Quantitative Geography</h4>
+author: <h4 style="font-style:normal">Professor Noli Brazil</h4>
+date: <h4 style="font-style:normal">Spring 2020</h4>
+output: 
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    theme: yeti
+    code_folding: show
+---
+
+
+<style>
+p.comment {
+background-color: #DBDBDB;
+padding: 10px;
+border: 1px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: italic;
+}
+
+.figure {
+   margin-top: 20px;
+   margin-bottom: 20px;
+}
+
+h1.title {
+  font-weight: bold;
+  font-family: Arial;  
+}
+
+h2.title {
+  font-family: Arial;  
+}
+
+</style>
+
+
+<style type="text/css">
+#TOC {
+  font-size: 13px;
+  font-family: Arial;
+}
+</style>
+
+
+\
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message = FALSE)
+```
+
+
+In this guide, we'll demonstrate some of the fine properties of the Central Limit Theorem by working with real data.  This is in contrast to the theorems, abstract equations and images of red balls from the lecture.  Working through the core components and key consequences of the theorem will help ground it more concretely in your mind.  The lab will also give you more practice working with R's sampling functions.  We will be following the material presented in BBR Ch. 6 and 7. The objectives of the guide are as follows
+
+1. Learn about estimating population parameters using sampling statistics
+2. Understand the implications of the Central Limit Theorem using real data
+3. Learn about uncertainty and confidence intervals 
+
+
+<div style="margin-bottom:25px;">
+</div>
+## **Installing and loading packages**
+\
+
+We'll be working with one new package in this lab, **infer**.  The following code checks if you've already installed this package before.  If you haven't, it will install it.
+
+```{r eval = FALSE}
+if (!require("infer")) install.packages("infer")
+```
+
+Next, we need to load this package and the other package we will use in this lab.
+
+
+```{r warning=FALSE, message=FALSE}
+library(infer)
+library(tidyverse)
+```
+
+
+<div style="margin-bottom:25px;">
+</div>
+## **Population**
+\
+
+The goal is to estimate the average age of a population from a sample. I uploaded onto GitHub a csv file containing the ages of a population of 1,000 residents. The data is also located on Canvas in the Week 2 Lab folder. Let's bring the population into R.
+
+```{r warning = FALSE, message = FALSE}
+data <- read_csv("https://raw.githubusercontent.com/geo200cn/data/master/ages.csv")
+```
+
+The object *data* contains our population.  Because we have a Census, we know the true population parameters.  So, we know the population mean
+
+```{r warning = FALSE, message = FALSE}
+mean(data$age)
+```
+
+and population standard deviation
+
+```{r warning = FALSE, message = FALSE}
+sd(data$age)
+```
+
+Let's say we don't know the ages of every person in the population. Let's also say we don't have the resources to conduct a Census.  So, we turn to sampling.
+
+<br>
+
+<p class="comment", style="font-style:normal">**Question 1**: Create a histogram of  *age*?  What does the Central Limit Theorem say about the distribution of a variable when we're trying to estimate the mean of that variable?   </p>
+
+<br>
+
+<div style="margin-bottom:25px;">
+</div>
+## **Sample**
+\
+
+We take a sample of size 10 from the population.  We can do it the base R way by  using `sample()`
+
+```{r warning = FALSE, message = FALSE}
+sample_ageb <- sample(data$age, 20, replace=TRUE)
+```
+
+Or we can go the tidy R route
+
+```{r warning = FALSE, message = FALSE}
+#compare sample_n with sample_frac.  what's the difference?
+sample_aget <- sample_n(data, 20, replace = TRUE)
+```
+
+<br>
+
+<p class="comment", style="font-style:normal">**Question 2**: Create a histogram of  *sample_aget*?  Does it look normal?   </p>
+
+<br>
+
+But this is only for one sample.  We can randomly sample 20 people 10 times.  We can do this using the `replicate()` function. 
+
+```{r warning = FALSE, message = FALSE}
+sim_results_repl <-replicate(10, sample(data$age, 20, replace=TRUE))
+```
+
+Or we can use the tidy friendly function `rep_sample_n()`, which is a part of the **infer** package we installed earlier.
+
+
+```{r warning = FALSE, message = FALSE}
+sim_results_repl10 <-rep_sample_n(data, 20, replace = TRUE, reps = 10)
+```
+
+What does the histogram of each of these size 20 samples look like?  Use `ggplot()` which we learned about in the tidy R [lab](https://geo200cn.github.io/tidyr).  
+
+
+```{r warning = FALSE, message = FALSE}
+ggplot(sim_results_repl10, aes(x=age))+
+  geom_histogram(color="white")+
+  facet_wrap(~replicate)+
+  theme_classic()
+```
+
+The function `facet_wrap()` allows us to create a histogram for each *replicate* or sample.
+
+Notice, all of the samples do not have the same looking histogram. This is because of random sampling error (as defined in BBR page 255). All of the samples are coming from the same distribution, but random chance makes each sample a little bit different.
+
+Now let's look at the mean of the samples.
+
+```{r warning = FALSE, message = FALSE}
+sample_means <- sim_results_repl10 %>%
+                group_by(replicate) %>%
+                summarise(means=mean(age))
+sample_means
+```
+
+A histogram gives a visual depiction of the distribution
+
+```{r warning = FALSE, message = FALSE}
+ggplot(sample_means, aes(x=means))+
+  geom_histogram(color="white")+
+  theme_classic()
+```
+
+
+This is the distribution of the sample means. It doesn’t look like much. That’s because we only took 10 samples.
+
+A note about sampling in R: When you work with using random values, the results will be different each time you run some code (that is the point); but sometimes it is desirable to recreate exactly the same random sequence. The function `set.seed()` allows you to do that (after all, in computers we can only create pseudo-random values).  So, if I plugged in `set.seed(1234)` before i ran any of the sampling functions above, I can replicate the results at a later time.  Furthermore, you can replicate my results if you too plugged in `set.seed(1234)`.  You will be seeing us use `set.seed()` in the future.
+
+
+<div style="margin-bottom:25px;">
+</div>
+## **Central Limit Theorem**
+\
+
+The histogram of 10 sample means looks kind of lonely. Let’s give them some more buddies. How about we repeat our sample 1000 times.
+
+```{r warning = FALSE, message = FALSE}
+sim_results_repl1000 <-rep_sample_n(data, 20, replace = TRUE, reps = 1000)
+
+sample_means1000 <- sim_results_repl1000 %>%
+                group_by(replicate) %>%
+                summarise(means=mean(age))
+
+ggplot(sample_means1000, aes(x=means))+
+  geom_histogram(color="white")+
+  theme_classic()                
+```
+
+
+The central limit theorem basically states that the the distribution of sample means will be a normal curve. It looks [normal](https://garfield.fandom.com/wiki/Nermal).
+
+But, what is the mean of the sample means? 
+
+
+```{r warning = FALSE, message = FALSE}
+mean(sample_means1000$means)
+```
+
+And the standard deviation? 
+
+```{r}
+sd(sample_means1000$means)
+```
+
+
+<br>
+
+
+  <p class="comment", style="font-style:normal">**Question 3**: According to CLT, what happens to the histogram, mean and standard deviation when you increase *n* (the sample size)? Show this by running the 1000 samples example above for increasing $n$.  Streamline this process by creating a function that allows you to plug in the (1) variable (2) sample size and (3) number of samples to return the mean and standard deviation of each sample. It should start out something like  `name of your function <- function(var, n, nsamp)`  where $var$ is the variable, $n$ is the sample size and $nsamp$ is the number of samples. </p>
+  
+<br>
+
+
+
+
+<div style="margin-bottom:25px;">
+</div>
+## **Confidence Intervals**
+\
+
+
+The CLT is cool. And its coolness gives us the ability to map our estimate from a single sample onto a normal distribution in order to measure the uncertainty of an estimate.  Return for a moment to the question that first motivated this lab: based on a sample, what can we infer about the population? Based only on a single sample, the best estimate of the mean age would be the sample mean. That serves as a good point estimate but it would be useful to also communicate how uncertain we are of that estimate. This can be captured by using a confidence interval.
+
+We can calculate a 95% confidence interval for a sample mean by adding and subtracting 1.96 standard errors to the point estimate (see BBR section 7.3 if you are unfamiliar with this formula)
+
+Let's go back to our first 20 person sample. Calculate the mean 
+
+```{r}
+my_mean <- mean(data$age)
+```
+
+Calculate the standard error
+
+```{r}
+se <- sd(data$age) / sqrt(20)
+```
+
+Finally, calculate the lower and upper bounds
+
+```{r}
+lower <- my_mean - 1.96 * se
+upper <- my_mean + 1.96 * se
+c(lower, upper)
+```
+
+This is an important inference that we’ve just made: even though we don’t know what the full population looks like, we’re 95% confident that the true average age of the population lies between the values lower and upper *given certan conditions are met*.
+
+<br>
+
+
+<p class="comment", style="font-style:normal">**Question 4**: Construct the confidence intervals for 1,000 samples of size 20. What proportion of those intervals would you expect to capture the true population mean? Why? Verify this in R. </p>
+
+
+<br>
+
+
+
+
+***
+
+
+Website created and maintained by [Noli Brazil](https://nbrazil.faculty.ucdavis.edu/)
+
+
+

@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Hypothesis Testing</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/yeti.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 45px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h2 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h3 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h4 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h5 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h6 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">GEO 200CN: Winter 2020</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="syllabus.html">Syllabus</a>
+</li>
+<li>
+  <a href="hw_guidelines.html">Assignment Guidelines</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Labs
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="tidyr.html">Tidy R</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Other
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a></a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Hypothesis Testing</h1>
+<h3 class="subtitle"><h4 style="font-style:normal">
+GEO 200CN - Quantitative Geography
+</h4></h3>
+<h4 class="author"><h4 style="font-style:normal">
+Professor Noli Brazil
+</h4></h4>
+<h4 class="date"><h4 style="font-style:normal">
+Spring 2020
+</h4></h4>
+
+</div>
+
+
+<style>
+p.comment {
+background-color: #DBDBDB;
+padding: 10px;
+border: 1px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: italic;
+}
+
+.figure {
+   margin-top: 20px;
+   margin-bottom: 20px;
+}
+
+h1.title {
+  font-weight: bold;
+  font-family: Arial;  
+}
+
+h2.title {
+  font-family: Arial;  
+}
+
+</style>
+<style type="text/css">
+#TOC {
+  font-size: 13px;
+  font-family: Arial;
+}
+</style>
+<p><br />
+</p>
+<p>In this lab guide, we’ll make statistical inferences about the significance of particular data values within a hypothesis testing framework. We will follow the material presented in BBR Ch. 8 and 9.</p>
+<p>The objectives of the guide are as follows</p>
+<ol style="list-style-type: decimal">
+<li>Apply one-sample hypothesis testing</li>
+<li>Make inferences about mean comparisons between two groups</li>
+<li>Bonus: Conduct significance testing non-parametrically using a permutation test</li>
+</ol>
+<p>We’ll use two data sets in this guide. The first contains current and forecasted climate values in Oregon. The second contains property values for buildings in Manhattan, New York City.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+<div id="installing-and-loading-packages" class="section level2">
+<h2><strong>Installing and loading packages</strong></h2>
+<p><br />
+We’ll be using one new package in this lab - <strong>foreign</strong>. First, install it if you don’t already have it. .</p>
+<pre class="r"><code>if (!require(&quot;foreign&quot;)) install.packages(&quot;foreign&quot;)</code></pre>
+<p>and then load it in and the other packages we will use in this guide.</p>
+<pre class="r"><code>library(foreign)
+library(tidyverse)</code></pre>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="one-sample-hypothesis-testing" class="section level2">
+<h2><strong>One-sample hypothesis testing</strong></h2>
+<p><br />
+</p>
+<p>Download the data set <a href="https://raw.githubusercontent.com/geo200cn/data/master/orsim.csv">orsim.csv</a>. The data is also located on Canvas in the Week 3 Lab folder. This data set includes climate values (January and July temperature and precipitation) simulated by a regional climate model for present, and for potential future conditions when the concentration of carbon dioxide in the atmosphere has doubled, for a set of model grid points that cover Oregon. The variables named <em>TJan1x</em>, <em>TJul1x</em>, <em>PJan1x</em> and <em>PJul1x</em> are the simulated present values of temperature (T) and precipitation (P), while the variables with <em>2x</em> in their names are those for the doubled CO2 (carbon dioxide) scenarios that are intended to describe the climate of the next century. Read this data set in using <code>read_csv()</code></p>
+<pre class="r"><code>orsim &lt;- read_csv(&quot;orsim.csv&quot;)</code></pre>
+<p>The research question is: How would a doubling of carbon dioxide in the atmosphere affect temperature over Oregon? From what we already know about the greenhouse effect, atmospheric change, and basic climatology, we can suspect that the temperatures will increase with an increase in carbon dioxide. The question is, are the simulated temperatures for the enhanced greenhouse-situation significantly higher than those for present?</p>
+<p>Before running any tests, let’s just look at the distribution of our two variables <em>TJan2x</em> and <em>TJan1x</em>. First, histograms of each</p>
+<pre class="r"><code>hist(orsim$TJan1x)</code></pre>
+<p><img src="hypothesis_files/figure-html/unnamed-chunk-4-1.png" /><!-- --></p>
+<pre class="r"><code>hist(orsim$TJan2x)</code></pre>
+<p><img src="hypothesis_files/figure-html/unnamed-chunk-4-2.png" /><!-- --></p>
+<p>Remember what CLT says?</p>
+<p>Let’s do a side-by-side comparison using a boxplot using the function <code>boxplot()</code></p>
+<pre class="r"><code>boxplot(orsim$TJan1x, orsim$TJan2x)</code></pre>
+<p><img src="hypothesis_files/figure-html/unnamed-chunk-5-1.png" /><!-- --></p>
+<p>Descriptively, it looks like an increase in the mean temperature from present to future. But, let’s formally test it since we now have the tools to do so. Remember the steps in hypothesis testing outlined in BBR and lecture.</p>
+<p><br></p>
+<div style="white-space: pre-line;"><strong>1. State the null and alternative hypotheses</strong></div>
+<p><br></p>
+<p>The null hypothesis is that there is no change in temperature, or the difference between present and future temperature is 0. The alternative hypothesis is that there is an increase in temperature.</p>
+<p><br></p>
+<div style="white-space: pre-line;"><strong>2. Identify a test statistic</strong></div>
+<p><br></p>
+<p>We’ll use the standard <em>t</em> statistic, which will allow us to conduct a t-test.</p>
+<p><br></p>
+<div style="white-space: pre-line;"><strong>3. Choose a level of error <span class="math inline"><em>α</em></span>.</strong></div>
+<p><br></p>
+<p>We should not be fixated too much with threshold cutoffs, but the standard <span class="math inline"><em>α</em></span> is 0.05.</p>
+<p><br></p>
+<div style="white-space: pre-line;"><strong>4. Compute the test statistic</strong></div>
+<p><br></p>
+<p>We’re computing a difference of means for paired observations (BBR page 363). If you look at the formula (page 365), this is basically a one-sample hypothesis test.</p>
+<p>First, let’s calculate the difference between <em>TJan2x</em> and <em>TJan1x</em> and save it back in our data frame.</p>
+<pre class="r"><code>orsim$diff &lt;- orsim$TJan2x - orsim$TJan1x</code></pre>
+<p>Next, we calculate <span class="math inline"><em>s</em></span></p>
+<pre class="r"><code>n &lt;- length(orsim$diff)
+s &lt;- sqrt(sum((orsim$diff-mean(orsim$diff))^2)/(n-1)) #formula from page 310
+#same as sqrt(var(orsim$diff))</code></pre>
+<p>Next, the t statistic</p>
+<pre class="r"><code>t1 = mean(orsim$diff)/(s/sqrt(n)) 
+t1</code></pre>
+<pre><code>## [1] 192.6058</code></pre>
+<p><br></p>
+<div style="white-space: pre-line;"><strong>5. Calculate the p-value</strong>. We can calculate the p-value by mapping our t statistic onto the t-distribution. In R, this is done using the function <code>pt()</code>. Note that if you wanted a two-sided p-value you would multiply the value produced by the line of code below by 2.</div>
+<p><br></p>
+<pre class="r"><code>pt(t1, n-1, lower=FALSE)</code></pre>
+<pre><code>## [1] 2.141518e-144</code></pre>
+<p><br></p>
+<p class="comment" , style="font-style:normal">
+<strong>Question 1</strong>: What is your conclusion regarding the difference between the present and simulated future January mean temperature over Oregon? How would you change the null and alternative hypotheses to make this a two-sided test? What is the p-value of this two-sided test?
+</p>
+<p class="comment" , style="font-style:normal">
+<strong>Question 2</strong>: For January precipitation (<em>PJan1x</em> and <em>PJan2x</em>) test the hypotheses that <em>PJan1x</em> and <em>PJan2x</em> are equal and that <em>PJan1x</em> is less than <em>PJan2x</em>
+</p>
+<p><br></p>
+<p>There is actually a canned function, <code>t.test()</code>, that you can use to run the t test.</p>
+<pre class="r"><code>t.test(orsim$TJan2x, orsim$TJan1x, paired = TRUE, alternative=&quot;greater&quot;, conf.level =.95)</code></pre>
+<pre><code>## 
+##  Paired t-test
+## 
+## data:  orsim$TJan2x and orsim$TJan1x
+## t = 192.61, df = 113, p-value &lt; 2.2e-16
+## alternative hypothesis: true difference in means is greater than 0
+## 95 percent confidence interval:
+##  4.054261      Inf
+## sample estimates:
+## mean of the differences 
+##                4.089474</code></pre>
+<p>similarly because this is basically a one-sample test</p>
+<pre class="r"><code>t.test(orsim$diff, mu = 0, alternative=&quot;greater&quot;, conf.level =.95)</code></pre>
+<pre><code>## 
+##  One Sample t-test
+## 
+## data:  orsim$diff
+## t = 192.61, df = 113, p-value &lt; 2.2e-16
+## alternative hypothesis: true mean is greater than 0
+## 95 percent confidence interval:
+##  4.054261      Inf
+## sample estimates:
+## mean of x 
+##  4.089474</code></pre>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="two-sample-hypothesis-testing" class="section level2">
+<h2><strong>Two-sample hypothesis testing</strong></h2>
+<p><br />
+To demonstrate two-sample hypothesis testing, let’s bring in the data set <em>mnmappluto.dbf</em>, which includes information about every building in Manhattan, over 40,000 buildings (wow!). I’ve uploaded this data on Canvas in the Week 3 Lab folder. Download it into an appropriate folder and bring it in using the function <code>read.dbf()</code>, which is a part of the <strong>foreign</strong> package.</p>
+<pre class="r"><code>MN&lt;-read.dbf(&quot;mnmappluto.dbf&quot;)</code></pre>
+<p>A dbase file is just another way of storing tabular data. There is little substantive difference between a dbase, csv, or an excel file. Esri (ArcGIS) likes dbase files for some reason, so when you end up doing doing GIS stuff in your career you’ll probably come across dbase files.</p>
+<p>In the next lab you will start exploring spatial data in R. Although <em>MN</em> is not spatialized, it does not have spatial information, longitude and latitude, which allows us to crudely plot it.</p>
+<pre class="r"><code>##Map all of the buildings in Manhattan
+plot(MN$YCoord~MN$XCoord)</code></pre>
+<p><img src="hypothesis_files/figure-html/unnamed-chunk-13-1.png" /><!-- --></p>
+<p>oh OH. Something is wrong here. The resulting plot doesn’t look at all like a map of Manhattan. Some buildings have not been assigned coordinates and have longitude and latitude positions of 0,0. These must be removed from the data:</p>
+<p><br></p>
+<p class="comment" , style="font-style:normal">
+<strong>Question 3</strong>: Keep the buildings that have longitude <em>XCoord</em> and latitude <em>YCoord</em> positions greater than 0.
+</p>
+<p><br></p>
+<p>You got the answer right if your <em>MN</em> object looks like this:</p>
+<pre class="r"><code>##dim() returns the number of rows and comlumns in a table
+dim(MN)</code></pre>
+<pre><code>## [1] 42514    85</code></pre>
+<p>Your new map should look like this:</p>
+<pre class="r"><code>plot(MN$YCoord~MN$XCoord)</code></pre>
+<p><img src="hypothesis_files/figure-html/unnamed-chunk-16-1.png" /><!-- --></p>
+<p>The research question is: Are property values higher for buildings located in historic districts? Historic neighborhoods are areas where the buildings have historical importance not because of their individual significance but because as a collection they represent the architectural sensibilities of a particular time period. They have tremendous historical and architectural value. But do they also carry greater financial value?</p>
+<p>Before answering this question, we need to be able to identify buildings in historic districts. It looks like the variable <em>HistDist</em> gives us which district a building is located in</p>
+<pre class="r"><code>summary(MN$HistDist)</code></pre>
+<p>You’ll notice that there are a bunch of buildings with a value <code>NA</code>. These <code>NA</code> buildings are not in a historic district. We don’t really care which district a building is in, only that it is in a historic district. We’ll now re-code the <em>HistDist</em> column to make a dummy variable which takes the value of 1 if a building is in a historic district and a value of 0 if it is not in a historic district. How do we do this?</p>
+<p>One useful function is <code>is.na()</code></p>
+<pre class="r"><code>##is.na() is a logical expression, it returns true if a value is missing (NA)
+##check the first 100 rows of the &quot;HistDist&quot; column to see if they are blank
+is.na(MN[1:100,&quot;HistDist&quot;])</code></pre>
+<pre><code>##   [1]  TRUE  TRUE  TRUE  TRUE  TRUE FALSE  TRUE FALSE  TRUE  TRUE  TRUE  TRUE
+##  [13]  TRUE  TRUE  TRUE  TRUE FALSE  TRUE  TRUE  TRUE FALSE  TRUE  TRUE FALSE
+##  [25] FALSE  TRUE FALSE  TRUE FALSE  TRUE  TRUE FALSE  TRUE FALSE  TRUE  TRUE
+##  [37] FALSE FALSE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE
+##  [49] FALSE  TRUE  TRUE  TRUE  TRUE  TRUE FALSE  TRUE FALSE  TRUE  TRUE FALSE
+##  [61] FALSE  TRUE  TRUE FALSE  TRUE FALSE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE
+##  [73]  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE FALSE  TRUE FALSE  TRUE
+##  [85] FALSE FALSE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE
+##  [97] FALSE  TRUE FALSE  TRUE</code></pre>
+<p>In the output the <code>TRUE</code> values indicate rows where the <em>HistDist</em> column is missing a value- these are places that are not in a historic district. Another useful function is <code>ifelse()</code></p>
+<pre class="r"><code>##take the previous line and replace the &quot;TRUE&quot; with 0
+ifelse(is.na(MN[1:100,&quot;HistDist&quot;]), 0, 1)</code></pre>
+<pre><code>##   [1] 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0 1 0 0 0 1 0 0 1 1 0 1 0 1 0 0 1 0 1 0 0 1
+##  [38] 1 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0 1 0 0 1 1 0 0 1 0 1 0 0 0 0 0 0 0 0
+##  [75] 0 0 0 0 0 0 1 0 1 0 1 1 0 0 0 0 0 0 0 0 0 0 1 0 1 0</code></pre>
+<p>The function <code>ifelse()</code> takes three arguments, a logical expression, a value for true, and a value for false. If the logical expression evaluates to <code>TRUE</code> the first value is used, if not the second value is used.</p>
+<p><br></p>
+<p class="comment" , style="font-style:normal">
+<strong>Question 4</strong>: Use the <code>ifelse()</code> and <code>is.na()</code> functions to create a variable named <em>HD</em> in <em>MN</em> that indicates whether a building is located in a historic district.
+</p>
+<p><br></p>
+<p>Your output should match the line below:</p>
+<pre class="r"><code>summary(MN$HD)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   0.000   0.000   0.000   0.244   0.000   1.000</code></pre>
+<p>A variable that is coded 0,1 to refer to absence or presence, respectively, is sometimes called a dummy variable or an indicator variable. Although a dummy looks like a numeric, it is in fact a qualtitative or categorical variable. Since <em>HD</em> captures whether a building is in or out of a historic district, we should tell R that the numbers in the column are a code for historic districts, and we do this by creating a factor, or categorical variable, using <code>as.factor()</code>.</p>
+<pre class="r"><code>MN$HD &lt;- as.factor(MN$HD) </code></pre>
+<p>Now we can draw a very crude map of historic districts.</p>
+<pre class="r"><code>plot(y= MN$YCoord, x= MN$XCoord, col = MN$HD, pch=16, cex=.5)</code></pre>
+<p><img src="hypothesis_files/figure-html/unnamed-chunk-23-1.png" /><!-- --></p>
+<p>Finally, split the “MN” object into two tables, one for the historic buildings (<em>inHD</em>) and one for the buildings outside a historic district (<em>outHD</em>):</p>
+<pre class="r"><code>inHD &lt;- MN[MN$HD ==1,] 
+
+outHD &lt;- MN[MN$HD ==0,]</code></pre>
+<p>Our goal is to explore the effect of historic districts on property values in Manhattan. Our null hypothesis is that the designation of historic districts has no effect on property values, the buildings in a historic district have the same value as those outside of a historic district, and difference between the two groups is due to random chance. First, let’s create boxplots of property values</p>
+<pre class="r"><code>boxplot(inHD$AssessTot, outHD$AssessTot)</code></pre>
+<p><img src="hypothesis_files/figure-html/unnamed-chunk-25-1.png" /><!-- --></p>
+<p>ooof. There appears to be a big outlier in the non historical district group. Can you guess what building this is?</p>
+<p>We’ll use the function <code>t.test()</code> to run the hypothesis test. In this case, <code>x =</code> is the data being tested, <code>y =</code> is the comparison group (used for a two sample test).</p>
+<p><br></p>
+<p class="comment" , style="font-style:normal">
+<strong>Question 5</strong>: Run the appropriate t-test to compare the mean property values of buildings in historic districts and those not in historic districts based on the research question. Briefly summarize your results.
+</p>
+<p><br></p>
+<p>Location is an important component of a property’s value. To test the impact of a historic district designation we should revise our test to examine only buildings that have similar locations. One way to do this is to identify buildings that are close to but outside of historic districts. Each building in the database has a block number. Let’s revise <em>outHD</em> so that it only includes buildings which are on the same block as a historic district but outside of the district boundaries.</p>
+<pre class="r"><code>##Select buildings on the same block as a historic district
+##Get a list of all blocks that contain historic buildings
+blocks &lt;- inHD$Block 
+
+#display the first 5 rows of blocks
+head(blocks)</code></pre>
+<pre><code>## [1]  7 72 73 29  7 29</code></pre>
+<pre class="r"><code>##Select all buildings (from MN) that are on the same block as historic buildings
+##The line below selects all rows where the block column contains values in our list of blocks
+##Save the result as a new object
+HDB &lt;- MN[MN$Block %in% blocks, ] 
+
+HDB_out &lt;- HDB[HDB$HD == 0, ] 
+
+HDB_in &lt;- HDB[HDB$HD == 1, ]</code></pre>
+<p>Boxplot again</p>
+<pre class="r"><code>boxplot(HDB_in$AssessTot, HDB_out$AssessTot)</code></pre>
+<p><img src="hypothesis_files/figure-html/unnamed-chunk-27-1.png" /><!-- --></p>
+<p>Seems like that severe outlier has disappeared.</p>
+<p>Now we have two files that contain buildings on blocks with historic districts, one file describes buildings in the district and the other describes those outside the district boundaries. But, we need one more correction: size. The size of the building is an important determinant of its value. The variable <em>BldgArea</em> gives the square footage. Let’s calculate the price per square foot. Taking a summary of this variable</p>
+<pre class="r"><code>summary(HDB_in$BldgArea)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##       0    4319    6605   20903   13910 2725731</code></pre>
+<p>We see a problem. Some buildings have 0 area (square footage). This could mean the lot is vacant, it could be an error. Either way it makes it hard to compute the price per square foot. We need to exlude these zero area buildings from the data set.</p>
+<pre class="r"><code>#Calcuate price per square foot for buildings
+#Only for buildings with an area greater than 0
+HDB_in_sqft &lt;- filter(HDB_in, HDB_in$BldgArea &gt; 0) %&gt;%
+              mutate(AssessSqFt = AssessTot/BldgArea)
+
+HDB_out_sqft &lt;- filter(HDB_out, HDB_out$BldgArea &gt; 0) %&gt;%
+              mutate(AssessSqFt = AssessTot/BldgArea)</code></pre>
+<p><br></p>
+<p class="comment" , style="font-style:normal">
+<strong>Question 6</strong>: For the new data sets <em>HDB_in_sqft</em> and <em>HDB_out_sqft</em>, run the appropriate t-test to compare the mean property values per square footage of buildings in historic districts and those not in historic districts. Summarize your results. What do the results from the two t-tests you ran for this historic building exercise tell you about the data generating process <span class="math inline"><em>X</em><sub>1</sub>, <em>X</em><sub>2</sub>, <em>X</em><sub>3</sub>, ...</span>?
+</p>
+<p><br></p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="bonus-permutation-tests" class="section level2">
+<h2><strong>Bonus: Permutation tests</strong></h2>
+<p><br />
+This lab concludes our foray into the statistical foundations of classical inference. However, we will revisit many of these ideas throughout the rest of the quarter, so it is important we have a strong understanding both conceptually and practically how statistical inference works. One way of further grounding these concepts is to actually step away from some of the core structures of classic inference. In particular, rather than conducting hypothesis tests and constructing confidence intervals parametrically - i.e. relying on known theoretical distributions like <em>Z</em>, <em>t</em>, binomial and others - we can just calculate our own p-values non parametrically by using the data itself rather than translating or mapping it onto a distribution. In other words, we will conduct inference via what are known as permutation (or Monte Carlo) tests.</p>
+<p><br></p>
+<p>Because we did not cover this in lecture, this section is a bonus portion of the lab, so you are not required to go through this to complete the assignment. However, we will be dipping into non parametric hypothesis testing as soon as next week, and fully when we start talking about prediction, so it would be a good idea to just glance through this section. You’ll also get extra credit points on your assignment (Cool!). However, don’t worry, we’ll revisit these ideas as they come up later, but I wanted to make sure you all have the opportunity to dip your toes early enough so that the water is not too cold when you start wading into the deeper end.</p>
+<p><br></p>
+<p>OK, so what is a permutation test? Let’s go back to the historic buildings example. Remember that the null hypothesis comparing the property values in historic and non historic neighborhoods is that the mean values are equal. In other words, the null is that effectively there is no difference between the two types of buildings, <em>as if the label historic and non historic were randomly assigned to buildings</em>. The italicized portion is key here. Most null distributions in hypothesis testing is basically asserting that the assignment, label, indicator or treatment is just randomly assigned across observations. The label “historic district” is not a special designation as any building can receive it simply by chance.</p>
+<p><br></p>
+<p>The basic idea: if our data were randomly assigned labels, how likely is it that we would have gotten the observed difference in means? The set up is as follows. Let’s say you have <span class="math inline"><em>n</em></span> observations <span class="math inline"><em>x</em><sub><em>i</em></sub>, ...<em>x</em><sub><em>n</em></sub></span> in group A and <span class="math inline"><em>m</em></span> observations <span class="math inline"><em>x</em><sub><em>j</em></sub>, ...<em>x</em><sub><em>m</em></sub></span> in group B. You have measured a value <span class="math inline"><em>y</em></span> for each group and you want to test whether the mean in <span class="math inline"><em>y</em></span> differs between the two groups. The basic steps of a permutation test are as follows</p>
+<p><br></p>
+<ol style="list-style-type: decimal">
+<li><p>Calculate your observed difference in <span class="math inline"><em>y</em></span> between group A and group B.</p></li>
+<li><p>Combine everyone into a single pool. We do this because <span class="math inline"><em>H</em><sub>0</sub> : <em>μ</em><sub><em>A</em></sub> = <em>μ</em><sub><em>B</em></sub></span> implies that both samples come from the same population. Take away each observation’s label A and B from them. Collect the <span class="math inline"><em>m</em> + <em>n</em></span> labels in a bag - <span class="math inline"><em>m</em></span> A labels and <span class="math inline"><em>n</em></span> B labels. Randomly assign each person a label <span class="math inline"><em>A</em></span> or <span class="math inline"><em>B</em></span> from this bag, making sure to keep the same number of <span class="math inline"><em>m</em></span> and <span class="math inline"><em>n</em></span> (i.e. we are sampling without replacement).</p></li>
+<li><p>Calculate the mean difference in <span class="math inline"><em>y</em></span> between the randomly assigned <span class="math inline"><em>A</em></span> and <span class="math inline"><em>B</em></span> groups</p></li>
+<li><p>Repeat steps 2-3 many times <em>N</em>. What you are effectively doing here is creating the null distribution.</p></li>
+<li><p>Calculate the permutation test p-value: the proportion of the test statistic (difference in means) that equal or exceed the value of the test statistic from the original data.</p></li>
+</ol>
+<p><br></p>
+<p>Now, let’s implement these steps in R.</p>
+<pre class="r"><code>#insert your comment here
+diff &lt;-mean(HDB_in_sqft$AssessSqFt)- mean(HDB_out_sqft$AssessSqFt)</code></pre>
+<pre class="r"><code>#insert your comment here
+HDB.in.out &lt;- rbind.data.frame(HDB_in_sqft, HDB_out_sqft)
+#insert your comment here
+indicator &lt;-c(rep(1, nrow(HDB_in_sqft)), rep(0, nrow(HDB_out_sqft)))</code></pre>
+<pre class="r"><code>#insert your comment here
+rp_test &lt;- function(data, label) {
+  vecr&lt;-sample(label)
+  test &lt;- cbind.data.frame(data, vecr)
+  return(mean(test[test$vecr == 1, &quot;AssessSqFt&quot;]) - mean(test[test$vecr == 0, &quot;AssessSqFt&quot;]))
+}</code></pre>
+<pre class="r"><code>#insert your comment here
+nrep &lt;- 10000
+#insert your comment here
+samps &lt;-replicate(nrep,rp_test(HDB.in.out, indicator))</code></pre>
+<p>The object <em>samps</em> gives 1,000 mean differences from the null distribution - i.e. a scenario where in district and not in district are randomly assigned, and thus there should be no difference between the two groups. We can create a histogram and plot the observed mean difference.</p>
+<pre class="r"><code>hist(samps,col=&quot;lightblue&quot;, main = &quot;Histogram of 1,000 permutations&quot;)
+#histogram in generated 
+abline(v = diff, col=&quot;red&quot;, lwd=3, lty=2)</code></pre>
+<p><img src="hypothesis_files/figure-html/unnamed-chunk-34-1.png" /><!-- --></p>
+<p>The p-value is the proportion of values in <em>samps</em> that is greater than or equal to the observed difference. In hypothesis framework language, this is a one-sided test.</p>
+<pre class="r"><code>table(samps &gt;= diff)/length(samps)</code></pre>
+<pre><code>## 
+##  FALSE   TRUE 
+## 0.4697 0.5303</code></pre>
+<p><br></p>
+<p>Why do a permutation test?</p>
+<ul>
+<li>The test is distribution free under <span class="math inline"><em>H</em><sub>0</sub></span>. Notice that we did not once refer or map to a theoretical distribution like the standard normal or t.</li>
+<li>Some non-parametric methods depend on large sample sizes for their validity. Permutation tests do not. Even for tiny samples, the chance of false significance cannot exceed 0.05.</li>
+<li>p-values are exact and not asymptotic</li>
+<li>There is no pretense of random sampling from some imaginary population</li>
+<li>All the probability comes from random assignment</li>
+<li>You can do this for nearly <em>any</em> statistic you can think of</li>
+</ul>
+<p>We’ll revisit permutation tests when we go through statistical inference in point pattern analysis and spatial autocorrelation.</p>
+<p><br></p>
+<p class="comment" , style="font-style:normal">
+<strong>Bonus Question</strong>: In the R code chunks above that perform the permutation test, add comments to explain what each line of code is doing.
+</p>
+<p><br></p>
+<p>A note about sampling in R: When you work with using random samples and values, the results will be different each time you run some code (that is the point); but sometimes it is desireable to recreate exactly the same random sequence. The function <code>set.seed()</code> allows you to do that (after all, in computers we can only create pseudo-random values). So, if I plugged in <code>set.seed(1234)</code> before i ran any of the sampling functions above, I can replicate the results at a later time. Furthermore, you can replicate my results if you too plugged in <code>set.seed(1234)</code>. You will be seeing us use <code>set.seed()</code> in the future.</p>
+<hr />
+<p>Website created and maintained by <a href="https://nbrazil.faculty.ucdavis.edu/">Noli Brazil</a></p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("show" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+
+</body>
+</html>
