@@ -663,32 +663,6 @@ You’ll learn to understand that R is beautiful. But, it isn’t perfect. One o
 ##  9 06017 El Dorado County, California     185015
 ## 10 06019 Fresno County, California        971616
 ## # … with 48 more rows</code></pre>
-<p>But this can be really annoying if you have a lot of <code>select()</code> commands in your code (because you have to go through and apply <code>dplyr::</code> to each one). A workaround is to set conflict hierarchies at the top of your document (<code>conflict_prefer(&quot;select&quot;, &quot;dplyr&quot;)</code>) to specify that the <code>select()</code> function should always come from the dplyr package. The <code>conflict_prefer()</code> function is in the <strong>conflicted</strong> package, which we need to install. The line of code below checks if you already have the package <strong>conflicted</strong> installed. If not, R will install it.</p>
-<pre class="r"><code>if (!require(&quot;conflicted&quot;)) install.packages(&quot;conflicted&quot;)</code></pre>
-<p>Then load</p>
-<pre class="r"><code>library(conflicted)</code></pre>
-<p>Then set your conflict preferences</p>
-<pre class="r"><code>conflict_prefer(&quot;select&quot;, &quot;dplyr&quot;)</code></pre>
-<pre><code>## [conflicted] Will prefer dplyr::select over any other package</code></pre>
-<p>The above code tells R that the function <code>select</code> will always come from the package <strong>dplyr</strong>. Now use <code>select()</code> without the <code>dplyr::</code></p>
-<pre class="r"><code>select(counties, GEOID, NAME, tpopr)</code></pre>
-<pre><code>## # A tibble: 58 x 3
-##    GEOID NAME                              tpopr
-##    &lt;chr&gt; &lt;chr&gt;                             &lt;dbl&gt;
-##  1 06001 Alameda County, California      1629615
-##  2 06003 Alpine County, California          1203
-##  3 06005 Amador County, California         37306
-##  4 06007 Butte County, California         225207
-##  5 06009 Calaveras County, California      45057
-##  6 06011 Colusa County, California         21479
-##  7 06013 Contra Costa County, California 1123678
-##  8 06015 Del Norte County, California      27442
-##  9 06017 El Dorado County, California     185015
-## 10 06019 Fresno County, California        971616
-## # … with 48 more rows</code></pre>
-<p>We’ll run into another function conflict later when we use the <code>filter()</code> command, which is now sent to the back after you loaded in <strong>MASS</strong>. As such, lets make the <strong>dplyr</strong> version the one to use.</p>
-<pre class="r"><code>conflict_prefer(&quot;filter&quot;, &quot;dplyr&quot;)</code></pre>
-<pre><code>## [conflicted] Will prefer dplyr::filter over any other package</code></pre>
 <div style="margin-bottom:25px;">
 
 </div>
@@ -722,14 +696,14 @@ One of the important innovations from the <strong>tidyverse</strong> is the pipe
   mutate(pwhite = nhwhite/tpopr, phisp = hisp/tpopr,
                   pasn = nhasn/tpopr, pblk = nhblk/tpopr) %&gt;%
   rename(County = NAME) %&gt;%
-  select(GEOID, County, pwhite, phisp, pasn, pblk, tpopr)</code></pre>
+  dplyr::select(GEOID, County, pwhite, phisp, pasn, pblk, tpopr)</code></pre>
 <p>In the code above, the tibble <em>counties</em> is piped into the command <code>mutate()</code>. This command creates the percent race/ethnicity variables. Once <code>mutate()</code> is done doing its thing, the result gets piped into the function <code>rename()</code>, which renames <em>NAME</em> to <em>County</em>. This result gets piped into <code>select()</code>, which keeps the appropriate variables. Finally, the final result gets saved into the data object <em>counties3</em>.</p>
 <p>One more neat thing about piping. Notice that saving the result into an object named <em>counties3</em> happened in the beginning. So, it’s not exactly linear or reading left to right. So, why don’t we make it that way?</p>
 <pre class="r"><code>counties %&gt;%
   mutate(pwhite = nhwhite/tpopr, phisp = hisp/tpopr,
                   pasn = nhasn/tpopr, pblk = nhblk/tpopr) %&gt;%
   rename(County = NAME) %&gt;%
-  select(GEOID, County, pwhite, phisp, pasn, pblk, tpopr) -&gt; counties4</code></pre>
+  dplyr::select(GEOID, County, pwhite, phisp, pasn, pblk, tpopr) -&gt; counties4</code></pre>
 <p>At the end of the pipe, we use the <code>-&gt;</code> operator. This is somewhat blasphemous, because long time R users are used to the <code>&lt;-</code> operator to assign or save a result. But, boo hoo for you, we’ve got a new toy now! The <code>-&gt;</code> makes complete sense in the <strong>tidyverse</strong> piping world.</p>
 <p>Piping makes code clearer, and simultaneously gets rid of the need to define any intermediate objects that you would have needed to keep track of while reading the code. PIPE, Pipe, and pipe whenever you can. Badge it!</p>
 <center>
@@ -809,7 +783,7 @@ Instead of tables, you might want to summarize your data using plots. <strong>gg
 <p>The basic idea is that a ggplot graphic layers geometric objects (circles, lines, etc), themes, and scales on top of data.</p>
 <p>You first start out with the base layer. It represents the empty ggplot layer defined by the <code>ggplot()</code> function.</p>
 <pre class="r"><code>ggplot(counties3)</code></pre>
-<p><img src="tidyr_files/figure-html/unnamed-chunk-39-1.png" /><!-- --></p>
+<p><img src="tidyr_files/figure-html/unnamed-chunk-34-1.png" /><!-- --></p>
 <p>We haven’t told <code>ggplot()</code> what type of geometric object(s) we want to plot, nor how the variables should be mapped to the geometric objects, so we just have a blank plot. We had geoms to paint the blank canvas.</p>
 <p>From here, we add a “geom” layer to the ggplot object. Layers are added to ggplot objects using <code>+</code>, instead of <code>%&gt;%</code>, since you are not explicitly piping an object into each subsequent layer, but adding layers on top of one another.</p>
 <p>Let’s create a histogram of percent white. Histograms are used to summarize a single numeric variable. To create a histogram, use <code>geom_histogram()</code> for <code>&lt;GEOM_FUNCTION()&gt;</code>. Inside <code>geom_histogram()</code>, you will specify the aesthetic mappings from the variables to the geometric objects that you want.</p>
@@ -817,46 +791,46 @@ Instead of tables, you might want to summarize your data using plots. <strong>gg
   geom_histogram(mapping = aes(x=pwhite)) +
   xlab(&quot;Percent white&quot;) </code></pre>
 <pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
-<p><img src="tidyr_files/figure-html/unnamed-chunk-40-1.png" /><!-- --></p>
+<p><img src="tidyr_files/figure-html/unnamed-chunk-35-1.png" /><!-- --></p>
 <p>The above code first specifies the data, then the mapping geometric object (the histogram), and then other aspects of the plot, in the above case, an x-axis label.</p>
 <p>What about plotting two numeric variables? A common plot for this is the scatter plot. Let’s plot <em>pwhite</em> and <em>phisp</em> using the geom <code>geom_point()</code></p>
 <pre class="r"><code>ggplot(counties3) +
     geom_point(mapping = aes(x = phisp, y = pwhite)) +
     xlab(&quot;Percent Hispanic&quot;) +
     ylab(&quot;Percent white&quot;)</code></pre>
-<p><img src="tidyr_files/figure-html/unnamed-chunk-41-1.png" /><!-- --></p>
+<p><img src="tidyr_files/figure-html/unnamed-chunk-36-1.png" /><!-- --></p>
 <p>Here, we specify both an x and y axis in <code>aes()</code>. Want to change the color of the points? Add a <code>col</code> argument to the <code>geom_point()</code> function</p>
 <pre class="r"><code>ggplot(counties3) +
     geom_point(mapping = aes(x = phisp, y = pwhite), col = &quot;cornflowerblue&quot;) +
     xlab(&quot;Percent Hispanic&quot;) +
     ylab(&quot;Percent white&quot;)</code></pre>
-<p><img src="tidyr_files/figure-html/unnamed-chunk-42-1.png" /><!-- --></p>
+<p><img src="tidyr_files/figure-html/unnamed-chunk-37-1.png" /><!-- --></p>
 <p>What if you wanted to establish separate colors for counties that are large and not large? You will need to include the color argument inside the <code>aes()</code> function.</p>
 <pre class="r"><code>ggplot(counties3) +
     geom_point(mapping = aes(x = phisp, y = pwhite, col = large)) +
     xlab(&quot;Percent Hispanic&quot;) +
     ylab(&quot;Percent white&quot;)</code></pre>
-<p><img src="tidyr_files/figure-html/unnamed-chunk-43-1.png" /><!-- --></p>
+<p><img src="tidyr_files/figure-html/unnamed-chunk-38-1.png" /><!-- --></p>
 <p>You can pipe in a dataset into <code>ggplot()</code>. For example, a scatterplot of <em>pwhite</em> and <em>phisp</em> just for large counties</p>
 <pre class="r"><code>counties3 %&gt;%
-  filter(large == &quot;Large&quot;) %&gt;%
+  dplyr::filter(large == &quot;Large&quot;) %&gt;%
   ggplot() +
       geom_point(mapping = aes(x = phisp, y = pwhite)) +
       xlab(&quot;Percent Hispanic&quot;) +
       ylab(&quot;Percent white&quot;)</code></pre>
-<p><img src="tidyr_files/figure-html/unnamed-chunk-44-1.png" /><!-- --></p>
+<p><img src="tidyr_files/figure-html/unnamed-chunk-39-1.png" /><!-- --></p>
 <p>Why not show scatterplots for both large and not large counties? To do this, add the function <code>facet_wrap()</code></p>
 <pre class="r"><code>  ggplot(counties3) +
       geom_point(mapping = aes(x = phisp, y = pwhite)) +
       xlab(&quot;Percent Hispanic&quot;) +
       ylab(&quot;Percent white&quot;) +
       facet_wrap(~large) </code></pre>
-<p><img src="tidyr_files/figure-html/unnamed-chunk-45-1.png" /><!-- --></p>
+<p><img src="tidyr_files/figure-html/unnamed-chunk-40-1.png" /><!-- --></p>
 <p>As BBR Chapter 2 explains, boxplots are another common exploratory tool. Boxplots are particularly useful for examining the relationship between a categorical and numeric variable. The <code>&lt;GEOM_FUNCTION&gt;()</code> is <code>geom_boxplot()</code>. Boxplots are automatically grouped by the x-aesthetic provided. To color boxplots, use the <code>fill</code> argument.</p>
 <pre class="r"><code>counties3 %&gt;%
   ggplot() +
   geom_boxplot(aes(x = large, y = pwhite, fill = large))</code></pre>
-<p><img src="tidyr_files/figure-html/unnamed-chunk-46-1.png" /><!-- --></p>
+<p><img src="tidyr_files/figure-html/unnamed-chunk-41-1.png" /><!-- --></p>
 <p><code>ggplot()</code> is a powerful function, and you can make a lot of really visually captivating graphs. You can change colors, add text labels, layer different plots on top of one another or side by side. You can also make maps with the function, which we’ll cover a few labs from now. You can also make your graphs really “pretty” and professional looking by altering graphing features using <code>&lt;OPTIONS()</code>, including colors, labels, titles and axes. For a list of <code>ggplot()</code> functions that alter various features of a graph, check out <a href="http://r4ds.had.co.nz/graphics-for-communication.html">Chapter 22 in RDS</a>.</p>
 <p>Here’s your <strong>ggplot2</strong> badge. Wear it with pride!</p>
 <center>

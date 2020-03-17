@@ -434,67 +434,6 @@ dplyr::select(counties, GEOID, NAME, tpopr)
 ## # … with 48 more rows
 ```
 
-But this can be really annoying if you have a lot of `select()` commands in your code (because you have to go through and apply `dplyr::` to each one).  A workaround is to set conflict hierarchies at the top of your document (`conflict_prefer("select", "dplyr")`) to specify that the `select()` function should always come from the dplyr package. The `conflict_prefer()` function is in the **conflicted** package, which we need to install.  The line of code below checks if you already have the package **conflicted** installed. If not, R will install it.
-
-
-```r
-if (!require("conflicted")) install.packages("conflicted")
-```
-
-Then load 
-
-
-```r
-library(conflicted)
-```
-
-Then set your conflict preferences
-
-
-```r
-conflict_prefer("select", "dplyr")
-```
-
-```
-## [conflicted] Will prefer dplyr::select over any other package
-```
-
-The above code tells R that the function `select` will always come from the package **dplyr**.  Now use `select()` without the `dplyr::`
-
-
-```r
-select(counties, GEOID, NAME, tpopr)
-```
-
-```
-## # A tibble: 58 x 3
-##    GEOID NAME                              tpopr
-##    <chr> <chr>                             <dbl>
-##  1 06001 Alameda County, California      1629615
-##  2 06003 Alpine County, California          1203
-##  3 06005 Amador County, California         37306
-##  4 06007 Butte County, California         225207
-##  5 06009 Calaveras County, California      45057
-##  6 06011 Colusa County, California         21479
-##  7 06013 Contra Costa County, California 1123678
-##  8 06015 Del Norte County, California      27442
-##  9 06017 El Dorado County, California     185015
-## 10 06019 Fresno County, California        971616
-## # … with 48 more rows
-```
-
-
-We'll run into another function conflict later when we use the `filter()` command, which is now sent to the back after you loaded in **MASS**.  As such, lets make the **dplyr** version the one to use.
-
-
-```r
-conflict_prefer("filter", "dplyr")
-```
-
-```
-## [conflicted] Will prefer dplyr::filter over any other package
-```
-
 
 <div style="margin-bottom:25px;">
 </div>
@@ -545,7 +484,7 @@ counties3 <- counties %>%
   mutate(pwhite = nhwhite/tpopr, phisp = hisp/tpopr,
                   pasn = nhasn/tpopr, pblk = nhblk/tpopr) %>%
   rename(County = NAME) %>%
-  select(GEOID, County, pwhite, phisp, pasn, pblk, tpopr)
+  dplyr::select(GEOID, County, pwhite, phisp, pasn, pblk, tpopr)
 ```
 
 In the code above, the tibble *counties* is piped into the command `mutate()`.  This command creates the percent race/ethnicity variables. Once `mutate()` is done doing its thing, the result gets piped into the function `rename()`, which renames *NAME* to *County*. This result gets piped into `select()`, which keeps the appropriate variables.  Finally, the final result gets saved into the data object *counties3*.
@@ -558,7 +497,7 @@ counties %>%
   mutate(pwhite = nhwhite/tpopr, phisp = hisp/tpopr,
                   pasn = nhasn/tpopr, pblk = nhblk/tpopr) %>%
   rename(County = NAME) %>%
-  select(GEOID, County, pwhite, phisp, pasn, pblk, tpopr) -> counties4
+  dplyr::select(GEOID, County, pwhite, phisp, pasn, pblk, tpopr) -> counties4
 ```
 
 At the end of the pipe, we use the `->` operator.  This is somewhat blasphemous, because long time R users are used to the `<-` operator to assign or save a result.  But, boo hoo for you, we've got a new toy now!  The `->` makes complete sense in the **tidyverse** piping world.
@@ -694,7 +633,7 @@ You first start out with the base layer.  It represents the empty ggplot layer d
 ggplot(counties3)
 ```
 
-![](tidyr_files/figure-html/unnamed-chunk-39-1.png)<!-- -->
+![](tidyr_files/figure-html/unnamed-chunk-34-1.png)<!-- -->
 
 We haven’t told `ggplot()` what type of geometric object(s) we want to plot, nor how the variables should be mapped to the geometric objects, so we just have a blank plot. We had geoms to paint the blank canvas.
 
@@ -713,7 +652,7 @@ ggplot(counties3) +
 ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 ```
 
-![](tidyr_files/figure-html/unnamed-chunk-40-1.png)<!-- -->
+![](tidyr_files/figure-html/unnamed-chunk-35-1.png)<!-- -->
 
 The above code first specifies the data, then the mapping geometric object (the histogram), and then other aspects of the plot, in the above case, an x-axis label.
 
@@ -727,7 +666,7 @@ ggplot(counties3) +
     ylab("Percent white")
 ```
 
-![](tidyr_files/figure-html/unnamed-chunk-41-1.png)<!-- -->
+![](tidyr_files/figure-html/unnamed-chunk-36-1.png)<!-- -->
 
 Here, we specify both an x and y axis in `aes()`. Want to change the color of the points? Add a `col` argument to the `geom_point()` function
 
@@ -739,7 +678,7 @@ ggplot(counties3) +
     ylab("Percent white")
 ```
 
-![](tidyr_files/figure-html/unnamed-chunk-42-1.png)<!-- -->
+![](tidyr_files/figure-html/unnamed-chunk-37-1.png)<!-- -->
 
 What if you wanted to establish separate colors for counties that are large and not large?  You will need to include the color argument inside the `aes()` function.
 
@@ -751,7 +690,7 @@ ggplot(counties3) +
     ylab("Percent white")
 ```
 
-![](tidyr_files/figure-html/unnamed-chunk-43-1.png)<!-- -->
+![](tidyr_files/figure-html/unnamed-chunk-38-1.png)<!-- -->
 
 
 You can pipe in a dataset into `ggplot()`.  For example, a scatterplot of *pwhite* and *phisp* just for large counties
@@ -759,14 +698,14 @@ You can pipe in a dataset into `ggplot()`.  For example, a scatterplot of *pwhit
 
 ```r
 counties3 %>%
-  filter(large == "Large") %>%
+  dplyr::filter(large == "Large") %>%
   ggplot() +
       geom_point(mapping = aes(x = phisp, y = pwhite)) +
       xlab("Percent Hispanic") +
       ylab("Percent white")
 ```
 
-![](tidyr_files/figure-html/unnamed-chunk-44-1.png)<!-- -->
+![](tidyr_files/figure-html/unnamed-chunk-39-1.png)<!-- -->
 
 Why not show scatterplots for both large and not large counties? To do this, add the function `facet_wrap()` 
 
@@ -779,7 +718,7 @@ Why not show scatterplots for both large and not large counties? To do this, add
       facet_wrap(~large) 
 ```
 
-![](tidyr_files/figure-html/unnamed-chunk-45-1.png)<!-- -->
+![](tidyr_files/figure-html/unnamed-chunk-40-1.png)<!-- -->
     
 
 As BBR Chapter 2 explains, boxplots are another common exploratory tool. Boxplots are particularly useful for examining the relationship between a categorical and numeric variable. The `<GEOM_FUNCTION>()` is `geom_boxplot()`. Boxplots are automatically grouped by the x-aesthetic provided. To color boxplots, use the `fill` argument.
@@ -791,7 +730,7 @@ counties3 %>%
   geom_boxplot(aes(x = large, y = pwhite, fill = large))
 ```
 
-![](tidyr_files/figure-html/unnamed-chunk-46-1.png)<!-- -->
+![](tidyr_files/figure-html/unnamed-chunk-41-1.png)<!-- -->
 
 
 `ggplot()` is a powerful function, and you can make a lot of really visually captivating graphs. You can change colors, add text labels, layer different plots on top of one another or side by side. You can also make maps with the function, which we'll cover a few labs from now.  You can also make your graphs really "pretty" and professional looking by altering graphing features using `<OPTIONS()`, including colors, labels, titles and axes.  For a list of `ggplot()` functions that alter various features of a graph, check out [Chapter 22 in RDS](http://r4ds.had.co.nz/graphics-for-communication.html).  

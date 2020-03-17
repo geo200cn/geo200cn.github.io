@@ -335,37 +335,6 @@ What in the world just happened? By loading **MASS**, we have overwritten **dply
 dplyr::select(counties, GEOID, NAME, tpopr)
 ```
 
-But this can be really annoying if you have a lot of `select()` commands in your code (because you have to go through and apply `dplyr::` to each one).  A workaround is to set conflict hierarchies at the top of your document (`conflict_prefer("select", "dplyr")`) to specify that the `select()` function should always come from the dplyr package. The `conflict_prefer()` function is in the **conflicted** package, which we need to install.  The line of code below checks if you already have the package **conflicted** installed. If not, R will install it.
-
-```{r warning = FALSE, ,message = FALSE}
-if (!require("conflicted")) install.packages("conflicted")
-```
-
-Then load 
-
-```{r}
-library(conflicted)
-```
-
-Then set your conflict preferences
-
-```{r}
-conflict_prefer("select", "dplyr")
-```
-
-The above code tells R that the function `select` will always come from the package **dplyr**.  Now use `select()` without the `dplyr::`
-
-```{r}
-select(counties, GEOID, NAME, tpopr)
-```
-
-
-We'll run into another function conflict later when we use the `filter()` command, which is now sent to the back after you loaded in **MASS**.  As such, lets make the **dplyr** version the one to use.
-
-```{r}
-conflict_prefer("filter", "dplyr")
-```
-
 
 <div style="margin-bottom:25px;">
 </div>
@@ -405,7 +374,7 @@ counties3 <- counties %>%
   mutate(pwhite = nhwhite/tpopr, phisp = hisp/tpopr,
                   pasn = nhasn/tpopr, pblk = nhblk/tpopr) %>%
   rename(County = NAME) %>%
-  select(GEOID, County, pwhite, phisp, pasn, pblk, tpopr)
+  dplyr::select(GEOID, County, pwhite, phisp, pasn, pblk, tpopr)
 ```
 
 In the code above, the tibble *counties* is piped into the command `mutate()`.  This command creates the percent race/ethnicity variables. Once `mutate()` is done doing its thing, the result gets piped into the function `rename()`, which renames *NAME* to *County*. This result gets piped into `select()`, which keeps the appropriate variables.  Finally, the final result gets saved into the data object *counties3*.
@@ -417,7 +386,7 @@ counties %>%
   mutate(pwhite = nhwhite/tpopr, phisp = hisp/tpopr,
                   pasn = nhasn/tpopr, pblk = nhblk/tpopr) %>%
   rename(County = NAME) %>%
-  select(GEOID, County, pwhite, phisp, pasn, pblk, tpopr) -> counties4
+  dplyr::select(GEOID, County, pwhite, phisp, pasn, pblk, tpopr) -> counties4
 ```
 
 At the end of the pipe, we use the `->` operator.  This is somewhat blasphemous, because long time R users are used to the `<-` operator to assign or save a result.  But, boo hoo for you, we've got a new toy now!  The `->` makes complete sense in the **tidyverse** piping world.
@@ -562,7 +531,7 @@ You can pipe in a dataset into `ggplot()`.  For example, a scatterplot of *pwhit
 
 ```{r warning=FALSE}
 counties3 %>%
-  filter(large == "Large") %>%
+  dplyr::filter(large == "Large") %>%
   ggplot() +
       geom_point(mapping = aes(x = phisp, y = pwhite)) +
       xlab("Percent Hispanic") +
