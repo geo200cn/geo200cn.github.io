@@ -37,7 +37,7 @@ h2.title {
 
 \
 
-The purpose of this lab guide is to install and set up R and RStudio. You will be using R to complete all data analysis tasks in this class. If you already have the most updated version of R on your personal computer (3.6.3 "Holding the Windsock") **and** you are  comfortable working in the RStudio environment, you can skip this lab.  You will be using R Markdown to write up all assignments. If you are not familiar with R Markdown, read through the [assignment guidelines](https://geo200cn.github.io/hw_guidelines.html) as they go through the basics of R Markdown.  For those who have never used R or it has been a long time since you've used the program, welcome to what will be a life fulfilling journey! Yes, I said it, life fulfilling.
+The purpose of this lab guide is to install and set up R and RStudio. You will be using R to complete all data analysis tasks in this class.  For those who have never used R or it has been a long time since you've used the program, welcome to what will be a life fulfilling journey! 
 
 
 <div style="margin-bottom:25px;">
@@ -103,6 +103,9 @@ Hopefully, I've convinced you that statistical programming and R are worthwhile 
 \
 
 R can be downloaded from one of the “CRAN” (Comprehensive R Archive Network) sites. In the US, the main site is at http://cran.us.r-project.org/.  Look in the “Download and Install R” area. Click on the appropriate link based on your operating system.  
+
+**If you already have R on your computer, make sure you have most updated version of R on your personal computer (3.6.3 "Holding the Windsock").**
+
 
 <div style="margin-bottom:25px;">
 </div>
