@@ -425,7 +425,7 @@ h2.title {
 </style>
 <p><br />
 </p>
-<p>Assignments are released Tuesday morning as pdfs on Canvas in the Files - Assignments folder. Assignments will typically have two components:</p>
+<p>Assignments are released Tuesday morning as pdfs on Canvas in the Files -&gt; Assignments folder. Assignments will typically have two components:</p>
 <ol style="list-style-type: decimal">
 <li>Answering non R-related conceptual questions sometimes assigned from one of the textbooks.</li>
 <li>Executing data analysis tasks in R - for example, create a map or run a statistical model and interpret its results.</li>
@@ -433,6 +433,25 @@ h2.title {
 <p>You will use <a href="https://rmarkdown.rstudio.com/">R Markdown</a> to write up all R related assignments.</p>
 <div style="margin-bottom:25px;">
 
+</div>
+<div id="r-scripts" class="section level2">
+<h2><strong>R Scripts</strong></h2>
+<p><br />
+Running R code using the console is a great place to start, but has its limitations. Each time you want to execute a set of commands, you have to re-enter them at the command line. Complex commands are potentially subject to typographical errors, necessitating that they be re-entered correctly. Repeating a set of operations requires re-entering the code stream. To give yourself more room to work, it’s a great idea to use the R script editor.</p>
+<p>A script is simply a text file containing a set of commands and comments. The script can be saved and used later to re-execute the saved commands. The script can also be edited so you can execute a modified version of the commands.</p>
+<p>You can open a new empty script by clicking the New File icon in the upper left of the main RStudio toolbar. This icon looks like a white square with a white plus sign in a green circle. Clicking the icon opens the New File Menu. Click the R Script menu option and the script editor will open with an empty script. Your R Studio should look similar to below (image source: <a href="https://r4ds.had.co.nz/workflow-scripts.html">R for Data Science</a>)</p>
+<p><br></p>
+<div class="figure">
+<img src="rstudioeditor.png" />
+
+</div>
+<p><br></p>
+<p>The panel that pops up is the mystery fourth window I was referring to in the <a href="https://geo200cn.github.io/getting_started.html">Getting Started</a> guide. Once the new script opens in the Script Editor panel, the script is ready for text entry.</p>
+<p>R Scripts are basically text files with a .R extension that houses your code and comments. You write your code. Execute that code from your R script. Results are produced in your R console window. In this class, we won’t be using regular R Scripts for homework assignments. Instead, we’ll be using R Markdown.</p>
+<p>R Markdown documents take script files to a new level by allowing you to mix R commands with explanatory text. Think of an R Markdown document as an R script on steroids. Your R Markdown source document is compiled into an output report evaluating the R commands in the source document to produce easily reproducible results in an aesthetically pleasing form. It combines code, results from the code, and narrative text explaining the results to produce beautiful documents and academic reports.</p>
+<div style="margin-bottom:25px;">
+
+</div>
 </div>
 <div id="r-markdown" class="section level2">
 <h2><strong>R Markdown</strong></h2>
@@ -455,7 +474,7 @@ install.packages(&quot;rmarkdown&quot;)</code></pre>
 <div id="creating-and-saving-an-r-markdown-document" class="section level2">
 <h2><strong>Creating and saving an R Markdown document</strong></h2>
 <p><br />
-To create a new <code>.Rmd</code> file in RStudio, select File -&gt; New File -&gt; R Markdown. A window should pop up. Type in “Assignment 1” next to <em>Title</em> and your name next to <em>Author</em>. Leave everything else alone and click OK. A new window in the top left of your RStudio console should pop up. This is the mystery fourth window I was referring to in the <a href="">Getting Started</a> guide.</p>
+To create a new <code>.Rmd</code> file in RStudio, select File -&gt; New File -&gt; R Markdown. A window should pop up. Type in “Assignment 1” next to <em>Title</em> and your name next to <em>Author</em>. Leave everything else alone and click OK. A new window in the top left of your RStudio console should pop up containing your new R Markdown file.</p>
 <p><br></p>
 <center>
 <div class="figure">
@@ -532,7 +551,7 @@ Assignments will typically ask you to write R code to accomplish a data analysis
 1+1
 ```</code></pre>
 <p><br></p>
-<p>Here, I named the chunk <code>q1chunk1</code> which indicates this is question 1, chunk 1. You can name the chunk whatever you like (sally, fred, ryangalt). The chunk name is not required; however, it is good practice to give each chunk a unique name (we’ll see its value later when we talk about knitting).</p>
+<p>Here, I named the chunk <code>q1chunk1</code> which indicates this is question 1, chunk 1. You can name the chunk whatever you like (sally, kenji, ryangalt). The chunk name is not required; however, it is good practice to give each chunk a unique name (we’ll see its value later when we talk about knitting).</p>
 <p>In the R Markdown you created and saved, you will notice the following R code chunk after the YAML.</p>
 <pre><code>```{r}
 knitr::opts_chunk$set(echo = TRUE)
@@ -699,7 +718,7 @@ In addition to the R Markdown Rmd file, you will need to submit its knitted resu
 </div>
 </center>
 <p><br></p>
-<p>If it has a problem knitting, R will stop at the chunk that contains the problem. You can determine the offending place in your R Markdown file two ways. First, in the R Markdown tab in the bottom left window, if you click on “Output” located at the top right corner of this window, you will see the R Markdown progress window, the error in red, and where R Markdown stopped. Carefully read the description of the error, which will contain the R code chunk name and sometimes the lines containing the problem in your R Mardown file. This is where it is useful for naming your chunks. You can go to your offending chunk and see what may be the problem. For example, the figure below shows knitting was stopped because the object <em>xyz</em> was not created in the R Markdown file. You can go to the chunk named <em>q2chunk2</em> to remedy the issue.</p>
+<p>If it has a problem knitting, R will stop at the chunk that contains the problem. You can determine the offending place in your R Markdown file two ways. First, in the R Markdown tab in the bottom left window, if you click on “Output” located at the top right corner of this window, you will see the R Markdown progress window, the error in red, and where R Markdown stopped. Carefully read the description of the error, which will contain the R code chunk name and sometimes the lines containing the problem in your R Markdown file. This is where it is useful for naming your chunks. You can go to your offending chunk and see what may be the problem. For example, the figure below shows knitting was stopped because the object <em>xyz</em> was not created in the R Markdown file. You can go to the chunk named <em>q2chunk2</em> to remedy the issue.</p>
 <p><br></p>
 <center>
 <div class="figure">
