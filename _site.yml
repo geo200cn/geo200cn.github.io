@@ -11,8 +11,8 @@ navbar:
       href: hw_guidelines.html
     - text: "Labs"
       menu:
-        - text: "Tidy R"
-          href: tidyr.html     
+        - text: "Getting Started"
+          href: getting_started.html     
     - text: "Other"
       menu:
         - text:
