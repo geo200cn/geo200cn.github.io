@@ -125,7 +125,7 @@ download.file(url = "https://raw.githubusercontent.com/geo200cn/data/master/spat
 unzip(zipfile = "spatialsflab.zip")
 ```
 
-Don’t worry if you don’t understand these commands - they are more for you to simply copy and paste so that you can download files that I zipped up and uploaded onto GitHub. You can look at the help documentation for each function if you are curious. The data is also located on Canvas in the Week 4 Lab folder. 
+Don’t worry if you don’t understand these commands - they are more for you to simply copy and paste so that you can download files that I zipped up and uploaded onto GitHub. You can look at the help documentation for each function if you are curious. The data is also located on Canvas in the Lab and Assignments Week 4 folder. 
 
 You should see four shapefiles in the folder you specified in `setwd()`: *californiatracts.shp*, *sacmetroarea.shp*, *sacramentocity.shp*, and *city_trees.shp*. First, bring in *californiatracts.shp*, which contains non-Hispanic white and total population for all [census tracts](https://www2.census.gov/geo/pdfs/education/CensusTracts.pdf) in California.
 
@@ -640,7 +640,7 @@ tmap_mode("plot")
 ```
 
 
-Another popular package for making interactive maps in R is [leaflet](https://rstudio.github.io/leaflet/).
+Behind the scenes, the package [leaflet](https://rstudio.github.io/leaflet/) is used for generating the interactive map
 
 
 <div style="margin-bottom:25px;">
@@ -682,13 +682,7 @@ Then use the `class()` function on the **sp** object to see what kind of object 
 class(sac.metro.tracts.sp)
 ```
 
-We find out that *sac.metro.tracts.sp* is a **SpatialPolygonsDataFrame** object. As you learned in last lab, **SpatialPolygonsDataFrame** objects are almost like regular R data frames. However, unlike an **sf** spatial object, the attribute and feature data in an **sp** object are stored separately in what are known as [data slots](https://stat.ethz.ch/R-manual/R-devel/library/methods/html/slot.html). To see the complexity of data slots, do a `View()` of the data set
-
-```{r results ="hide", message=FALSE, warning=FALSE, eval=FALSE}
-View(sac.metro.tracts.sp)
-```
-
-Delving into the feature data slot reveals a series of nested lists and S4 objects, which can be confusing to work with directly.  If you are interested, you can learn more about the **sp** package [here](https://cran.r-project.org/web/packages/sp/vignettes/intro_sp.pdf), [here](https://cran.r-project.org/web/packages/sp/vignettes/over.pdf) and [here](http://www.nickeubank.com/gis-in-r/).  
+We find out that *sac.metro.tracts.sp* is a **SpatialPolygonsDataFrame** object.  If you are interested, you can learn more about the **sp** package [here](https://cran.r-project.org/web/packages/sp/vignettes/intro_sp.pdf), [here](https://cran.r-project.org/web/packages/sp/vignettes/over.pdf) and [here](http://www.nickeubank.com/gis-in-r/).  
 
 You've completed your introduction to **sf**. 
 
