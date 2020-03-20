@@ -147,7 +147,7 @@ sample_aget <- sample_n(data, 20, replace = TRUE)
 
 <br>
 
-<p class="comment", style="font-style:normal">**Question 2**: Create a histogram of  *sample_aget*?  Does it look normal?  Does it matter when trying to make inferences about the population? </p>
+<p class="comment", style="font-style:normal">**Question 2**: Create a histogram of  *sample_aget*?  Does it look normal?  Does it matter when you are trying to make inferences about the population? </p>
 
 <br>
 
@@ -327,7 +327,7 @@ This is an important inference that we’ve just made: even though we don’t kn
 <br>
 
 
-<p class="comment", style="font-style:normal">**Question 4**: Construct the confidence intervals for 1,000 samples of size 20. What proportion of those intervals would you expect to capture the true population mean? Why? Verify this in R. </p>
+<p class="comment", style="font-style:normal">**Question 4**: Construct the confidence intervals for 1,000 samples of size 20. What proportion of these intervals would you expect to capture the true population mean? Why? Verify this in R. </p>
 
 
 <br>
