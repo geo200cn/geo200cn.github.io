@@ -55,7 +55,7 @@ knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message = FALSE)
 ```
 
 
-In this guide, we'll demonstrate some of the fine properties of the Central Limit Theorem by working with real data.  This is in contrast to the theorems, abstract equations and images of red balls from the lecture.  Working through the core components and key consequences of the theorem will help ground it more concretely in your mind.  The lab will also give you more practice working with R's sampling functions.  We will be following the material presented in BBR Ch. 6 and 7. The objectives of the guide are as follows
+In this guide, we'll demonstrate some of the fine properties of the Central Limit Theorem by working with real data.  This will help ground the theorems, abstract equations and images of red balls from lecture.  Working through the core components and key consequences of the theorem will help ground it more concretely in your mind.  The lab will also give you more practice working with R's sampling functions.  We will be following the material presented in BBR Ch. 6 and 7. The objectives of the guide are as follows
 
 1. Learn about estimating population parameters using sampling statistics
 2. Understand the implications of the Central Limit Theorem using real data
@@ -87,7 +87,7 @@ library(tidyverse)
 ## **Population**
 \
 
-The goal is to estimate the average age of a population from a sample. I uploaded onto GitHub a csv file containing the ages of a population of 1,000 residents. The data is also located on Canvas in the Week 2 Lab folder. Let's bring the population into R.
+The goal is to estimate the average age of a population from a sample. I uploaded onto GitHub a csv file containing the ages of a population of 1,000 residents. The data are also located on Canvas in the Lab and Assignments Week 2 folder. Let's bring the population into R.
 
 ```{r warning = FALSE, message = FALSE}
 data <- read_csv("https://raw.githubusercontent.com/geo200cn/data/master/ages.csv")
@@ -121,6 +121,7 @@ Let's say we don't know the ages of every person in the population. Let's also s
 We take a sample of size 10 from the population.  We can do it the base R way by  using `sample()`
 
 ```{r warning = FALSE, message = FALSE}
+set.seed(1234)
 sample_ageb <- sample(data$age, 20, replace=TRUE)
 ```
 
@@ -133,7 +134,7 @@ sample_aget <- sample_n(data, 20, replace = TRUE)
 
 <br>
 
-<p class="comment", style="font-style:normal">**Question 2**: Create a histogram of  *sample_aget*?  Does it look normal?   </p>
+<p class="comment", style="font-style:normal">**Question 2**: Create a histogram of  *sample_aget*?  Does it look normal?  Does it matter when trying to make inferences about the population? </p>
 
 <br>
 
@@ -184,7 +185,7 @@ ggplot(sample_means, aes(x=means))+
 
 This is the distribution of the sample means. It doesn’t look like much. That’s because we only took 10 samples.
 
-A note about sampling in R: When you work with using random values, the results will be different each time you run some code (that is the point); but sometimes it is desirable to recreate exactly the same random sequence. The function `set.seed()` allows you to do that (after all, in computers we can only create pseudo-random values).  So, if I plugged in `set.seed(1234)` before i ran any of the sampling functions above, I can replicate the results at a later time.  Furthermore, you can replicate my results if you too plugged in `set.seed(1234)`.  You will be seeing us use `set.seed()` in the future.
+A note about sampling in R: When you work with using random values, the results will be different each time you run some code (that is the point); but sometimes it is desirable to recreate exactly the same random sequence. The function `set.seed()` allows you to do that (after all, in computers we can only create pseudo-random values).  So, by plugging in `set.seed(1234)` before I ran the sampling functions above, I can replicate the results at a later time.  Furthermore, you can replicate my results if you too plugged in `set.seed(1234)`.  
 
 
 <div style="margin-bottom:25px;">
@@ -263,7 +264,7 @@ upper <- my_mean + 1.96 * se
 c(lower, upper)
 ```
 
-This is an important inference that we’ve just made: even though we don’t know what the full population looks like, we’re 95% confident that the true average age of the population lies between the values lower and upper *given certan conditions are met*.
+This is an important inference that we’ve just made: even though we don’t know what the full population looks like, we’re 95% confident that the true average age of the population lies between the values lower and upper *given certan conditions are met*. Wow!
 
 <br>
 
