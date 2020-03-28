@@ -603,7 +603,7 @@ Also note: all code used to produce your results must be shown in your html or p
 * We expect you to ask for help if you get stuck (and you will be stuck a lot). We can’t read minds, so if you don’t tell us that you are confused, we won’t know.
 * You should try and solve problems before you ask for help.
 * Trying includes an Internet search (a crucial skill!)
-* All homework should be submitted on Canvas. If you email in homework, it will not get graded.
+* All homework should be submitted on Canvas. 
 
 <div style="margin-bottom:25px;">
 </div>
