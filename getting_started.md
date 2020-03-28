@@ -104,7 +104,7 @@ Hopefully, I've convinced you that statistical programming and R are worthwhile 
 
 R can be downloaded from one of the “CRAN” (Comprehensive R Archive Network) sites. In the US, the main site is at http://cran.us.r-project.org/.  Look in the “Download and Install R” area. Click on the appropriate link based on your operating system.  
 
-**If you already have R on your computer, make sure you have most updated version of R on your personal computer (3.6.3 "Holding the Windsock").**
+**If you already have R on your computer, make sure you have the most updated version of R on your personal computer (3.6.3 "Holding the Windsock").**
 
 
 <div style="margin-bottom:25px;">
@@ -233,7 +233,7 @@ In running the few lines of code above, we've asked you to work directly in the 
 In your homework assignments, we will be asking you to submit code in a specific type of script: the R Markdown file.  R Markdown allows you to create documents that serve as a neat record of your analysis. Think of it as a word document file, but instead of sentences in an essay, you are writing code for a data analysis.  
 
 
-Now may be a good time to read through the class [assignment guidelines](https://geo200cn.github.io/hw_guidelines.html) as they go through the basics of R Markdown files.  After you've gone through the guidelines, go through Robert Hijman's [Introduction to R](https://rspatial.org/intr/index.html): Basic data types, Basic data structures, Indexing, Algebra, Read and write files, Data Exploration, and Graphics.  We will cover the rest of his intro next week.
+Now may be a good time to read through the class [assignment guidelines](https://geo200cn.github.io/hw_guidelines.html) as they go through the basics of R Markdown files.  
 
 
 ***
