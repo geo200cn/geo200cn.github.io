@@ -12,11 +12,13 @@ navbar:
     - text: "Labs"
       menu:
         - text: "Getting Started"
-          href: getting_started.html     
+          href: getting_started.html
+        - text: "Lab Lecture - 1"
+          href: Lab_Week1.html         
     - text: "Other"
       menu:
         - text:
-          href:       
+          href:
 
 output:
   html_document:
