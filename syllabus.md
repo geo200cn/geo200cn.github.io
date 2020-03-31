@@ -42,9 +42,9 @@ The following is an abridged version of the course syllabus.  A full course syll
 ## **Lecture and Lab Times**
 
 * Lecture: 
-    + Tuesday and Thursday, 9:00-10:30
+    + Tuesday and Thursday, 9:00-10:30, Zoom
 * Labs: 
-    + Tuesday and Thursday, 11:00-12:50 
+    + Tuesday and Thursday, 11:00-12:50, Zoom 
 
 <div style="margin-bottom:25px;">
 </div>
@@ -52,7 +52,7 @@ The following is an abridged version of the course syllabus.  A full course syll
 
 Dr. Noli Brazil  
 *Contact*: nbrazil.at.ucdavis.edu  
-*Office hours*: Thursday from 1:00-3:00 pm or by appointment, in 2325 Hart Hall.  Please sign up for a slot [here](https://www.wejoinin.com/sheets/riajy). Out of courtesy to other students, please do not sign up for more than two 10-minute blocks.  If you do, I will keep only the first two blocks.
+*Office hours*: Thursday from 1:00-3:00 pm or by appointment.  Please sign up for a slot [here](https://www.wejoinin.com/sheets/riajy). Out of courtesy to other students, please do not sign up for more than two 10-minute blocks.  If you do, I will keep only the first two blocks.
 
 <div style="margin-bottom:25px;">
 </div>
@@ -116,7 +116,7 @@ The primary reading material is composed of a combination of the following three
 
 3.	(ISLR) James, G., D. Witten, T. Hastie and R. Tibshirani. 2013.  An Introduction to Statistical Learning with Applications in R. Springer. 
 
-We will also be reading book chapters and journal articles for some topics, which will be available on Canvas.  There are also journal article readings for each substantive topic that shows a real-world application of the method.  These readings are listed in the document reading_response.pdf uploaded onto Canvas.   You will need to complete reading responses for two of these readings.  
+We will also be reading book chapters and journal articles for some topics, which will be available on Canvas.  There are also journal article readings that show real-world applications of the methods covered in class.  These readings are listed in the document reading_response.pdf uploaded onto Canvas.   You will need to complete reading responses for two of these readings by the end of the quarter.  You can submit them at any point during the quarter.  
 
 
 <div style="margin-bottom:25px;">
