@@ -1,5 +1,5 @@
 ---
-title: "Central Limit Theorem"
+title: "Sampling, Central Limit Theorem and Confidence Intervals"
 subtitle: <h4 style="font-style:normal">GEO 200CN - Quantitative Geography</h4>
 author: <h4 style="font-style:normal">Professor Noli Brazil</h4>
 output: 
@@ -53,7 +53,7 @@ h2.title {
 
 
 
-In this guide, we'll demonstrate some of the fine properties of the Central Limit Theorem by working with real data.  This will help ground the theorems, abstract equations and images of red balls from lecture.  Working through the core components and key consequences of the theorem will help ground it more concretely in your mind.  The lab will also give you more practice working with R's sampling functions.  We will be following the material presented in BBR Ch. 6 and 7. The objectives of the guide are as follows
+In this guide, we'll demonstrate some of the concepts we learned in Chapters 6 and 7 in BBR by working with real data.  This will help ground the theorems, abstract equations and images of red balls from lecture.  The lab will also give you more practice working with R's sampling functions.  We will be following the material presented in BBR Ch. 6 and 7. The objectives of the guide are as follows
 
 1. Learn about estimating population parameters using sampling statistics
 2. Understand the implications of the Central Limit Theorem using real data
@@ -72,7 +72,7 @@ We'll be working with one new package in this lab, **infer**.  The following cod
 if (!require("infer")) install.packages("infer")
 ```
 
-Next, we need to load this package and the other package we will use in this lab.
+Next, we need to load this package as well as **tidyverse**.
 
 
 
@@ -94,7 +94,7 @@ The goal is to estimate the average age of a population from a sample. I uploade
 data <- read_csv("https://raw.githubusercontent.com/geo200cn/data/master/ages.csv")
 ```
 
-The object *data* contains our population.  Because we have a Census, we know the true population parameters.  So, we know the population mean
+The object *data* contains the population.  Because we have a Census, we know the true population parameters.  So, we know the population mean
 
 
 ```r
@@ -120,7 +120,7 @@ Let's say we don't know the ages of every person in the population. Let's also s
 
 <br>
 
-<p class="comment", style="font-style:normal">**Question 1**: Create a histogram of  *age*?  What does the Central Limit Theorem say about the distribution of a variable when we're trying to estimate the mean of that variable?   </p>
+<p class="comment", style="font-style:normal">**Question 1**: Create a histogram of  *age*.  Does it look normal? Does it matter when you are trying to make inferences about the population mean using a sample? </p>
 
 <br>
 
@@ -137,7 +137,7 @@ set.seed(1234)
 sample_ageb <- sample(data$age, 20, replace=TRUE)
 ```
 
-Or we can go the tidy R route
+Or we can go the tidy R route using `sample_n()`
 
 
 ```r
@@ -147,7 +147,7 @@ sample_aget <- sample_n(data, 20, replace = TRUE)
 
 <br>
 
-<p class="comment", style="font-style:normal">**Question 2**: Create a histogram of  *sample_aget*?  Does it look normal?  Does it matter when you are trying to make inferences about the population? </p>
+<p class="comment", style="font-style:normal">**Question 2**: Create a histogram of  *sample_aget*?  Does it look normal?  Does it matter when you are trying to make inferences about the population mean? </p>
 
 <br>
 
@@ -223,7 +223,7 @@ ggplot(sample_means, aes(x=means))+
 
 This is the distribution of the sample means. It doesn’t look like much. That’s because we only took 10 samples.
 
-A note about sampling in R: When you work with using random values, the results will be different each time you run some code (that is the point); but sometimes it is desirable to recreate exactly the same random sequence. The function `set.seed()` allows you to do that (after all, in computers we can only create pseudo-random values).  So, by plugging in `set.seed(1234)` before I ran the sampling functions above, I can replicate the results at a later time.  Furthermore, you can replicate my results if you too plugged in `set.seed(1234)`.  
+A note about sampling in R: When you work with using random values, the results will be different each time you run some code (that is the point); but sometimes it is desirable to recreate exactly the same random sequence. The function `set.seed()` allows you to do that (after all, in computers we can only create pseudo-random values).  So, by plugging in `set.seed(1234)` before we ran the sampling functions above, we can replicate the results at a later time.  
 
 
 <div style="margin-bottom:25px;">
@@ -299,7 +299,7 @@ Let's go back to our first 20 person sample. Calculate the mean
 
 
 ```r
-my_mean <- mean(data$age)
+my_mean <- mean(sample_aget$age)
 ```
 
 Calculate the standard error
@@ -319,15 +319,17 @@ c(lower, upper)
 ```
 
 ```
-## [1] 46.37344 61.63456
+## [1] 47.86944 63.13056
 ```
 
-This is an important inference that we’ve just made: even though we don’t know what the full population looks like, we’re 95% confident that the true average age of the population lies between the values lower and upper *given certan conditions are met*. Wow!
+This is an important inference that we’ve just made: even though we don’t know what the full population looks like, we’re 95% confident that the true average age of the population lies between the values lower and upper *given certan conditions are met*. 
 
 <br>
 
 
 <p class="comment", style="font-style:normal">**Question 4**: Construct the confidence intervals for 1,000 samples of size 20. What proportion of these intervals would you expect to capture the true population mean? Why? Verify this in R. </p>
+
+<p class="comment", style="font-style:normal">**Question 5**: We have data on the population, so we were able to grab the population standard deviation to construct the confidence interval. Construct the appropriate 95% confidence interval for the sample mean if you did not have the population data.  Hint: `qt()` might help you out. </p>
 
 
 <br>

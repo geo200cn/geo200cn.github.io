@@ -11,7 +11,7 @@
 
 
 
-<title>Central Limit Theorem</title>
+<title>Sampling, Central Limit Theorem and Confidence Intervals</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -371,6 +371,9 @@ div.tocify {
     <li>
       <a href="getting_started.html">Getting Started</a>
     </li>
+    <li>
+      <a href="Lab_Week1.html">Lab Lecture - 1</a>
+    </li>
   </ul>
 </li>
 <li class="dropdown">
@@ -405,7 +408,7 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Central Limit Theorem</h1>
+<h1 class="title toc-ignore">Sampling, Central Limit Theorem and Confidence Intervals</h1>
 <h3 class="subtitle"><h4 style="font-style:normal">
 GEO 200CN - Quantitative Geography
 </h4></h3>
@@ -449,7 +452,7 @@ h2.title {
 </style>
 <p><br />
 </p>
-<p>In this guide, we’ll demonstrate some of the fine properties of the Central Limit Theorem by working with real data. This will help ground the theorems, abstract equations and images of red balls from lecture. Working through the core components and key consequences of the theorem will help ground it more concretely in your mind. The lab will also give you more practice working with R’s sampling functions. We will be following the material presented in BBR Ch. 6 and 7. The objectives of the guide are as follows</p>
+<p>In this guide, we’ll demonstrate some of the concepts we learned in Chapters 6 and 7 in BBR by working with real data. This will help ground the theorems, abstract equations and images of red balls from lecture. The lab will also give you more practice working with R’s sampling functions. We will be following the material presented in BBR Ch. 6 and 7. The objectives of the guide are as follows</p>
 <ol style="list-style-type: decimal">
 <li>Learn about estimating population parameters using sampling statistics</li>
 <li>Understand the implications of the Central Limit Theorem using real data</li>
@@ -463,7 +466,7 @@ h2.title {
 <p><br />
 We’ll be working with one new package in this lab, <strong>infer</strong>. The following code checks if you’ve already installed this package before. If you haven’t, it will install it.</p>
 <pre class="r"><code>if (!require(&quot;infer&quot;)) install.packages(&quot;infer&quot;)</code></pre>
-<p>Next, we need to load this package and the other package we will use in this lab.</p>
+<p>Next, we need to load this package as well as <strong>tidyverse</strong>.</p>
 <pre class="r"><code>library(infer)
 library(tidyverse)</code></pre>
 <div style="margin-bottom:25px;">
@@ -475,7 +478,7 @@ library(tidyverse)</code></pre>
 <p><br />
 The goal is to estimate the average age of a population from a sample. I uploaded onto GitHub a csv file containing the ages of a population of 1,000 residents. The data are also located on Canvas in the Lab and Assignments Week 2 folder. Let’s bring the population into R.</p>
 <pre class="r"><code>data &lt;- read_csv(&quot;https://raw.githubusercontent.com/geo200cn/data/master/ages.csv&quot;)</code></pre>
-<p>The object <em>data</em> contains our population. Because we have a Census, we know the true population parameters. So, we know the population mean</p>
+<p>The object <em>data</em> contains the population. Because we have a Census, we know the true population parameters. So, we know the population mean</p>
 <pre class="r"><code>mean(data$age)</code></pre>
 <pre><code>## [1] 54.004</code></pre>
 <p>and population standard deviation</p>
@@ -484,7 +487,7 @@ The goal is to estimate the average age of a population from a sample. I uploade
 <p>Let’s say we don’t know the ages of every person in the population. Let’s also say we don’t have the resources to conduct a Census. So, we turn to sampling.</p>
 <p><br></p>
 <p class="comment" , style="font-style:normal">
-<strong>Question 1</strong>: Create a histogram of <em>age</em>? What does the Central Limit Theorem say about the distribution of a variable when we’re trying to estimate the mean of that variable?
+<strong>Question 1</strong>: Create a histogram of <em>age</em>. Does it look normal? Does it matter when you are trying to make inferences about the population mean using a sample?
 </p>
 <p><br></p>
 <div style="margin-bottom:25px;">
@@ -497,12 +500,12 @@ The goal is to estimate the average age of a population from a sample. I uploade
 We take a sample of size 10 from the population. We can do it the base R way by using <code>sample()</code></p>
 <pre class="r"><code>set.seed(1234)
 sample_ageb &lt;- sample(data$age, 20, replace=TRUE)</code></pre>
-<p>Or we can go the tidy R route</p>
+<p>Or we can go the tidy R route using <code>sample_n()</code></p>
 <pre class="r"><code>#compare sample_n with sample_frac.  what&#39;s the difference?
 sample_aget &lt;- sample_n(data, 20, replace = TRUE)</code></pre>
 <p><br></p>
 <p class="comment" , style="font-style:normal">
-<strong>Question 2</strong>: Create a histogram of <em>sample_aget</em>? Does it look normal? Does it matter when you are trying to make inferences about the population?
+<strong>Question 2</strong>: Create a histogram of <em>sample_aget</em>? Does it look normal? Does it matter when you are trying to make inferences about the population mean?
 </p>
 <p><br></p>
 <p>But this is only for one sample. We can randomly sample 20 people 10 times. We can do this using the <code>replicate()</code> function.</p>
@@ -541,7 +544,7 @@ sample_means</code></pre>
   theme_classic()</code></pre>
 <p><img src="central_files/figure-html/unnamed-chunk-12-1.png" /><!-- --></p>
 <p>This is the distribution of the sample means. It doesn’t look like much. That’s because we only took 10 samples.</p>
-<p>A note about sampling in R: When you work with using random values, the results will be different each time you run some code (that is the point); but sometimes it is desirable to recreate exactly the same random sequence. The function <code>set.seed()</code> allows you to do that (after all, in computers we can only create pseudo-random values). So, by plugging in <code>set.seed(1234)</code> before I ran the sampling functions above, I can replicate the results at a later time. Furthermore, you can replicate my results if you too plugged in <code>set.seed(1234)</code>.</p>
+<p>A note about sampling in R: When you work with using random values, the results will be different each time you run some code (that is the point); but sometimes it is desirable to recreate exactly the same random sequence. The function <code>set.seed()</code> allows you to do that (after all, in computers we can only create pseudo-random values). So, by plugging in <code>set.seed(1234)</code> before we ran the sampling functions above, we can replicate the results at a later time.</p>
 <div style="margin-bottom:25px;">
 
 </div>
@@ -583,18 +586,21 @@ ggplot(sample_means1000, aes(x=means))+
 <p>The CLT is cool. And its coolness gives us the ability to map our estimate from a single sample onto a normal distribution in order to measure the uncertainty of an estimate. Return for a moment to the question that first motivated this lab: based on a sample, what can we infer about the population? Based only on a single sample, the best estimate of the mean age would be the sample mean. That serves as a good point estimate but it would be useful to also communicate how uncertain we are of that estimate. This can be captured by using a confidence interval.</p>
 <p>We can calculate a 95% confidence interval for a sample mean by adding and subtracting 1.96 standard errors to the point estimate (see BBR section 7.3 if you are unfamiliar with this formula)</p>
 <p>Let’s go back to our first 20 person sample. Calculate the mean</p>
-<pre class="r"><code>my_mean &lt;- mean(data$age)</code></pre>
+<pre class="r"><code>my_mean &lt;- mean(sample_aget$age)</code></pre>
 <p>Calculate the standard error</p>
 <pre class="r"><code>se &lt;- sd(data$age) / sqrt(20)</code></pre>
 <p>Finally, calculate the lower and upper bounds</p>
 <pre class="r"><code>lower &lt;- my_mean - 1.96 * se
 upper &lt;- my_mean + 1.96 * se
 c(lower, upper)</code></pre>
-<pre><code>## [1] 46.37344 61.63456</code></pre>
-<p>This is an important inference that we’ve just made: even though we don’t know what the full population looks like, we’re 95% confident that the true average age of the population lies between the values lower and upper <em>given certan conditions are met</em>. Wow!</p>
+<pre><code>## [1] 47.86944 63.13056</code></pre>
+<p>This is an important inference that we’ve just made: even though we don’t know what the full population looks like, we’re 95% confident that the true average age of the population lies between the values lower and upper <em>given certan conditions are met</em>.</p>
 <p><br></p>
 <p class="comment" , style="font-style:normal">
 <strong>Question 4</strong>: Construct the confidence intervals for 1,000 samples of size 20. What proportion of these intervals would you expect to capture the true population mean? Why? Verify this in R.
+</p>
+<p class="comment" , style="font-style:normal">
+<strong>Question 5</strong>: We have data on the population, so we were able to grab the population standard deviation to construct the confidence interval. Construct the appropriate 95% confidence interval for the sample mean if you did not have the population data. Hint: <code>qt()</code> might help you out.
 </p>
 <p><br></p>
 <hr />
