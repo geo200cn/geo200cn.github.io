@@ -108,7 +108,7 @@ Unlike installing, loading a package using `library()` needs to happen every tim
 ## **Reading and writing data**
 \
 
-Let's bring in some data to help illustrate the use of tidy R functions.  I uploaded a file on GitHub containing the number of Hispanic, white, Asian, and black residents in 2017 in California counties taken from the United States [American Community Survey](https://www.census.gov/programs-surveys/acs).  The data is also located on Canvas in the Lab and Assignments Week 2 folder.  To import this file in R, use the `read_csv()` command
+Let's bring in some data to help illustrate the use of tidy R functions.  I uploaded a file on GitHub containing the number of Hispanic, white, Asian, and black residents in 2017 in California counties taken from the United States [American Community Survey](https://www.census.gov/programs-surveys/acs).  The data are also located on Canvas in the Lab and Assignments Week 2 folder.  To import this file in R, use the `read_csv()` command
 
 
 ```r

@@ -14,7 +14,11 @@ navbar:
         - text: "Getting Started"
           href: getting_started.html
         - text: "Lab Lecture - 1"
-          href: Lab_Week1.html         
+          href: Lab_Week1.html
+        - text: "Intro to tidyverse"
+          href: tidyr.html
+        - text: "Sampling, CIs, CLT"
+          href: central.html
     - text: "Other"
       menu:
         - text:
