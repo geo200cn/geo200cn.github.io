@@ -599,7 +599,7 @@ head(Loblolly)
 for(i in 1:nrow(Loblolly)){
   
   # get the age for the current iteration
-  iteration_age <- as.character(Loblolly[i, "age"])
+  iteration_age <- as.numeric(Loblolly[i, "age"])
   
   # Decision Making
   if(iteration_age <= 4){
@@ -956,6 +956,43 @@ head(iris[order(iris$Sepal.Length),])
 ```
 
 (You may have noticed the unnamed column on the left, the row number, shows you where it used to be.)
+
+## Questions
+
+What would I do if I wanted to sum all plant counts in the below data set? How would you fix this data?
+
+```{r}
+berryessa_count <- data.frame(
+  locations = c("Stebbins", "Quail Ridge", "Putah Creek"),
+  `Foothill Pine` = c(109, 39, 12),
+  `Manzanita` = c(84, 197, 15),
+  `CA Bay Laurel` = c(94, 1092, 19)
+)
+
+berryessa_count
+```
+
+Answer:
+
+```{r}
+berryessa_count <- reshape(
+  # Wide data
+  data = berryessa_count,
+  # All the columns that need to be dissolved
+  varying = names(berryessa_count)[2:length(berryessa_count)],
+  # Name of new column with the groupings in `times`
+  timevar = "Spp.",
+  # The groupings of plants
+  times = names(berryessa_count)[2:length(berryessa_count)],
+  # the name of the new column for the values
+  v.names = "Count",
+  # From wide to long.
+  direction = "long"
+)
+
+sum(berryessa_count$Count)
+```
+
 
 
 # Packages
