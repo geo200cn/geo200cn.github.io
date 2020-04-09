@@ -213,6 +213,19 @@ apply(
 )
 ```
 
+Please note that the "value" being passed to the function when you use `apply` is the whole row or vector. In the example above where 3 is added to each cell in the matrix, it may seem like the calcuation is happening to one cell at a time, but what is actually happening (for the first column) is `c(3,5,7,9,11) + 3`. As a proof of concept, we use the `length` function to find out exactly how many values are in `x`:
+
+```{r}
+apply(
+  X = my_matrix,
+  MARGIN = 2,
+  FUN = function(x){
+    length(x)
+  })
+```
+
+This is why when we use `mean` it gives us the mean of the whole column (or row) and not the mean of each cell (which would be itself, and thus useless). 
+
 ## `tapply`
 
 What if we have a data.frame like `iris` and we want to summarise some information by category? In the `iris` dataset, we have 3 species with 50 observations of various anatomical parts, like the length of a petal.
