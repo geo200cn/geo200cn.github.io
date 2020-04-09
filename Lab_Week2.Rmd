@@ -599,7 +599,7 @@ head(Loblolly)
 for(i in 1:nrow(Loblolly)){
   
   # get the age for the current iteration
-  iteration_age <- Loblolly[i, "age"]
+  iteration_age <- as.character(Loblolly[i, "age"])
   
   # Decision Making
   if(iteration_age <= 4){
@@ -809,7 +809,7 @@ lob[1:5]
 In some ways, this format of data is more pleasing, particularly as it is easy to compare, say, tree 301 to tree 303. However, you'll notice we no longer follow the "rows as observations" and "columns as variables" structure. If you recall the original `Loblolly` dataset, there were three columns: `height`, `age`, and `Seed`. Now each `Seed` has its own column, and so now our table "wide." We can fix this with `reshape` as well.
 
 ```{r}
-lob <- reshape(
+lob2 <- reshape(
   # Wide data
   data = lob,
   # All the columns that need to be dissolved
@@ -826,12 +826,12 @@ lob <- reshape(
 )
 
 # remove id column & reorder like original Loblolly
-lob <- lob[c(3,1,2)]
+lob2 <- lob2[c(3,1,2)]
 
 # remove rownames
-rownames(lob) <- NULL
+rownames(lob2) <- NULL
 
-head(lob)
+head(lob2)
 ```
 
 But wait, wouldn't each tree be the "observation?" Like one row for each `Seed`, with 14 rows and 7 columns, include one each for height at some age? We could do this as well, but in the case of the original Loblolly dataset, an observation is identified both by the unique `Seed` ID number and the `age`.
@@ -1079,7 +1079,7 @@ iris %>%
 
 Where the above code reads "Yes, it does." and "No, it does not.", you could substitute anything, include a numeric value, like 1 and 0.
 
-### `group_by`
+### `group_by` & `summarize`
 
 What if we want to get summaries by category?
 
@@ -1090,9 +1090,178 @@ iris %>%
   # What functions do you want to apply across a column?
   summarize(Count = n(), 
             `Mean Sepal Length` = mean(Sepal.Length),
-            `Max Sepal Length` = max(Sepal.Length)
+            `Max Sepal Length` = max(Sepal.Length),
+            `Med Sepal Length` = median(Sepal.Length)
             )
 ```
+
+### `arrange`
+
+What if you want to re-arrange the last example by the highest mean to lowest mean?
+
+```{r}
+iris %>%
+  # pick your category
+  group_by(Species) %>%
+  # What functions do you want to apply across a column?
+  summarize(Count = n(), 
+            `Mean Sepal Length` = mean(Sepal.Length),
+            `Max Sepal Length` = max(Sepal.Length),
+            `Med Sepal Length` = median(Sepal.Length)
+            ) %>%
+  # Would you like that in order?
+  arrange(desc(`Mean Sepal Length`))
+```
+
+### `join` (like `merge`)
+
+There are multiple ways to "merge" or "join" two tables together using `dplyr`. Depending on how you want to join two tables, you may use one way or another. For instance, you might want to get rid of any rows that don't match from one table to another, you my want all rows no matter what, etc. Below we use a `full_join`, which will create `NA` values for rows that don't match, rather than dropping them entirely. For more information, I encourage you to check out the section on "Relational Data" in [R for Data Science](https://r4ds.had.co.nz/relational-data.html).
+
+```{r}
+iris_sepals %>%
+  full_join(x=.,
+            y=iris_petals, 
+            by = c("ID", 
+                   "Species")) %>%
+  head()
+```
+
+What if the column names don't match? No problem!
+
+```{r}
+iris_sepals %>%
+  # here we rename Species to spp in just iris_sepals
+  rename(spp = Species) %>%
+  # now we just a join function, the same as above, except
+  # the input value for `by`
+  full_join(x=., 
+            y=iris_petals, 
+            # here we match by the ID column
+            # and by both spp and Species columns.
+            by = c("ID", 
+                   "spp" = "Species")) %>%
+  head()
+```
+
+Compare to `merge` below:
+
+```{r eval=F}
+all_irises <- merge(
+  # first data.frame
+  x = iris_sepals,
+  # second data.frame
+  y = iris_petals,
+  # what are the "keys?"
+  # i.e. what do they have in common.
+  by = c("ID", "Species"),
+  # This determines which data.frame is
+  # considered the primary dataset.
+  # When all = T, both are equally important.
+  all = T
+)
+```
+
+What does `full_join` look like when we're missing an observation in one of the tables?
+
+```{r}
+iris_sepals %>%
+  # here we make a subset using the first 149 values (of 150)
+  slice(1:149) %>%
+  # now we do a full_join
+  full_join(x=.,
+            y=iris_petals, 
+            by = c("ID", 
+                   "Species")) %>%
+  # let's look at the last 6 values to see the missing values
+  # ID: 289 should be the one missing Sepal.Length & Width.
+  tail()
+```
+
+Finally, take note that it doesn't matter which table you begin with when you're using `full_join`. We could begin with `iris_petals` instead of `iris_sepals` and all the code chunks above in this section would have had the same effect (albeit with the columns in a different order). However, this is the the case with join functions `left_join` and `right_join` which prioritize one table over the other. When using these latter functions, missing data is not filled in with `NA` values, but rather the whole row is excised.
+
+## Tidyr
+
+The `tidyr` package contains tools similar to those addressed in the section above on "Data Prep." However, unlike those `base` functions, the analogs in `tidyr` are easier to understand.
+
+*Supplemental*
+
+* [A Vignette on Tidy Data](https://tidyr.tidyverse.org/articles/tidy-data.html)
+
+### `pivot_wider`
+
+```{r}
+# long to wide
+untidy_iris %>%
+  pivot_wider(.,
+              # the "key" variable(s)
+              id_cols = c("ID", "Species"),
+              # where the names of the new column come from
+              names_from = Petal, 
+              # where the values for those new columns are from
+              values_from = Value) %>%
+  head()
+```
+
+Compare the above chunk to `reshape` below:
+
+```{r eval=F}
+reshape(
+  # our untidy data
+  data = untidy_iris,
+  # the "key" variable(s)
+  idvar = c("ID", "Species"),
+  # the column that needs to change.
+  timevar = "Petal",
+  # are we adding width to table?
+  # or are we adding rows to the table?
+  direction = "wide"
+)
+```
+
+### `pivot_longer`
+
+How about from wide to long?
+
+```{r}
+lob %>%
+  pivot_longer(.,
+              # the "key" variable(s)
+              # Here we use a helper function, starts_with
+              # which picks any column starting with 3.
+              # alternatively you can type each one of them,
+              # eg, c("301", "303", etc)
+              # or
+              # colnames(.)[2:length(.)]
+              cols = starts_with("3"),
+              # where the names of the new column come from
+              names_to = "Seed", 
+              # where the values for those new columns are from
+              values_to = "height") %>%
+  # reorder the columns
+  select(height, age, Seed) %>%
+  head()
+```
+
+Compare the above chunk to:
+
+```{r eval=F}
+lob2 <- reshape(
+  # Wide data
+  data = lob,
+  # All the columns that need to be dissolved
+  varying = names(lob)[2:15],
+  # Name of new column with the groupings in `times`
+  timevar = "Seed",
+  # The groupings of Seed
+  times = names(lob)[2:15],
+  # the name of the new column for the values
+  # that previously had no descriptor (just 301, etc)
+  v.names = "height",
+  # From wide to long.
+  direction = "long"
+)
+```
+
 
 ## ggplot2
 
@@ -1279,3 +1448,8 @@ aq %>%
   * [ggplot2 Cheat Sheet](https://rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf)
   * [ggplot2 Reference](https://ggplot2.tidyverse.org/reference/index.html)
   * Need help picking a color? [HTML Color Picker](https://www.w3schools.com/colors/colors_picker.asp)
+  
+## The Rest of the Tidyverse
+
+There are other useful `tidyverse` packages that we do not explore here. We can mimic the apply family of functions with `purrr`, maniuplate factors with `forcats`, and perhaps one of the most useful packages we do not cover in depth here is `stringr`, which streamlines a lot issues with maniuplating text and using regular expressions (aka regex). Ever wonder how to extract bits of text from a longer string? You can use regex for that. There are `base` regex functions like `grepl`, but often it's faster to use `stringr`.
+

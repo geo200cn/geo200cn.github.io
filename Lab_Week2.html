@@ -1939,7 +1939,7 @@ while(TRUE){
 <p>If you ever need stop code from continuing to execute, just hit the CTRL + C keys or the ESC key. Here’s a more useful example of an infinite loop. We’ll describe some of its components in more detail in the next section.</p>
 <pre class="r"><code>random_value &lt;- sample(5:10, 1)
 print(random_value)</code></pre>
-<pre><code>## [1] 7</code></pre>
+<pre><code>## [1] 9</code></pre>
 <pre class="r"><code>while(TRUE){
   # decrease value
   random_value &lt;- random_value - 1
@@ -1953,6 +1953,8 @@ print(random_value)</code></pre>
   print(&quot;I'll keep going for now.&quot;)
 }</code></pre>
 <pre><code>## [1] &quot;I'll keep going for now.&quot;
+## [1] &quot;I'll keep going for now.&quot;
+## [1] &quot;I'll keep going for now.&quot;
 ## [1] &quot;I'll keep going for now.&quot;
 ## [1] &quot;I'll keep going for now.&quot;
 ## [1] &quot;I'll keep going for now.&quot;
@@ -2057,7 +2059,7 @@ head(Loblolly)</code></pre>
 for(i in 1:nrow(Loblolly)){
   
   # get the age for the current iteration
-  iteration_age &lt;- Loblolly[i, &quot;age&quot;]
+  iteration_age &lt;- as.character(Loblolly[i, &quot;age&quot;])
   
   # Decision Making
   if(iteration_age &lt;= 4){
@@ -2240,7 +2242,7 @@ lob[1:5]</code></pre>
 ## 5  20 52.70 53.88 55.82 50.78
 ## 6  25 60.92 63.39 64.10 59.07</code></pre>
 <p>In some ways, this format of data is more pleasing, particularly as it is easy to compare, say, tree 301 to tree 303. However, you’ll notice we no longer follow the “rows as observations” and “columns as variables” structure. If you recall the original <code>Loblolly</code> dataset, there were three columns: <code>height</code>, <code>age</code>, and <code>Seed</code>. Now each <code>Seed</code> has its own column, and so now our table “wide.” We can fix this with <code>reshape</code> as well.</p>
-<pre class="r"><code>lob &lt;- reshape(
+<pre class="r"><code>lob2 &lt;- reshape(
   # Wide data
   data = lob,
   # All the columns that need to be dissolved
@@ -2257,12 +2259,12 @@ lob[1:5]</code></pre>
 )
 
 # remove id column &amp; reorder like original Loblolly
-lob &lt;- lob[c(3,1,2)]
+lob2 &lt;- lob2[c(3,1,2)]
 
 # remove rownames
-rownames(lob) &lt;- NULL
+rownames(lob2) &lt;- NULL
 
-head(lob)</code></pre>
+head(lob2)</code></pre>
 <pre><code>##   height age Seed
 ## 1   4.51   3  301
 ## 2  10.89   5  301
@@ -2282,20 +2284,20 @@ head(lob)</code></pre>
 <p>Here’s what you got:</p>
 <pre class="r"><code>head(iris_petals)</code></pre>
 <pre><code>##    ID    Species Petal.Length Petal.Width
-## 1 989  virginica          6.1         1.9
-## 2 897     setosa          1.3         0.4
-## 3 122     setosa          1.4         0.2
-## 4 658 versicolor          3.5         1.0
-## 5 993  virginica          5.1         2.3
-## 6 708     setosa          1.5         0.2</code></pre>
+## 1 934  virginica          5.6         2.1
+## 2 979  virginica          5.8         2.2
+## 3 926  virginica          5.1         1.9
+## 4 998  virginica          5.6         2.2
+## 5 110     setosa          1.9         0.4
+## 6 244 versicolor          3.9         1.2</code></pre>
 <pre class="r"><code>head(iris_sepals)</code></pre>
 <pre><code>##    ID    Species Sepal.Length Sepal.Width
-## 1 299     setosa          4.4         3.2
-## 2 949  virginica          6.8         3.2
-## 3 586     setosa          5.3         3.7
-## 4 653 versicolor          6.1         3.0
-## 5 491     setosa          5.7         4.4
-## 6 176  virginica          6.3         3.4</code></pre>
+## 1 318     setosa          5.2         3.5
+## 2 110     setosa          5.1         3.8
+## 3 101 versicolor          5.9         3.0
+## 4 456 versicolor          5.0         2.0
+## 5 702  virginica          6.4         2.7
+## 6 543  virginica          6.9         3.2</code></pre>
 <p>R makes resolving this a trivial issue. Here you can use <code>merge</code>.</p>
 <pre class="r"><code>all_irises &lt;- merge(
   # first data.frame
@@ -2313,18 +2315,18 @@ head(lob)</code></pre>
 
 head(all_irises)</code></pre>
 <pre><code>##    ID    Species Sepal.Length Sepal.Width Petal.Length Petal.Width
-## 1 102     setosa          5.0         3.4          1.5         0.2
-## 2 103     setosa          4.8         3.4          1.9         0.2
-## 3 114  virginica          6.4         3.1          5.5         1.8
-## 4 115     setosa          5.0         3.5          1.6         0.6
-## 5 121 versicolor          6.4         2.9          4.3         1.3
-## 6 122     setosa          4.4         2.9          1.4         0.2</code></pre>
+## 1 101 versicolor          5.9         3.0          4.2         1.5
+## 2 110     setosa          5.1         3.8          1.9         0.4
+## 3 113 versicolor          5.6         3.0          4.5         1.5
+## 4 117  virginica          6.4         3.2          5.3         2.3
+## 5 119 versicolor          6.1         2.8          4.0         1.3
+## 6 128 versicolor          4.9         2.4          3.3         1.0</code></pre>
 <p>You’ll note that because your partner only did 148 irises that there are two rows missing petals.</p>
 <pre class="r"><code>all_irises[is.na(all_irises$Petal.Length), 
            c(1,2,5,6)]</code></pre>
-<pre><code>##      ID    Species Petal.Length Petal.Width
-## 16  177     setosa           NA          NA
-## 124 866 versicolor           NA          NA</code></pre>
+<pre><code>##     ID Species Petal.Length Petal.Width
+## 32 272  setosa           NA          NA
+## 94 676  setosa           NA          NA</code></pre>
 <p>What if you wanted only complete rows, and you didn’t need these two individuals with missing Petal data? This where we specify that one of the data.frames is the primary data.frame. In this case, the complete 150 sepals data you collected has superfluous data that can be cast aside.</p>
 <pre class="r"><code>partial_irises &lt;- merge(
   # first data.frame
@@ -2511,8 +2513,8 @@ iris %&gt;%
 ## 6          5.4         3.9          1.7         0.4  setosa No, it does not.</code></pre>
 <p>Where the above code reads “Yes, it does.” and “No, it does not.”, you could substitute anything, include a numeric value, like 1 and 0.</p>
 </div>
-<div id="group_by" class="section level3">
-<h3><code>group_by</code></h3>
+<div id="group_by-summarize" class="section level3">
+<h3><code>group_by</code> &amp; <code>summarize</code></h3>
 <p>What if we want to get summaries by category?</p>
 <pre class="r"><code>iris %&gt;%
   # pick your category
@@ -2520,14 +2522,195 @@ iris %&gt;%
   # What functions do you want to apply across a column?
   summarize(Count = n(), 
             `Mean Sepal Length` = mean(Sepal.Length),
-            `Max Sepal Length` = max(Sepal.Length)
+            `Max Sepal Length` = max(Sepal.Length),
+            `Med Sepal Length` = median(Sepal.Length)
             )</code></pre>
-<pre><code>## # A tibble: 3 x 4
-##   Species    Count `Mean Sepal Length` `Max Sepal Length`
-##   &lt;fct&gt;      &lt;int&gt;               &lt;dbl&gt;              &lt;dbl&gt;
-## 1 setosa        50                5.01                5.8
-## 2 versicolor    50                5.94                7  
-## 3 virginica     50                6.59                7.9</code></pre>
+<pre><code>## # A tibble: 3 x 5
+##   Species    Count `Mean Sepal Length` `Max Sepal Length` `Med Sepal Length`
+##   &lt;fct&gt;      &lt;int&gt;               &lt;dbl&gt;              &lt;dbl&gt;              &lt;dbl&gt;
+## 1 setosa        50                5.01                5.8                5  
+## 2 versicolor    50                5.94                7                  5.9
+## 3 virginica     50                6.59                7.9                6.5</code></pre>
+</div>
+<div id="arrange" class="section level3">
+<h3><code>arrange</code></h3>
+<p>What if you want to re-arrange the last example by the highest mean to lowest mean?</p>
+<pre class="r"><code>iris %&gt;%
+  # pick your category
+  group_by(Species) %&gt;%
+  # What functions do you want to apply across a column?
+  summarize(Count = n(), 
+            `Mean Sepal Length` = mean(Sepal.Length),
+            `Max Sepal Length` = max(Sepal.Length),
+            `Med Sepal Length` = median(Sepal.Length)
+            ) %&gt;%
+  # Would you like that in order?
+  arrange(desc(`Mean Sepal Length`))</code></pre>
+<pre><code>## # A tibble: 3 x 5
+##   Species    Count `Mean Sepal Length` `Max Sepal Length` `Med Sepal Length`
+##   &lt;fct&gt;      &lt;int&gt;               &lt;dbl&gt;              &lt;dbl&gt;              &lt;dbl&gt;
+## 1 virginica     50                6.59                7.9                6.5
+## 2 versicolor    50                5.94                7                  5.9
+## 3 setosa        50                5.01                5.8                5</code></pre>
+</div>
+<div id="join-like-merge" class="section level3">
+<h3><code>join</code> (like <code>merge</code>)</h3>
+<p>There are multiple ways to “merge” or “join” two tables together using <code>dplyr</code>. Depending on how you want to join two tables, you may use one way or another. For instance, you might want to get rid of any rows that don’t match from one table to another, you my want all rows no matter what, etc. Below we use a <code>full_join</code>, which will create <code>NA</code> values for rows that don’t match, rather than dropping them entirely. For more information, I encourage you to check out the section on “Relational Data” in <a href="https://r4ds.had.co.nz/relational-data.html">R for Data Science</a>.</p>
+<pre class="r"><code>iris_sepals %&gt;%
+  full_join(x=.,
+            y=iris_petals, 
+            by = c(&quot;ID&quot;, 
+                   &quot;Species&quot;)) %&gt;%
+  head()</code></pre>
+<pre><code>##    ID    Species Sepal.Length Sepal.Width Petal.Length Petal.Width
+## 1 318     setosa          5.2         3.5          1.5         0.2
+## 2 110     setosa          5.1         3.8          1.9         0.4
+## 3 101 versicolor          5.9         3.0          4.2         1.5
+## 4 456 versicolor          5.0         2.0          3.5         1.0
+## 5 702  virginica          6.4         2.7          5.3         1.9
+## 6 543  virginica          6.9         3.2          5.7         2.3</code></pre>
+<p>What if the column names don’t match? No problem!</p>
+<pre class="r"><code>iris_sepals %&gt;%
+  # here we rename Species to spp in just iris_sepals
+  rename(spp = Species) %&gt;%
+  # now we just a join function, the same as above, except
+  # the input value for `by`
+  full_join(x=., 
+            y=iris_petals, 
+            # here we match by the ID column
+            # and by both spp and Species columns.
+            by = c(&quot;ID&quot;, 
+                   &quot;spp&quot; = &quot;Species&quot;)) %&gt;%
+  head()</code></pre>
+<pre><code>##    ID        spp Sepal.Length Sepal.Width Petal.Length Petal.Width
+## 1 318     setosa          5.2         3.5          1.5         0.2
+## 2 110     setosa          5.1         3.8          1.9         0.4
+## 3 101 versicolor          5.9         3.0          4.2         1.5
+## 4 456 versicolor          5.0         2.0          3.5         1.0
+## 5 702  virginica          6.4         2.7          5.3         1.9
+## 6 543  virginica          6.9         3.2          5.7         2.3</code></pre>
+<p>Compare to <code>merge</code> below:</p>
+<pre class="r"><code>all_irises &lt;- merge(
+  # first data.frame
+  x = iris_sepals,
+  # second data.frame
+  y = iris_petals,
+  # what are the &quot;keys?&quot;
+  # i.e. what do they have in common.
+  by = c(&quot;ID&quot;, &quot;Species&quot;),
+  # This determines which data.frame is
+  # considered the primary dataset.
+  # When all = T, both are equally important.
+  all = T
+)</code></pre>
+<p>What does <code>full_join</code> look like when we’re missing an observation in one of the tables?</p>
+<pre class="r"><code>iris_sepals %&gt;%
+  # here we make a subset using the first 149 values (of 150)
+  slice(1:149) %&gt;%
+  # now we do a full_join
+  full_join(x=.,
+            y=iris_petals, 
+            by = c(&quot;ID&quot;, 
+                   &quot;Species&quot;)) %&gt;%
+  # let's look at the last 6 values to see the missing values
+  # ID: 289 should be the one missing Sepal.Length &amp; Width.
+  tail()</code></pre>
+<pre><code>##      ID    Species Sepal.Length Sepal.Width Petal.Length Petal.Width
+## 145 829     setosa          4.8         3.4          1.6         0.2
+## 146 139     setosa          5.4         3.9          1.3         0.4
+## 147 285     setosa          4.3         3.0          1.1         0.1
+## 148 680 versicolor          6.0         2.2          4.0         1.0
+## 149 281     setosa          5.5         4.2          1.4         0.2
+## 150 420  virginica           NA          NA          4.8         1.8</code></pre>
+<p>Finally, take note that it doesn’t matter which table you begin with when you’re using <code>full_join</code>. We could begin with <code>iris_petals</code> instead of <code>iris_sepals</code> and all the code chunks above in this section would have had the same effect (albeit with the columns in a different order). However, this is the the case with join functions <code>left_join</code> and <code>right_join</code> which prioritize one table over the other. When using these latter functions, missing data is not filled in with <code>NA</code> values, but rather the whole row is excised.</p>
+</div>
+</div>
+<div id="tidyr" class="section level2">
+<h2>Tidyr</h2>
+<p>The <code>tidyr</code> package contains tools similar to those addressed in the section above on “Data Prep.” However, unlike those <code>base</code> functions, the analogs in <code>tidyr</code> are easier to understand.</p>
+<p><em>Supplemental</em></p>
+<ul>
+<li><a href="https://tidyr.tidyverse.org/articles/tidy-data.html">A Vignette on Tidy Data</a></li>
+</ul>
+<div id="pivot_wider" class="section level3">
+<h3><code>pivot_wider</code></h3>
+<pre class="r"><code># long to wide
+untidy_iris %&gt;%
+  pivot_wider(.,
+              # the &quot;key&quot; variable(s)
+              id_cols = c(&quot;ID&quot;, &quot;Species&quot;),
+              # where the names of the new column come from
+              names_from = Petal, 
+              # where the values for those new columns are from
+              values_from = Value) %&gt;%
+  head()</code></pre>
+<pre><code>## # A tibble: 6 x 4
+##      ID Species Length Width
+##   &lt;int&gt; &lt;fct&gt;    &lt;dbl&gt; &lt;dbl&gt;
+## 1     1 setosa     1.4   0.2
+## 2     2 setosa     1.4   0.2
+## 3     3 setosa     1.3   0.2
+## 4     4 setosa     1.5   0.2
+## 5     5 setosa     1.4   0.2
+## 6     6 setosa     1.7   0.4</code></pre>
+<p>Compare the above chunk to <code>reshape</code> below:</p>
+<pre class="r"><code>reshape(
+  # our untidy data
+  data = untidy_iris,
+  # the &quot;key&quot; variable(s)
+  idvar = c(&quot;ID&quot;, &quot;Species&quot;),
+  # the column that needs to change.
+  timevar = &quot;Petal&quot;,
+  # are we adding width to table?
+  # or are we adding rows to the table?
+  direction = &quot;wide&quot;
+)</code></pre>
+</div>
+<div id="pivot_longer" class="section level3">
+<h3><code>pivot_longer</code></h3>
+<p>How about from wide to long?</p>
+<pre class="r"><code>lob %&gt;%
+  pivot_longer(.,
+              # the &quot;key&quot; variable(s)
+              # Here we use a helper function, starts_with
+              # which picks any column starting with 3.
+              # alternatively you can type each one of them,
+              # eg, c(&quot;301&quot;, &quot;303&quot;, etc)
+              # or
+              # colnames(.)[2:length(.)]
+              cols = starts_with(&quot;3&quot;),
+              # where the names of the new column come from
+              names_to = &quot;Seed&quot;, 
+              # where the values for those new columns are from
+              values_to = &quot;height&quot;) %&gt;%
+  # reorder the columns
+  select(height, age, Seed) %&gt;%
+  head()</code></pre>
+<pre><code>## # A tibble: 6 x 3
+##   height   age Seed 
+##    &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;
+## 1   4.51     3 301  
+## 2   4.55     3 303  
+## 3   4.79     3 305  
+## 4   3.91     3 307  
+## 5   4.81     3 309  
+## 6   3.88     3 311</code></pre>
+<p>Compare the above chunk to:</p>
+<pre class="r"><code>lob2 &lt;- reshape(
+  # Wide data
+  data = lob,
+  # All the columns that need to be dissolved
+  varying = names(lob)[2:15],
+  # Name of new column with the groupings in `times`
+  timevar = &quot;Seed&quot;,
+  # The groupings of Seed
+  times = names(lob)[2:15],
+  # the name of the new column for the values
+  # that previously had no descriptor (just 301, etc)
+  v.names = &quot;height&quot;,
+  # From wide to long.
+  direction = &quot;long&quot;
+)</code></pre>
 </div>
 </div>
 <div id="ggplot2" class="section level2">
@@ -2693,6 +2876,10 @@ ChickWeight %&gt;%
 </ul>
 </div>
 </div>
+</div>
+<div id="the-rest-of-the-tidyverse" class="section level2">
+<h2>The Rest of the Tidyverse</h2>
+<p>There are other useful <code>tidyverse</code> packages that we do not explore here. We can mimic the apply family of functions with <code>purrr</code>, maniuplate factors with <code>forcats</code>, and perhaps one of the most useful packages we do not cover in depth here is <code>stringr</code>, which streamlines a lot issues with maniuplating text and using regular expressions (aka regex). Ever wonder how to extract bits of text from a longer string? You can use regex for that. There are <code>base</code> regex functions like <code>grepl</code>, but often it’s faster to use <code>stringr</code>.</p>
 </div>
 </div>
 
