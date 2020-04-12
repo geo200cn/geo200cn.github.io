@@ -294,7 +294,7 @@ Your output should match the line below:
 summary(MN$HD)
 ```
 
-A variable that is coded 0,1 to refer to absence or presence, respectively, is sometimes called a dummy variable or an indicator variable. Although a dummy looks like a numeric, it is in fact a qualtitative or categorical variable. Since *HD* captures whether a building is in or out of a historic district, we should tell R that the numbers in the column are a code for historic districts, and we do this by creating a factor, or categorical variable, using `as.factor()`.
+A variable that is coded 0,1 to refer to absence or presence, respectively, is sometimes called a dummy variable or an indicator variable. Although a dummy looks like a numeric, it is in fact a qualitative or categorical variable. Since *HD* captures whether a building is in or out of a historic district, we should tell R that the numbers in the column are a code for historic districts, and we do this by creating a factor, or categorical variable, using `as.factor()`.
 
 ```{r}
 MN$HD <- as.factor(MN$HD) 
@@ -367,7 +367,7 @@ Now we have two files that contain buildings on blocks with historic districts, 
 summary(HDB_in$BldgArea)
 ```
 
-We see a problem.  Some buildings have 0 area (square footage). This could mean the lot is vacant, it could be an error. Either way it makes it hard to compute the price per square foot. We need to exlude these zero area buildings from the data set.
+We see a problem.  Some buildings have 0 area (square footage). This could mean the lot is vacant, it could be an error. Either way it makes it hard to compute the price per square foot. We need to exclude these zero area buildings from the data set.
 
 ```{r}
 #Calcuate price per square foot for buildings
@@ -382,7 +382,10 @@ HDB_out_sqft <- filter(HDB_out, HDB_out$BldgArea > 0) %>%
 
 <br>
 
-<p class="comment", style="font-style:normal">**Question 6**: For the new data sets *HDB_in_sqft* and *HDB_out_sqft*, run the appropriate *t*-test to compare the mean property values per square footage of buildings in historic districts and those not in historic districts.  Summarize your results. </p>
+<p class="comment", style="font-style:normal">**Question 6**: For the new data sets *HDB_in_sqft* and *HDB_out_sqft*, we want to run a *t*-test to compare the mean property values per square footage of buildings in historic districts and those not in historic districts. Check whether the variances between the two groups differ by using the `var.test()` function. </p>
+
+
+<p class="comment", style="font-style:normal">**Question 7**:  Run the appropriate *t*-test to compare the mean property values per square footage of buildings in historic districts and those not in historic districts.  Summarize your results. </p>
 
 <br>
 
