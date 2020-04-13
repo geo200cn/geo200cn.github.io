@@ -590,18 +590,10 @@ To demonstrate two-sample hypothesis testing, let’s bring in the data set <em>
 plot(MN$YCoord~MN$XCoord)</code></pre>
 <p><img src="hypothesis_files/figure-html/unnamed-chunk-13-1.png" /><!-- --></p>
 <p>oh OH. Something is wrong here. The resulting plot doesn’t look at all like a map of Manhattan. Some buildings have not been assigned coordinates and have longitude and latitude positions of 0,0. These must be removed from the data:</p>
-<p><br></p>
-<p class="comment" , style="font-style:normal">
-<strong>Question 3</strong>: Keep the buildings that have longitude <em>XCoord</em> and latitude <em>YCoord</em> positions greater than 0.
-</p>
-<p><br></p>
-<p>You got the answer right if your <em>MN</em> object looks like this:</p>
-<pre class="r"><code>##dim() returns the number of rows and comlumns in a table
-dim(MN)</code></pre>
-<pre><code>## [1] 42514    85</code></pre>
+<pre class="r"><code>MN &lt;- MN[MN$YCoord &gt; 0 &amp; MN$XCoord &gt; 0,]</code></pre>
 <p>Your new map should look like this:</p>
 <pre class="r"><code>plot(MN$YCoord~MN$XCoord)</code></pre>
-<p><img src="hypothesis_files/figure-html/unnamed-chunk-16-1.png" /><!-- --></p>
+<p><img src="hypothesis_files/figure-html/unnamed-chunk-15-1.png" /><!-- --></p>
 <p>The research question is: Are property values higher for buildings located in historic districts? Historic neighborhoods are areas where the buildings have historical importance not because of their individual significance but because as a collection they represent the architectural sensibilities of a particular time period. They have tremendous historical and architectural value. But do they also carry greater financial value?</p>
 <p>Before answering this question, we need to be able to identify buildings in historic districts. It looks like the variable <em>HistDist</em> gives us which district a building is located in</p>
 <pre class="r"><code>summary(MN$HistDist)</code></pre>
@@ -626,11 +618,11 @@ ifelse(is.na(MN[1:100,&quot;HistDist&quot;]), 0, 1)</code></pre>
 ##  [38] 1 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0 1 0 0 1 1 0 0 1 0 1 0 0 0 0 0 0 0 0
 ##  [75] 0 0 0 0 0 0 1 0 1 0 1 1 0 0 0 0 0 0 0 0 0 0 1 0 1 0</code></pre>
 <p>The function <code>ifelse()</code> takes three arguments, a logical expression, a value for true, and a value for false. If the logical expression evaluates to <code>TRUE</code> the first value is used, if not the second value is used.</p>
-<p><br></p>
-<p class="comment" , style="font-style:normal">
-<strong>Question 4</strong>: Use the <code>ifelse()</code> and <code>is.na()</code> functions to create a variable named <em>HD</em> in <em>MN</em> that indicates whether a building is located in a historic district.
+We use the <code>ifelse()</code> and <code>is.na()</code> functions within <code>mutate()</code> to create a variable named <em>HD</em> in <em>MN</em> that indicates whether a building is located in a historic district.
 </p>
 <p><br></p>
+<pre class="r"><code>#one of many ways to do this
+MN &lt;- mutate(MN, HD = ifelse(is.na(HistDist), 0, 1))</code></pre>
 <p>Your output should match the line below:</p>
 <pre class="r"><code>summary(MN$HD)</code></pre>
 <pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
@@ -639,19 +631,19 @@ ifelse(is.na(MN[1:100,&quot;HistDist&quot;]), 0, 1)</code></pre>
 <pre class="r"><code>MN$HD &lt;- as.factor(MN$HD) </code></pre>
 <p>Now we can draw a very crude map of buildings in historic districts.</p>
 <pre class="r"><code>plot(y= MN$YCoord, x= MN$XCoord, col = MN$HD, pch=16, cex=.5)</code></pre>
-<p><img src="hypothesis_files/figure-html/unnamed-chunk-23-1.png" /><!-- --></p>
+<p><img src="hypothesis_files/figure-html/unnamed-chunk-22-1.png" /><!-- --></p>
 <p>Finally, split the “MN” object into two tables, one for the historic buildings (<em>inHD</em>) and one for the buildings outside a historic district (<em>outHD</em>):</p>
 <pre class="r"><code>inHD &lt;- MN[MN$HD ==1,] 
 
 outHD &lt;- MN[MN$HD ==0,]</code></pre>
 <p>Our goal is to explore the effect of historic districts on property values in Manhattan. Our null hypothesis is that the designation of historic districts has no effect on property values, the buildings in a historic district have the same value as those outside of a historic district, and the difference between the two groups is due to random chance. First, let’s create boxplots of property values</p>
 <pre class="r"><code>boxplot(inHD$AssessTot, outHD$AssessTot)</code></pre>
-<p><img src="hypothesis_files/figure-html/unnamed-chunk-25-1.png" /><!-- --></p>
+<p><img src="hypothesis_files/figure-html/unnamed-chunk-24-1.png" /><!-- --></p>
 <p>ooof. There appears to be a big outlier in the non historical district group. Can you guess what building this is?</p>
 <p>We’ll use the function <code>t.test()</code> to run the hypothesis test. In this case, <code>x =</code> is the data being tested, <code>y =</code> is the comparison group (used for a two sample test).</p>
 <p><br></p>
 <p class="comment" , style="font-style:normal">
-<strong>Question 5</strong>: Run the appropriate <em>t</em>-test to compare the mean property values of buildings in historic districts and those not in historic districts based on the research question. Briefly summarize your results.
+<strong>Question 3</strong>: Run the appropriate <em>t</em>-test to compare the mean property values of buildings in historic districts and those not in historic districts based on the research question. Briefly summarize your results.
 </p>
 <p><br></p>
 <p>Location is an important component of a property’s value. To test the impact of a historic district designation we should revise our test to examine only buildings that have similar locations. One way to do this is to identify buildings that are close to but outside of historic districts. Each building in the database has a block number. Let’s revise <em>outHD</em> so that it only includes buildings which are on the same block as a historic district but outside of the district boundaries.</p>
@@ -672,7 +664,7 @@ HDB_out &lt;- HDB[HDB$HD == 0, ]
 HDB_in &lt;- HDB[HDB$HD == 1, ]</code></pre>
 <p>Boxplot again</p>
 <pre class="r"><code>boxplot(HDB_in$AssessTot, HDB_out$AssessTot)</code></pre>
-<p><img src="hypothesis_files/figure-html/unnamed-chunk-27-1.png" /><!-- --></p>
+<p><img src="hypothesis_files/figure-html/unnamed-chunk-26-1.png" /><!-- --></p>
 <p>Seems like that severe outlier has disappeared.</p>
 <p>Now we have two files that contain buildings on blocks with historic districts, one file describes buildings in the district and the other describes those outside the district boundaries. But, we need one more correction: size. The size of the building is an important determinant of its value. The variable <em>BldgArea</em> gives the square footage. Let’s calculate the price per square foot. Taking a summary of this variable</p>
 <pre class="r"><code>summary(HDB_in$BldgArea)</code></pre>
@@ -686,12 +678,13 @@ HDB_in_sqft &lt;- filter(HDB_in, HDB_in$BldgArea &gt; 0) %&gt;%
 
 HDB_out_sqft &lt;- filter(HDB_out, HDB_out$BldgArea &gt; 0) %&gt;%
               mutate(AssessSqFt = AssessTot/BldgArea)</code></pre>
+<p>For the new data sets <em>HDB_in_sqft</em> and <em>HDB_out_sqft</em>, we want to run a <em>t</em>-test to compare the mean property values per square footage of buildings in historic districts and those not in historic districts. However, we need to check whether the variances between the two groups differ by using the <code>var.test()</code> function. This function runs the F-test for the variance ratio described on page 370 in BBR.</p>
 <p><br></p>
 <p class="comment" , style="font-style:normal">
-<strong>Question 6</strong>: For the new data sets <em>HDB_in_sqft</em> and <em>HDB_out_sqft</em>, we want to run a <em>t</em>-test to compare the mean property values per square footage of buildings in historic districts and those not in historic districts. Check whether the variances between the two groups differ by using the <code>var.test()</code> function.
+<strong>Question 4</strong>: Run <code>var.test()</code> to test whether the variances between the two groups differ. Interpret your results.
 </p>
 <p class="comment" , style="font-style:normal">
-<strong>Question 7</strong>: Run the appropriate <em>t</em>-test to compare the mean property values per square footage of buildings in historic districts and those not in historic districts. Summarize your results.
+<strong>Question 5</strong>: Run the appropriate <em>t</em>-test to compare the mean property values per square footage of buildings in historic districts and those not in historic districts. Summarize your results.
 </p>
 <p><br></p>
 <div style="margin-bottom:25px;">
@@ -740,7 +733,7 @@ samps &lt;-replicate(nrep,rp_test(HDB.in.out, indicator))</code></pre>
 <pre class="r"><code>hist(samps,col=&quot;lightblue&quot;, main = &quot;Histogram of 1,000 permutations&quot;)
 #histogram in generated 
 abline(v = diff, col=&quot;red&quot;, lwd=3, lty=2)</code></pre>
-<p><img src="hypothesis_files/figure-html/unnamed-chunk-34-1.png" /><!-- --></p>
+<p><img src="hypothesis_files/figure-html/unnamed-chunk-33-1.png" /><!-- --></p>
 <p>The p-value is the proportion of values in <em>samps</em> that is greater than or equal to the observed difference. In hypothesis framework language, this is a one-sided test.</p>
 <pre class="r"><code>table(samps &gt;= diff)/length(samps)</code></pre>
 <pre><code>## 

@@ -222,23 +222,9 @@ plot(MN$YCoord~MN$XCoord)
 
 oh OH. Something is wrong here. The resulting plot doesn’t look at all like a map of Manhattan. Some buildings have not been assigned coordinates and have longitude and latitude positions of 0,0. These must be removed from the data:
 
-<br>
 
-<p class="comment", style="font-style:normal">**Question 3**: Keep the buildings that have longitude *XCoord* and latitude *YCoord* positions greater than 0. </p>
-
-<br>
-
-
-```{r include=FALSE, warning=FALSE, results="hide"}
+```{r message=FALSE, warning=FALSE}
 MN <- MN[MN$YCoord > 0 & MN$XCoord > 0,]
-```
-
-
-You got the answer right if your *MN* object looks like this:
-
-```{r}
-##dim() returns the number of rows and comlumns in a table
-dim(MN)
 ```
 
 Your new map should look like this:
@@ -274,15 +260,11 @@ ifelse(is.na(MN[1:100,"HistDist"]), 0, 1)
 
 The function `ifelse()` takes three arguments, a logical expression, a value for true, and a value for false. If the logical expression evaluates to `TRUE` the first value is used, if not the second value is used.
 
-
-
-<br>
-
-<p class="comment", style="font-style:normal">**Question 4**: Use the `ifelse()` and `is.na()` functions to create a variable named *HD* in *MN* that indicates whether a building is located in a historic district. </p>
+We use the `ifelse()` and `is.na()` functions within `mutate()` to create a variable named *HD* in *MN* that indicates whether a building is located in a historic district. </p>
 
 <br>
 
-```{r include=FALSE, warning=FALSE, results="hide"}
+```{r message=FALSE, warning=FALSE}
 #one of many ways to do this
 MN <- mutate(MN, HD = ifelse(is.na(HistDist), 0, 1))
 ```
@@ -327,7 +309,7 @@ We'll use the function `t.test()` to run the hypothesis test.  In this case, `x 
 
 <br>
 
-<p class="comment", style="font-style:normal">**Question 5**: Run the appropriate *t*-test to compare the mean property values of buildings in historic districts and those not in historic districts based on the research question.  Briefly summarize your results. </p>
+<p class="comment", style="font-style:normal">**Question 3**: Run the appropriate *t*-test to compare the mean property values of buildings in historic districts and those not in historic districts based on the research question.  Briefly summarize your results. </p>
 
 <br>
 
@@ -379,13 +361,14 @@ HDB_out_sqft <- filter(HDB_out, HDB_out$BldgArea > 0) %>%
               mutate(AssessSqFt = AssessTot/BldgArea)
 ```
 
+For the new data sets *HDB_in_sqft* and *HDB_out_sqft*, we want to run a *t*-test to compare the mean property values per square footage of buildings in historic districts and those not in historic districts. However, we need to check whether the variances between the two groups differ by using the `var.test()` function.  This function runs the F-test for the variance ratio described on page 370 in BBR.
 
 <br>
 
-<p class="comment", style="font-style:normal">**Question 6**: For the new data sets *HDB_in_sqft* and *HDB_out_sqft*, we want to run a *t*-test to compare the mean property values per square footage of buildings in historic districts and those not in historic districts. Check whether the variances between the two groups differ by using the `var.test()` function. </p>
+<p class="comment", style="font-style:normal">**Question 4**: Run `var.test()` to test whether the variances between the two groups differ.  Interpret your results. </p>
 
 
-<p class="comment", style="font-style:normal">**Question 7**:  Run the appropriate *t*-test to compare the mean property values per square footage of buildings in historic districts and those not in historic districts.  Summarize your results. </p>
+<p class="comment", style="font-style:normal">**Question 5**:  Run the appropriate *t*-test to compare the mean property values per square footage of buildings in historic districts and those not in historic districts.  Summarize your results. </p>
 
 <br>
 
