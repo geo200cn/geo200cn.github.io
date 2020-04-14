@@ -377,6 +377,9 @@ div.tocify {
     <li>
       <a href="central.html">Sampling, CIs, CLT</a>
     </li>
+    <li>
+      <a href="hypothesis.html">Hypothesis Testing</a>
+    </li>
   </ul>
 </li>
 <li class="dropdown">
@@ -546,7 +549,7 @@ t1</code></pre>
 <strong>Question 1</strong>: What is your conclusion regarding the difference between the present and simulated future January mean temperature over Oregon? How would you change the null and alternative hypotheses to make this a two-sided test? What is the p-value of this two-sided test?
 </p>
 <p class="comment" , style="font-style:normal">
-<strong>Question 2</strong>: For January precipitation (<em>PJan1x</em> and <em>PJan2x</em>) test the hypothesis that <em>PJan1x</em> and <em>PJan2x</em> are not equal. Also test the hypothesis that <em>PJan1x</em> is less than <em>PJan2x</em> Interpret your results.
+<strong>Question 2</strong>: For January precipitation (<em>PJan1x</em> and <em>PJan2x</em>) test the hypothesis that <em>PJan1x</em> is less than <em>PJan2x</em>. Interpret your results.
 </p>
 <p><br></p>
 <p>There is actually a canned function, <code>t.test()</code>, that you can use to run the <em>t</em>-test.</p>
@@ -602,21 +605,19 @@ plot(MN$YCoord~MN$XCoord)</code></pre>
 <pre class="r"><code>##is.na() is a logical expression, it returns true if a value is missing (NA)
 ##check the first 100 rows of the &quot;HistDist&quot; column to see if they are blank
 is.na(MN[1:100,&quot;HistDist&quot;])</code></pre>
-<pre><code>##   [1]  TRUE  TRUE  TRUE  TRUE  TRUE FALSE  TRUE FALSE  TRUE  TRUE  TRUE  TRUE
-##  [13]  TRUE  TRUE  TRUE  TRUE FALSE  TRUE  TRUE  TRUE FALSE  TRUE  TRUE FALSE
-##  [25] FALSE  TRUE FALSE  TRUE FALSE  TRUE  TRUE FALSE  TRUE FALSE  TRUE  TRUE
-##  [37] FALSE FALSE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE
-##  [49] FALSE  TRUE  TRUE  TRUE  TRUE  TRUE FALSE  TRUE FALSE  TRUE  TRUE FALSE
-##  [61] FALSE  TRUE  TRUE FALSE  TRUE FALSE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE
-##  [73]  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE FALSE  TRUE FALSE  TRUE
-##  [85] FALSE FALSE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE
+<pre><code>##   [1]  TRUE  TRUE  TRUE  TRUE  TRUE FALSE  TRUE FALSE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE
+##  [17] FALSE  TRUE  TRUE  TRUE FALSE  TRUE  TRUE FALSE FALSE  TRUE FALSE  TRUE FALSE  TRUE  TRUE FALSE
+##  [33]  TRUE FALSE  TRUE  TRUE FALSE FALSE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE
+##  [49] FALSE  TRUE  TRUE  TRUE  TRUE  TRUE FALSE  TRUE FALSE  TRUE  TRUE FALSE FALSE  TRUE  TRUE FALSE
+##  [65]  TRUE FALSE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE
+##  [81] FALSE  TRUE FALSE  TRUE FALSE FALSE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE
 ##  [97] FALSE  TRUE FALSE  TRUE</code></pre>
 <p>In the output the <code>TRUE</code> values indicate rows where the <em>HistDist</em> column is missing a value- these are places that are not in a historic district. Another useful function is <code>ifelse()</code></p>
 <pre class="r"><code>##take the previous line and replace the &quot;TRUE&quot; with 0
 ifelse(is.na(MN[1:100,&quot;HistDist&quot;]), 0, 1)</code></pre>
-<pre><code>##   [1] 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0 1 0 0 0 1 0 0 1 1 0 1 0 1 0 0 1 0 1 0 0 1
-##  [38] 1 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0 1 0 0 1 1 0 0 1 0 1 0 0 0 0 0 0 0 0
-##  [75] 0 0 0 0 0 0 1 0 1 0 1 1 0 0 0 0 0 0 0 0 0 0 1 0 1 0</code></pre>
+<pre><code>##   [1] 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0 1 0 0 0 1 0 0 1 1 0 1 0 1 0 0 1 0 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0
+##  [49] 1 0 0 0 0 0 1 0 1 0 0 1 1 0 0 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 0 1 1 0 0 0 0 0 0 0 0 0 0
+##  [97] 1 0 1 0</code></pre>
 <p>The function <code>ifelse()</code> takes three arguments, a logical expression, a value for true, and a value for false. If the logical expression evaluates to <code>TRUE</code> the first value is used, if not the second value is used.</p>
 We use the <code>ifelse()</code> and <code>is.na()</code> functions within <code>mutate()</code> to create a variable named <em>HD</em> in <em>MN</em> that indicates whether a building is located in a historic district.
 </p>

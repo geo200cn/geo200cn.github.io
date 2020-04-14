@@ -208,7 +208,7 @@ pt(t1, n-1, lower=FALSE)
 <p class="comment", style="font-style:normal">**Question 1**: What is your conclusion regarding the difference between the present and simulated future January mean temperature over Oregon? How would you change the null and alternative hypotheses to make this a two-sided test? What is the p-value of this two-sided test?</p>
 
 
-<p class="comment", style="font-style:normal">**Question 2**:  For January precipitation (*PJan1x* and *PJan2x*) test the hypothesis that *PJan1x* and *PJan2x* are not equal.  Also test the hypothesis that *PJan1x* is less than *PJan2x* Interpret your results. </p>
+<p class="comment", style="font-style:normal">**Question 2**:  For January precipitation (*PJan1x* and *PJan2x*) test the hypothesis that *PJan1x* is less than *PJan2x*. Interpret your results. </p>
 
 <br>
 
@@ -316,14 +316,12 @@ is.na(MN[1:100,"HistDist"])
 ```
 
 ```
-##   [1]  TRUE  TRUE  TRUE  TRUE  TRUE FALSE  TRUE FALSE  TRUE  TRUE  TRUE  TRUE
-##  [13]  TRUE  TRUE  TRUE  TRUE FALSE  TRUE  TRUE  TRUE FALSE  TRUE  TRUE FALSE
-##  [25] FALSE  TRUE FALSE  TRUE FALSE  TRUE  TRUE FALSE  TRUE FALSE  TRUE  TRUE
-##  [37] FALSE FALSE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE
-##  [49] FALSE  TRUE  TRUE  TRUE  TRUE  TRUE FALSE  TRUE FALSE  TRUE  TRUE FALSE
-##  [61] FALSE  TRUE  TRUE FALSE  TRUE FALSE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE
-##  [73]  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE FALSE  TRUE FALSE  TRUE
-##  [85] FALSE FALSE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE
+##   [1]  TRUE  TRUE  TRUE  TRUE  TRUE FALSE  TRUE FALSE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE
+##  [17] FALSE  TRUE  TRUE  TRUE FALSE  TRUE  TRUE FALSE FALSE  TRUE FALSE  TRUE FALSE  TRUE  TRUE FALSE
+##  [33]  TRUE FALSE  TRUE  TRUE FALSE FALSE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE
+##  [49] FALSE  TRUE  TRUE  TRUE  TRUE  TRUE FALSE  TRUE FALSE  TRUE  TRUE FALSE FALSE  TRUE  TRUE FALSE
+##  [65]  TRUE FALSE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE
+##  [81] FALSE  TRUE FALSE  TRUE FALSE FALSE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE
 ##  [97] FALSE  TRUE FALSE  TRUE
 ```
 
@@ -336,9 +334,9 @@ ifelse(is.na(MN[1:100,"HistDist"]), 0, 1)
 ```
 
 ```
-##   [1] 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0 1 0 0 0 1 0 0 1 1 0 1 0 1 0 0 1 0 1 0 0 1
-##  [38] 1 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0 1 0 0 1 1 0 0 1 0 1 0 0 0 0 0 0 0 0
-##  [75] 0 0 0 0 0 0 1 0 1 0 1 1 0 0 0 0 0 0 0 0 0 0 1 0 1 0
+##   [1] 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0 1 0 0 0 1 0 0 1 1 0 1 0 1 0 0 1 0 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0
+##  [49] 1 0 0 0 0 0 1 0 1 0 0 1 1 0 0 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 0 1 1 0 0 0 0 0 0 0 0 0 0
+##  [97] 1 0 1 0
 ```
 
 The function `ifelse()` takes three arguments, a logical expression, a value for true, and a value for false. If the logical expression evaluates to `TRUE` the first value is used, if not the second value is used.
