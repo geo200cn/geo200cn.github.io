@@ -111,7 +111,7 @@ mean(orsim$TJan2x) - mean(orsim$TJan1x)
 ## [1] 4.089474
 ```
 
-Then histograms of each
+Then histograms of each variable.
 
 
 ```r

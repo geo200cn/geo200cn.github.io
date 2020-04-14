@@ -105,7 +105,7 @@ Before running any tests, let's just look at the distribution of our two variabl
 mean(orsim$TJan2x) - mean(orsim$TJan1x)
 ```
 
-Then histograms of each
+Then histograms of each variable.
 
 ```{r}
 hist(orsim$TJan1x)
