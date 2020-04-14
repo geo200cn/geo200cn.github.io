@@ -525,7 +525,7 @@ library(tidyverse)</code></pre>
 <p><br></p>
 <div style="white-space: pre-line;"><strong>4. Compute the test statistic</strong></div>
 <p><br></p>
-<p>We’re computing a difference of means for paired observations (BBR page 363). If you look at the formula (page 365), this is basically a one-sample hypothesis test.</p>
+<p>We’re computing a difference of means for paired observations (BBR page 363). If you look at the formula (page 365), this is a one-sample hypothesis test.</p>
 <p>First, let’s calculate the difference between <em>TJan2x</em> and <em>TJan1x</em> and save it back in our data frame.</p>
 <pre class="r"><code>orsim$diff &lt;- orsim$TJan2x - orsim$TJan1x</code></pre>
 <p>Next, we calculate <span class="math inline"><em>s</em></span></p>
@@ -546,7 +546,7 @@ t1</code></pre>
 <strong>Question 1</strong>: What is your conclusion regarding the difference between the present and simulated future January mean temperature over Oregon? How would you change the null and alternative hypotheses to make this a two-sided test? What is the p-value of this two-sided test?
 </p>
 <p class="comment" , style="font-style:normal">
-<strong>Question 2</strong>: For January precipitation (<em>PJan1x</em> and <em>PJan2x</em>) test the hypothesis that <em>PJan1x</em> and <em>PJan2x</em> are not equal. Also test the hypothesis that <em>PJan1x</em> is less than <em>PJan2x</em>
+<strong>Question 2</strong>: For January precipitation (<em>PJan1x</em> and <em>PJan2x</em>) test the hypothesis that <em>PJan1x</em> and <em>PJan2x</em> are not equal. Also test the hypothesis that <em>PJan1x</em> is less than <em>PJan2x</em> Interpret your results.
 </p>
 <p><br></p>
 <p>There is actually a canned function, <code>t.test()</code>, that you can use to run the <em>t</em>-test.</p>

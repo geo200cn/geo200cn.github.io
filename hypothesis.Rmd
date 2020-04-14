@@ -146,7 +146,7 @@ We should not be fixated too much with threshold cutoffs, but the standard $\alp
 
 <br>
 
-We're computing a difference of means for paired observations (BBR page 363).  If you look at the formula (page 365), this is basically a one-sample hypothesis test.  
+We're computing a difference of means for paired observations (BBR page 363).  If you look at the formula (page 365), this is a one-sample hypothesis test.  
 
 First, let's calculate the difference between *TJan2x* and *TJan1x* and save it back in our data frame.
 
@@ -184,7 +184,7 @@ pt(t1, n-1, lower=FALSE)
 <p class="comment", style="font-style:normal">**Question 1**: What is your conclusion regarding the difference between the present and simulated future January mean temperature over Oregon? How would you change the null and alternative hypotheses to make this a two-sided test? What is the p-value of this two-sided test?</p>
 
 
-<p class="comment", style="font-style:normal">**Question 2**:  For January precipitation (*PJan1x* and *PJan2x*) test the hypothesis that *PJan1x* and *PJan2x* are not equal.  Also test the hypothesis that *PJan1x* is less than *PJan2x* </p>
+<p class="comment", style="font-style:normal">**Question 2**:  For January precipitation (*PJan1x* and *PJan2x*) test the hypothesis that *PJan1x* and *PJan2x* are not equal.  Also test the hypothesis that *PJan1x* is less than *PJan2x* Interpret your results. </p>
 
 <br>
 
