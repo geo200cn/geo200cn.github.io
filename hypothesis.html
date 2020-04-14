@@ -503,15 +503,18 @@ library(tidyverse)</code></pre>
 <p>Download the data set <a href="https://raw.githubusercontent.com/geo200cn/data/master/orsim.csv">orsim.csv</a>. The data is also located on Canvas in the Lab and Assignments Week 3 folder. This data set includes climate values (January and July temperature and precipitation) simulated by a regional climate model for present, and for potential future conditions when the concentration of carbon dioxide in the atmosphere has doubled, for a set of model grid points that cover Oregon. The variables named <em>TJan1x</em>, <em>TJul1x</em>, <em>PJan1x</em> and <em>PJul1x</em> are the simulated present values of temperature (T) and precipitation (P), while the variables with <em>2x</em> in their names are those for the doubled CO2 (carbon dioxide) scenarios that are intended to describe the climate of the next century. Read in the data set using <code>read_csv()</code></p>
 <pre class="r"><code>orsim &lt;- read_csv(&quot;https://raw.githubusercontent.com/geo200cn/data/master/orsim.csv&quot;)</code></pre>
 <p>The research question is: How would a doubling of carbon dioxide in the atmosphere affect temperature over Oregon? From what we already know about the greenhouse effect, atmospheric change, and basic climatology, we can suspect that the temperatures will increase with an increase in carbon dioxide. The question is, are the simulated temperatures for the enhanced greenhouse-situation significantly higher than those for present?</p>
-<p>Before running any tests, let’s just look at the distribution of our two variables <em>TJan2x</em> and <em>TJan1x</em>. First, histograms of each</p>
+<p>Before running any tests, let’s just look at the distribution of our two variables <em>TJan2x</em> and <em>TJan1x</em>. First, the mean difference.</p>
+<pre class="r"><code>mean(orsim$TJan2x) - mean(orsim$TJan1x)</code></pre>
+<pre><code>## [1] 4.089474</code></pre>
+<p>Then histograms of each</p>
 <pre class="r"><code>hist(orsim$TJan1x)</code></pre>
-<p><img src="hypothesis_files/figure-html/unnamed-chunk-4-1.png" /><!-- --></p>
+<p><img src="hypothesis_files/figure-html/unnamed-chunk-5-1.png" /><!-- --></p>
 <pre class="r"><code>hist(orsim$TJan2x)</code></pre>
-<p><img src="hypothesis_files/figure-html/unnamed-chunk-4-2.png" /><!-- --></p>
+<p><img src="hypothesis_files/figure-html/unnamed-chunk-5-2.png" /><!-- --></p>
 <p>Remember what CLT says?</p>
 <p>Let’s do a side-by-side comparison using a boxplot using the function <code>boxplot()</code></p>
 <pre class="r"><code>boxplot(orsim$TJan1x, orsim$TJan2x)</code></pre>
-<p><img src="hypothesis_files/figure-html/unnamed-chunk-5-1.png" /><!-- --></p>
+<p><img src="hypothesis_files/figure-html/unnamed-chunk-6-1.png" /><!-- --></p>
 <p>Descriptively, it looks like an increase in the mean temperature from present to future. But, let’s formally test it since we now have the tools to do so. Remember the steps in hypothesis testing outlined in BBR and lecture.</p>
 <p><br></p>
 <div style="white-space: pre-line;"><strong>1. State the null and alternative hypotheses</strong></div>
@@ -591,12 +594,12 @@ To demonstrate two-sample hypothesis testing, let’s bring in the data set <em>
 <p>In the next lab you will start exploring spatial data in R. Although <em>MN</em> is not spatialized, it does not have spatial information, longitude and latitude, which allows us to crudely plot it.</p>
 <pre class="r"><code>##Map all of the buildings in Manhattan
 plot(MN$YCoord~MN$XCoord)</code></pre>
-<p><img src="hypothesis_files/figure-html/unnamed-chunk-13-1.png" /><!-- --></p>
+<p><img src="hypothesis_files/figure-html/unnamed-chunk-14-1.png" /><!-- --></p>
 <p>oh OH. Something is wrong here. The resulting plot doesn’t look at all like a map of Manhattan. Some buildings have not been assigned coordinates and have longitude and latitude positions of 0,0. These must be removed from the data:</p>
 <pre class="r"><code>MN &lt;- MN[MN$YCoord &gt; 0 &amp; MN$XCoord &gt; 0,]</code></pre>
 <p>Your new map should look like this:</p>
 <pre class="r"><code>plot(MN$YCoord~MN$XCoord)</code></pre>
-<p><img src="hypothesis_files/figure-html/unnamed-chunk-15-1.png" /><!-- --></p>
+<p><img src="hypothesis_files/figure-html/unnamed-chunk-16-1.png" /><!-- --></p>
 <p>The research question is: Are property values higher for buildings located in historic districts? Historic neighborhoods are areas where the buildings have historical importance not because of their individual significance but because as a collection they represent the architectural sensibilities of a particular time period. They have tremendous historical and architectural value. But do they also carry greater financial value?</p>
 <p>Before answering this question, we need to be able to identify buildings in historic districts. It looks like the variable <em>HistDist</em> gives us which district a building is located in</p>
 <pre class="r"><code>summary(MN$HistDist)</code></pre>
@@ -605,29 +608,25 @@ plot(MN$YCoord~MN$XCoord)</code></pre>
 <pre class="r"><code>##is.na() is a logical expression, it returns true if a value is missing (NA)
 ##check the first 100 rows of the &quot;HistDist&quot; column to see if they are blank
 is.na(MN[1:100,&quot;HistDist&quot;])</code></pre>
-<pre><code>##   [1]  TRUE  TRUE  TRUE  TRUE  TRUE FALSE  TRUE FALSE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE
-##  [17] FALSE  TRUE  TRUE  TRUE FALSE  TRUE  TRUE FALSE FALSE  TRUE FALSE  TRUE FALSE  TRUE  TRUE FALSE
-##  [33]  TRUE FALSE  TRUE  TRUE FALSE FALSE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE
-##  [49] FALSE  TRUE  TRUE  TRUE  TRUE  TRUE FALSE  TRUE FALSE  TRUE  TRUE FALSE FALSE  TRUE  TRUE FALSE
-##  [65]  TRUE FALSE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE
-##  [81] FALSE  TRUE FALSE  TRUE FALSE FALSE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE
+<pre><code>##   [1]  TRUE  TRUE  TRUE  TRUE  TRUE FALSE  TRUE FALSE  TRUE  TRUE  TRUE  TRUE
+##  [13]  TRUE  TRUE  TRUE  TRUE FALSE  TRUE  TRUE  TRUE FALSE  TRUE  TRUE FALSE
+##  [25] FALSE  TRUE FALSE  TRUE FALSE  TRUE  TRUE FALSE  TRUE FALSE  TRUE  TRUE
+##  [37] FALSE FALSE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE
+##  [49] FALSE  TRUE  TRUE  TRUE  TRUE  TRUE FALSE  TRUE FALSE  TRUE  TRUE FALSE
+##  [61] FALSE  TRUE  TRUE FALSE  TRUE FALSE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE
+##  [73]  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE FALSE  TRUE FALSE  TRUE
+##  [85] FALSE FALSE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE
 ##  [97] FALSE  TRUE FALSE  TRUE</code></pre>
 <p>In the output the <code>TRUE</code> values indicate rows where the <em>HistDist</em> column is missing a value- these are places that are not in a historic district. Another useful function is <code>ifelse()</code></p>
 <pre class="r"><code>##take the previous line and replace the &quot;TRUE&quot; with 0
 ifelse(is.na(MN[1:100,&quot;HistDist&quot;]), 0, 1)</code></pre>
-<pre><code>##   [1] 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0 1 0 0 0 1 0 0 1 1 0 1 0 1 0 0 1 0 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0
-##  [49] 1 0 0 0 0 0 1 0 1 0 0 1 1 0 0 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 0 1 1 0 0 0 0 0 0 0 0 0 0
-##  [97] 1 0 1 0</code></pre>
+<pre><code>##   [1] 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0 1 0 0 0 1 0 0 1 1 0 1 0 1 0 0 1 0 1 0 0 1
+##  [38] 1 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0 1 0 0 1 1 0 0 1 0 1 0 0 0 0 0 0 0 0
+##  [75] 0 0 0 0 0 0 1 0 1 0 1 1 0 0 0 0 0 0 0 0 0 0 1 0 1 0</code></pre>
 <p>The function <code>ifelse()</code> takes three arguments, a logical expression, a value for true, and a value for false. If the logical expression evaluates to <code>TRUE</code> the first value is used, if not the second value is used.</p>
-We use the <code>ifelse()</code> and <code>is.na()</code> functions within <code>mutate()</code> to create a variable named <em>HD</em> in <em>MN</em> that indicates whether a building is located in a historic district.
-</p>
-<p><br></p>
+<p>We use the <code>ifelse()</code> and <code>is.na()</code> functions within <code>mutate()</code> to create a variable named <em>HD</em> in <em>MN</em> that indicates whether a building is located in a historic district.</p>
 <pre class="r"><code>#one of many ways to do this
 MN &lt;- mutate(MN, HD = ifelse(is.na(HistDist), 0, 1))</code></pre>
-<p>Your output should match the line below:</p>
-<pre class="r"><code>summary(MN$HD)</code></pre>
-<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-##   0.000   0.000   0.000   0.244   0.000   1.000</code></pre>
 <p>A variable that is coded 0,1 to refer to absence or presence, respectively, is sometimes called a dummy variable or an indicator variable. Although a dummy looks like a numeric, it is in fact a qualitative or categorical variable. Since <em>HD</em> captures whether a building is in or out of a historic district, we should tell R that the numbers in the column are a code for historic districts, and we do this by creating a factor, or categorical variable, using <code>as.factor()</code>.</p>
 <pre class="r"><code>MN$HD &lt;- as.factor(MN$HD) </code></pre>
 <p>Now we can draw a very crude map of buildings in historic districts.</p>

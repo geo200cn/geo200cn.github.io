@@ -100,20 +100,31 @@ orsim <- read_csv("https://raw.githubusercontent.com/geo200cn/data/master/orsim.
 
 The research question is: How would a doubling of carbon dioxide in the atmosphere affect temperature over Oregon? From what we already know about the greenhouse effect, atmospheric change, and basic climatology, we can suspect that the temperatures will increase with an increase in carbon dioxide. The question is, are the simulated temperatures for the enhanced greenhouse-situation significantly higher than those for present?
 
-Before running any tests, let's just look at the distribution of our two variables *TJan2x* and *TJan1x*. First, histograms of each
+Before running any tests, let's just look at the distribution of our two variables *TJan2x* and *TJan1x*. First, the mean difference.
+
+
+```r
+mean(orsim$TJan2x) - mean(orsim$TJan1x)
+```
+
+```
+## [1] 4.089474
+```
+
+Then histograms of each
 
 
 ```r
 hist(orsim$TJan1x)
 ```
 
-![](hypothesis_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
+![](hypothesis_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
 
 ```r
 hist(orsim$TJan2x)
 ```
 
-![](hypothesis_files/figure-html/unnamed-chunk-4-2.png)<!-- -->
+![](hypothesis_files/figure-html/unnamed-chunk-5-2.png)<!-- -->
 
 Remember what CLT says?
 
@@ -124,7 +135,7 @@ Let's do a side-by-side comparison using a boxplot using the function `boxplot()
 boxplot(orsim$TJan1x, orsim$TJan2x)
 ```
 
-![](hypothesis_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
+![](hypothesis_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
 
 Descriptively, it looks like an increase in the mean temperature from present to future.  But, let's formally test it since we now have the tools to do so. Remember the steps in hypothesis testing outlined in BBR and lecture.
 
@@ -276,7 +287,7 @@ In the next lab you will start exploring spatial data in R. Although *MN* is not
 plot(MN$YCoord~MN$XCoord)
 ```
 
-![](hypothesis_files/figure-html/unnamed-chunk-13-1.png)<!-- -->
+![](hypothesis_files/figure-html/unnamed-chunk-14-1.png)<!-- -->
 
 oh OH. Something is wrong here. The resulting plot doesn’t look at all like a map of Manhattan. Some buildings have not been assigned coordinates and have longitude and latitude positions of 0,0. These must be removed from the data:
 
@@ -293,7 +304,7 @@ Your new map should look like this:
 plot(MN$YCoord~MN$XCoord)
 ```
 
-![](hypothesis_files/figure-html/unnamed-chunk-15-1.png)<!-- -->
+![](hypothesis_files/figure-html/unnamed-chunk-16-1.png)<!-- -->
 
 The research question is: Are property values higher for buildings located in historic districts? Historic neighborhoods are areas where the buildings have historical importance not because of their individual significance but because as a collection they represent the architectural sensibilities of a particular time period.  They have tremendous historical and architectural value.  But do they also carry greater financial value?
 
@@ -316,12 +327,14 @@ is.na(MN[1:100,"HistDist"])
 ```
 
 ```
-##   [1]  TRUE  TRUE  TRUE  TRUE  TRUE FALSE  TRUE FALSE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE
-##  [17] FALSE  TRUE  TRUE  TRUE FALSE  TRUE  TRUE FALSE FALSE  TRUE FALSE  TRUE FALSE  TRUE  TRUE FALSE
-##  [33]  TRUE FALSE  TRUE  TRUE FALSE FALSE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE
-##  [49] FALSE  TRUE  TRUE  TRUE  TRUE  TRUE FALSE  TRUE FALSE  TRUE  TRUE FALSE FALSE  TRUE  TRUE FALSE
-##  [65]  TRUE FALSE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE
-##  [81] FALSE  TRUE FALSE  TRUE FALSE FALSE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE
+##   [1]  TRUE  TRUE  TRUE  TRUE  TRUE FALSE  TRUE FALSE  TRUE  TRUE  TRUE  TRUE
+##  [13]  TRUE  TRUE  TRUE  TRUE FALSE  TRUE  TRUE  TRUE FALSE  TRUE  TRUE FALSE
+##  [25] FALSE  TRUE FALSE  TRUE FALSE  TRUE  TRUE FALSE  TRUE FALSE  TRUE  TRUE
+##  [37] FALSE FALSE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE
+##  [49] FALSE  TRUE  TRUE  TRUE  TRUE  TRUE FALSE  TRUE FALSE  TRUE  TRUE FALSE
+##  [61] FALSE  TRUE  TRUE FALSE  TRUE FALSE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE
+##  [73]  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE FALSE  TRUE FALSE  TRUE
+##  [85] FALSE FALSE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE
 ##  [97] FALSE  TRUE FALSE  TRUE
 ```
 
@@ -334,34 +347,20 @@ ifelse(is.na(MN[1:100,"HistDist"]), 0, 1)
 ```
 
 ```
-##   [1] 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0 1 0 0 0 1 0 0 1 1 0 1 0 1 0 0 1 0 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0
-##  [49] 1 0 0 0 0 0 1 0 1 0 0 1 1 0 0 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 0 1 1 0 0 0 0 0 0 0 0 0 0
-##  [97] 1 0 1 0
+##   [1] 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0 1 0 0 0 1 0 0 1 1 0 1 0 1 0 0 1 0 1 0 0 1
+##  [38] 1 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0 1 0 0 1 1 0 0 1 0 1 0 0 0 0 0 0 0 0
+##  [75] 0 0 0 0 0 0 1 0 1 0 1 1 0 0 0 0 0 0 0 0 0 0 1 0 1 0
 ```
 
 The function `ifelse()` takes three arguments, a logical expression, a value for true, and a value for false. If the logical expression evaluates to `TRUE` the first value is used, if not the second value is used.
 
-We use the `ifelse()` and `is.na()` functions within `mutate()` to create a variable named *HD* in *MN* that indicates whether a building is located in a historic district. </p>
+We use the `ifelse()` and `is.na()` functions within `mutate()` to create a variable named *HD* in *MN* that indicates whether a building is located in a historic district. 
 
-<br>
 
 
 ```r
 #one of many ways to do this
 MN <- mutate(MN, HD = ifelse(is.na(HistDist), 0, 1))
-```
-
-
-Your output should match the line below:
-
-
-```r
-summary(MN$HD)
-```
-
-```
-##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-##   0.000   0.000   0.000   0.244   0.000   1.000
 ```
 
 A variable that is coded 0,1 to refer to absence or presence, respectively, is sometimes called a dummy variable or an indicator variable. Although a dummy looks like a numeric, it is in fact a qualitative or categorical variable. Since *HD* captures whether a building is in or out of a historic district, we should tell R that the numbers in the column are a code for historic districts, and we do this by creating a factor, or categorical variable, using `as.factor()`.

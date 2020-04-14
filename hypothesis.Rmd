@@ -99,7 +99,13 @@ orsim <- read_csv("https://raw.githubusercontent.com/geo200cn/data/master/orsim.
 
 The research question is: How would a doubling of carbon dioxide in the atmosphere affect temperature over Oregon? From what we already know about the greenhouse effect, atmospheric change, and basic climatology, we can suspect that the temperatures will increase with an increase in carbon dioxide. The question is, are the simulated temperatures for the enhanced greenhouse-situation significantly higher than those for present?
 
-Before running any tests, let's just look at the distribution of our two variables *TJan2x* and *TJan1x*. First, histograms of each
+Before running any tests, let's just look at the distribution of our two variables *TJan2x* and *TJan1x*. First, the mean difference.
+
+```{r}
+mean(orsim$TJan2x) - mean(orsim$TJan1x)
+```
+
+Then histograms of each
 
 ```{r}
 hist(orsim$TJan1x)
@@ -260,20 +266,12 @@ ifelse(is.na(MN[1:100,"HistDist"]), 0, 1)
 
 The function `ifelse()` takes three arguments, a logical expression, a value for true, and a value for false. If the logical expression evaluates to `TRUE` the first value is used, if not the second value is used.
 
-We use the `ifelse()` and `is.na()` functions within `mutate()` to create a variable named *HD* in *MN* that indicates whether a building is located in a historic district. </p>
+We use the `ifelse()` and `is.na()` functions within `mutate()` to create a variable named *HD* in *MN* that indicates whether a building is located in a historic district. 
 
-<br>
 
 ```{r message=FALSE, warning=FALSE}
 #one of many ways to do this
 MN <- mutate(MN, HD = ifelse(is.na(HistDist), 0, 1))
-```
-
-
-Your output should match the line below:
-
-```{r}
-summary(MN$HD)
 ```
 
 A variable that is coded 0,1 to refer to absence or presence, respectively, is sometimes called a dummy variable or an indicator variable. Although a dummy looks like a numeric, it is in fact a qualitative or categorical variable. Since *HD* captures whether a building is in or out of a historic district, we should tell R that the numbers in the column are a code for historic districts, and we do this by creating a factor, or categorical variable, using `as.factor()`.
