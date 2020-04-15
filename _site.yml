@@ -25,6 +25,8 @@ navbar:
           href: Lab_Week1.html
         - text: "Lab Lecture - 2"
           href: Lab_Week2.html
+        - text: "Lab Lecture - 3"
+          href: Lab_Week3.html
     - text: "Other"
       menu:
         - text:
