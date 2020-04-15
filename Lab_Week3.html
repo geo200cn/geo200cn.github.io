@@ -1560,20 +1560,35 @@ div.tocify {
 <li><p>-0.000132</p></li>
 </ul>
 </div>
-<div id="loading-shape-files" class="section level1">
-<h1>Loading Shape Files</h1>
-<p>Although rspatial suggests using a function from the <code>{raster}</code> package to load <code>.shp</code> files, I recommend <code>readOGR</code> from <code>{rgdal}</code>. For one, you don’t need to use any functions from <code>{raster}</code> if you’re just working with “vector” data (including, points, lines and polygons, but not satellite photos). For instance, the code <code>rgdal::readOGR(&quot;galap.shp&quot;)</code> will load your spatial data into R for Assignment 3.</p>
+<div id="shape-files" class="section level1">
+<h1>Shape Files</h1>
 <p>A note about Shape files: they are always more than one actual file. You’ll find a <code>.shp</code> file, but also <code>.shx</code> and others. The “galap” data for the assignment is actually composed of 4 files. Each file includes important information necessary to use the spatial data, so make sure they’re all together in the same directory when you load a shape file. Shape files are the industry standard, largely as a legacy of the monopoly ArcGIS/ESRI have on GIS. However, there is an increasing push to use open source spatial data files known as “geopackage” with the extension <code>.gpkg</code>. (For the nerds, geopackages are actually just a form of an SQL database.) Unlike Shape files, geopackage files are designed to store multiple different datasets. In both Shapefiles and geopackages, they only store vector data.</p>
 </div>
-<div id="coordinate-reference-systems" class="section level1">
-<h1>Coordinate Reference Systems</h1>
+<div id="notes-on-rspatial-readings" class="section level1">
+<h1>Notes on rspatial Readings</h1>
+<div id="chapter-3-sp-objects" class="section level2">
+<h2>Chapter 3: <code>{sp}</code> objects</h2>
+<p>In <a href="https://rspatial.org/raster/spatial/3-vectordata.html">chapter 3</a>, Professor Hijmans goes into some detail about “classes” in R. This is really an advanced topic. Don’t worry if you don’t completely understand it. What’s important is that <code>{sp}</code> data is often stored in these complicated R Objects that behave a lot like <code>list</code> objects. These <code>list</code>-like objects sometimes have a data.frame attached, which would include non-spatial data like rainfall.</p>
+<p>Professor Hijmans also creates spatial data objects from scratch. Will you ever actually have to do this? Maybe. For this course? Not a ton. Particularly when it comes to creating your own <code>SpatialLines</code> and <code>SpatialPolygons</code>, you can skim it. This material will always be available if you ever need to come back to it after all.</p>
+</div>
+<div id="chapter-5-readingwriting-vector-files." class="section level2">
+<h2>Chapter 5: Reading/Writing Vector Files.</h2>
+<p>In <a href="https://rspatial.org/raster/spatial/5-files.html">chapter 5</a>, Professor Hijmans suggests using a function from the <code>{raster}</code> package to read <code>.shp</code> files into R. However, I recommend <code>readOGR</code> from <code>{rgdal}</code>. Mainly because you don’t need to use any functions from <code>{raster}</code> if you’re just working with “vector” data (including, points, lines and polygons, but not satellite photos). For instance, the code <code>rgdal::readOGR(&quot;galap.shp&quot;)</code> will load your spatial data into R for Assignment 3. (Similarly, to write <code>{sp}</code> files, I recommend <code>writeOGR</code>.)</p>
+<p>Remember to skip the stuff on Raster for now.</p>
+</div>
+<div id="chapter-6-coordinate-reference-systems" class="section level2">
+<h2>Chapter 6: Coordinate Reference Systems</h2>
 <p>The reading in <a href="https://rspatial.org/raster/spatial/6-crs.html">rspatial</a> may be a little opaque in its description of the CRS. For the sake of this course, all we expect for you to know is that the CRS information attached (or omitted) from each piece of spatial data contains instructions for your GIS (whether its R, ArcGIS, QGIS, etc) to correctly place the spatial geometries. In order to do this, your GIS takes the instructions in the CRS information attached to your spatial data file, and then calculates both the 3D model of the planet, and how that 3D image should be presented on your 2D computer screen or printed map. A lot of math is involved in constructing a CRS (both in terms of <a href="https://en.wikipedia.org/wiki/Geodesy">Geodesy</a> and <a href="https://en.wikipedia.org/wiki/Map_projection">Cartography</a>).</p>
-<p>The CRS information attached to your spatial data can be presented to you in a number of ways. Sometimes you’ll see a “proj4” string: <code>+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs</code>. Sometimes you’ll see an EPSG code attached to it. The EPSG is a Petroleum industry set of standards for cataloging (among other things) commonly used CRS.</p>
 <p>It’s rare that you’ll actually need to mess around with a CRS. Sometimes people will send you spatial data with a missing or incomplete CRS. Often if it is entirely missing, the presumed CRS is some standard mercator coordinate system. (For instance, EPSG 3857. When you go to Google maps, right click somewhere, and click on “What’s here?,” the coordinates that it presents are in EPSG 3857.) It is not uncommon to have two different spatial data sets that you need to use together (say the borders of a state and spatial data you collected), but have a different CRS. It’s pretty trivial now to “transform” one to match the other in R or any other GIS.</p>
 <p><em>Supplemental</em></p>
 <ul>
 <li>A thorough guide on CRS from <a href="https://docs.qgis.org/3.10/en/docs/gentle_gis_introduction/coordinate_reference_systems.html">QGIS</a></li>
 </ul>
+</div>
+<div id="chapter-7-vector-data-manipulation" class="section level2">
+<h2>Chapter 7: Vector Data Manipulation</h2>
+<p>Just a reminder, a variable in Data Science is different from a variable in programming. In this chapter, when Professor Hijmans writes about variables, he is talking about variables in the former sense (i.e. columns in a table).</p>
+</div>
 </div>
 
 
