@@ -158,7 +158,7 @@ Consider a spreadsheet (aka a table) with rows and columns, where each row is a 
 <tbody>
   <tr>
    <td style="text-align:left;"> Points Possible </td>
-   <td style="text-align:right;">  </td>
+   <td style="text-align:right;"> NA </td>
    <td style="text-align:left;">  </td>
    <td style="text-align:left;">  </td>
    <td style="text-align:right;"> 100 </td>

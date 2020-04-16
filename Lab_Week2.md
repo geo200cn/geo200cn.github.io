@@ -1158,13 +1158,13 @@ head(iris_petals)
 ```
 
 ```
-##    ID    Species Petal.Length Petal.Width
-## 1 991  virginica          5.4         2.1
-## 2 206     setosa          1.5         0.3
-## 3 492 versicolor          4.1         1.0
-## 4 608     setosa          1.4         0.2
-## 5 585 versicolor          4.4         1.4
-## 6 448     setosa          1.3         0.4
+##    ID   Species Petal.Length Petal.Width
+## 1 870 virginica          5.5         2.1
+## 2 162    setosa          1.5         0.1
+## 3 586    setosa          1.3         0.2
+## 4 393    setosa          1.4         0.2
+## 5 470 virginica          5.3         2.3
+## 6 862    setosa          1.6         0.2
 ```
 
 
@@ -1174,12 +1174,12 @@ head(iris_sepals)
 
 ```
 ##    ID    Species Sepal.Length Sepal.Width
-## 1 875  virginica          7.4         2.8
-## 2 690     setosa          5.7         4.4
-## 3 323  virginica          6.1         3.0
-## 4 626  virginica          7.2         3.2
-## 5 251 versicolor          5.5         2.4
-## 6 552     setosa          4.6         3.1
+## 1 194     setosa          4.5         2.3
+## 2 151 versicolor          6.7         3.0
+## 3 499     setosa          5.4         3.9
+## 4 335     setosa          5.0         3.6
+## 5 797  virginica          6.7         3.3
+## 6 477 versicolor          5.7         2.9
 ```
 
 R makes resolving this a trivial issue. Here you can use `merge`.
@@ -1205,12 +1205,12 @@ head(all_irises)
 
 ```
 ##    ID    Species Sepal.Length Sepal.Width Petal.Length Petal.Width
-## 1 109 versicolor          5.1         2.5          3.0         1.1
-## 2 114     setosa          5.5         3.5          1.3         0.2
-## 3 128  virginica          5.8         2.8          5.1         2.4
-## 4 139  virginica          6.4         3.1          5.5         1.8
-## 5 147  virginica          6.4         2.8          5.6         2.1
-## 6 156  virginica          7.7         3.8          6.7         2.2
+## 1 100 versicolor          6.6         3.0          4.4         1.4
+## 2 106  virginica          6.1         2.6          5.6         1.4
+## 3 112  virginica          7.2         3.2          6.0         1.8
+## 4 113  virginica          6.9         3.1          5.1         2.3
+## 5 117 versicolor          6.8         2.8          4.8         1.4
+## 6 120 versicolor          6.9         3.1          4.9         1.5
 ```
 
 You'll note that because your partner only did 148 irises that there are two rows missing petals.
@@ -1222,9 +1222,9 @@ all_irises[is.na(all_irises$Petal.Length),
 ```
 
 ```
-##     ID    Species Petal.Length Petal.Width
-## 28 267     setosa           NA          NA
-## 96 642 versicolor           NA          NA
+##      ID   Species Petal.Length Petal.Width
+## 25  233 virginica           NA          NA
+## 111 764 virginica           NA          NA
 ```
 
 What if you wanted only complete rows, and you didn't need these two individuals with missing Petal data? This where we specify that one of the data.frames is the primary data.frame. In this case, the complete 150 sepals data you collected has superfluous data that can be cast aside.
@@ -1391,13 +1391,11 @@ head(ls("package:stats"), n=20)
 ```
 
 ```
-##  [1] "acf"                  "acf2AR"               "add.scope"           
-##  [4] "add1"                 "addmargins"           "aggregate"           
-##  [7] "aggregate.data.frame" "aggregate.ts"         "AIC"                 
-## [10] "alias"                "anova"                "ansari.test"         
-## [13] "aov"                  "approx"               "approxfun"           
-## [16] "ar"                   "ar.burg"              "ar.mle"              
-## [19] "ar.ols"               "ar.yw"
+##  [1] "acf"                  "acf2AR"               "add.scope"            "add1"                
+##  [5] "addmargins"           "aggregate"            "aggregate.data.frame" "aggregate.ts"        
+##  [9] "AIC"                  "alias"                "anova"                "ansari.test"         
+## [13] "aov"                  "approx"               "approxfun"            "ar"                  
+## [17] "ar.burg"              "ar.mle"               "ar.ols"               "ar.yw"
 ```
 
 
@@ -1638,12 +1636,12 @@ iris_sepals %>%
 
 ```
 ##    ID    Species Sepal.Length Sepal.Width Petal.Length Petal.Width
-## 1 875  virginica          7.4         2.8          6.1         1.9
-## 2 690     setosa          5.7         4.4          1.5         0.4
-## 3 323  virginica          6.1         3.0          4.9         1.8
-## 4 626  virginica          7.2         3.2          6.0         1.8
-## 5 251 versicolor          5.5         2.4          3.7         1.0
-## 6 552     setosa          4.6         3.1          1.5         0.2
+## 1 194     setosa          4.5         2.3          1.3         0.3
+## 2 151 versicolor          6.7         3.0          5.0         1.7
+## 3 499     setosa          5.4         3.9          1.7         0.4
+## 4 335     setosa          5.0         3.6          1.4         0.2
+## 5 797  virginica          6.7         3.3          5.7         2.5
+## 6 477 versicolor          5.7         2.9          4.2         1.3
 ```
 
 What if the column names don't match? No problem!
@@ -1666,12 +1664,12 @@ iris_sepals %>%
 
 ```
 ##    ID        spp Sepal.Length Sepal.Width Petal.Length Petal.Width
-## 1 875  virginica          7.4         2.8          6.1         1.9
-## 2 690     setosa          5.7         4.4          1.5         0.4
-## 3 323  virginica          6.1         3.0          4.9         1.8
-## 4 626  virginica          7.2         3.2          6.0         1.8
-## 5 251 versicolor          5.5         2.4          3.7         1.0
-## 6 552     setosa          4.6         3.1          1.5         0.2
+## 1 194     setosa          4.5         2.3          1.3         0.3
+## 2 151 versicolor          6.7         3.0          5.0         1.7
+## 3 499     setosa          5.4         3.9          1.7         0.4
+## 4 335     setosa          5.0         3.6          1.4         0.2
+## 5 797  virginica          6.7         3.3          5.7         2.5
+## 6 477 versicolor          5.7         2.9          4.2         1.3
 ```
 
 Compare to `merge` below:
@@ -1711,13 +1709,13 @@ iris_sepals %>%
 ```
 
 ```
-##      ID   Species Sepal.Length Sepal.Width Petal.Length Petal.Width
-## 145 178    setosa          4.4         2.9          1.4         0.2
-## 146 484 virginica          5.6         2.8          4.9         2.0
-## 147 732 virginica          6.9         3.2          5.7         2.3
-## 148 206    setosa          5.1         3.8          1.5         0.3
-## 149 212    setosa          5.0         3.4          1.5         0.2
-## 150 613 virginica           NA          NA          5.0         2.0
+##      ID    Species Sepal.Length Sepal.Width Petal.Length Petal.Width
+## 145 493  virginica          6.3         3.3          6.0         2.5
+## 146 405  virginica          6.3         3.4          5.6         2.4
+## 147 773 versicolor          6.1         2.8          4.7         1.2
+## 148 120 versicolor          6.9         3.1          4.9         1.5
+## 149 354 versicolor          4.9         2.4          3.3         1.0
+## 150 591  virginica           NA          NA          6.9         2.3
 ```
 
 Finally, take note that it doesn't matter which table you begin with when you're using `full_join`. We could begin with `iris_petals` instead of `iris_sepals` and all the code chunks above in this section would have had the same effect (albeit with the columns in a different order). However, this is the the case with join functions `left_join` and `right_join` which prioritize one table over the other. When using these latter functions, missing data is not filled in with `NA` values, but rather the whole row is excised.
