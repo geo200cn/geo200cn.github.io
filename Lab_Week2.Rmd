@@ -1,7 +1,7 @@
 ---
 title: "Lab Lecture - Week 2"
 author: "Kenji Tomari"
-date: "Spring 2020"
+subtitle: "Spring 2020"
 output: 
   html_document:
     theme: readable
