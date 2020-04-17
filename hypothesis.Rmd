@@ -128,7 +128,7 @@ Descriptively, it looks like an increase in the mean temperature from present to
 
 <br>
 
-The null hypothesis is that there is no change in temperature, or the difference between present and future temperature is 0.  The alternative hypothesis is that there is an increase in temperature.
+The null hypothesis is that there is no change or a decrease in temperature.  The alternative hypothesis is that there is an increase in temperature.
 
 <br>
 
