@@ -219,7 +219,7 @@ MN<-read.dbf("mnmappluto.dbf")
 
 A dbase file is just another way of storing tabular data. There is little substantive difference between a dbase, csv, or an excel file. Esri (ArcGIS) likes dbase files for some reason, so when you end up doing doing GIS stuff in your career you’ll probably come across dbase files. 
 
-In the next lab you will start exploring spatial data in R. Although *MN* is not spatialized, it does not have spatial information, longitude and latitude, which allows us to crudely plot it. 
+In the next lab you will start exploring spatial data in R. Although *MN* is not spatialized, it does have spatial information, longitude and latitude, which allows us to crudely plot it. 
 
 ```{r}
 ##Map all of the buildings in Manhattan

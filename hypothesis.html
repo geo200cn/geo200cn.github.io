@@ -594,7 +594,7 @@ t1</code></pre>
 To demonstrate two-sample hypothesis testing, let’s bring in the data set <em>mnmappluto.dbf</em>, which includes information about every building in Manhattan, over 40,000 buildings (wow!). I’ve uploaded this data on Canvas in the Week 3 Lab folder. Download it into an appropriate folder and bring it in using the function <code>read.dbf()</code>, which is a part of the <strong>foreign</strong> package.</p>
 <pre class="r"><code>MN&lt;-read.dbf(&quot;mnmappluto.dbf&quot;)</code></pre>
 <p>A dbase file is just another way of storing tabular data. There is little substantive difference between a dbase, csv, or an excel file. Esri (ArcGIS) likes dbase files for some reason, so when you end up doing doing GIS stuff in your career you’ll probably come across dbase files.</p>
-<p>In the next lab you will start exploring spatial data in R. Although <em>MN</em> is not spatialized, it does not have spatial information, longitude and latitude, which allows us to crudely plot it.</p>
+<p>In the next lab you will start exploring spatial data in R. Although <em>MN</em> is not spatialized, it does have spatial information, longitude and latitude, which allows us to crudely plot it.</p>
 <pre class="r"><code>##Map all of the buildings in Manhattan
 plot(MN$YCoord~MN$XCoord)</code></pre>
 <p><img src="hypothesis_files/figure-html/unnamed-chunk-14-1.png" /><!-- --></p>
