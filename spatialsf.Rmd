@@ -1,0 +1,322 @@
+---
+title: "Mapping using the sf package"
+subtitle: <h4 style="font-style:normal">GEO 200CN - Quantitative Geography</h4>
+author: <h4 style="font-style:normal">Professor Noli Brazil</h4>
+output: 
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    theme: yeti
+    code_folding: show
+---
+
+
+<style>
+p.comment {
+background-color: #DBDBDB;
+padding: 10px;
+border: 1px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: italic;
+}
+
+.figure {
+   margin-top: 20px;
+   margin-bottom: 20px;
+}
+
+h1.title {
+  font-weight: bold;
+  font-family: Arial;  
+}
+
+h2.title {
+  font-family: Arial;  
+}
+
+</style>
+
+
+<style type="text/css">
+#TOC {
+  font-size: 13px;
+  font-family: Arial;
+}
+</style>
+
+
+\
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+The two major packages for processing spatial data in R are **sp** and **sf**. This guide will go through the **sf** package. To motivate the use of **sf**, the bulk of the guide will focus on how to map data, which will help you accomplish question 1 in the assignment.
+
+You might be wondering why go through both **sp** and **sf**. Just pick one!! Just like with base and tidy R, **sp** and **sf** are two distinct approaches.  And both approaches are important to understanding the ecosystem of spatial analysis tools available in R.  The one really important difference between the two packages is that **sf** is tidy friendly.  Which means we can use most of the functions we went through in the [tidy R lab](https://geo200cn.github.io/tidyr) to clean and process **sf** spatial objects.  As you likely have already discovered in last lab, **sp** objects are complicated. In contrast, **sf** objects are relatively straight forward to understand because they are basically data frames.
+
+
+
+
+
+<div style="margin-bottom:25px;">
+</div>
+## **Installing and loading packages**
+\
+
+
+Install **sf** if you have not already done so. The following code checks if you've already installed the package.  If you haven't, it will install it.
+
+```{r warning = FALSE, message = FALSE, eval = FALSE}
+if (!require("sf")) install.packages("sf")
+```
+
+We will also be using the package **tmap** in this lab.
+
+```{r warning = FALSE, message = FALSE, eval = FALSE}
+if (!require("tmap")) install.packages("tmap")
+```
+
+Load **sf** and **tmap** using `library()`.  We'll also be using the package **tidyverse**, so load it up as well.  Remember, you always need to use `library()` at the top of your R Markdown files.
+
+```{r warning = FALSE, message = FALSE}
+library(sf)
+library(tmap)
+library(tidyverse)
+```
+
+
+<div style="margin-bottom:25px;">
+</div>
+## **sf package**
+\
+
+The **sf** package conceives of spatial objects as **s**imple **f**eatures. What is a feature? A feature is thought of as a thing, or an object in the real world, such as a building or a tree. A county can be a feature. As can a city and a neighborhood. Features have a geometry describing where on Earth the features are located, and they have attributes, which describe other properties.  The main application of simple feature geometries is to describe two-dimensional geometries by points, lines, or polygons. 
+
+We won't go through the intricacies and nitty gritty details of **sf** objects as they are beyond the scope of this class. We provide resources at the end of this guide for those who want more.
+
+<div style="margin-bottom:25px;">
+</div>
+## **Reading spatial data**
+\
+
+The function for reading in spatial data into R is `st_read()`.  The shapefile is the most commonly used file format for vector data.  I zipped up and uploaded onto GitHub a folder containing files for this lab.  Set your working directory to an appropriate folder and use the following code to download and unzip the file.
+
+```{r warning = FALSE, message = FALSE, eval = FALSE}
+#insert the pathway to the folder you want your data stored into
+setwd("insert your pathway here")
+#downloads file into your working directory 
+download.file(url = "https://raw.githubusercontent.com/geo200cn/data/master/spatialsflab.zip", destfile = "spatialsflab.zip")
+#unzips the zipped file
+unzip(zipfile = "spatialsflab.zip")
+```
+
+```{r warning = FALSE, message = FALSE, echo=FALSE}
+download.file(url = "https://raw.githubusercontent.com/geo200cn/data/master/spatialsflab.zip", destfile = "spatialsflab.zip")
+unzip(zipfile = "spatialsflab.zip")
+```
+
+The data are also located on Canvas in the Labs and Assignments Week 4 folder. 
+
+You should see the shapefile *sacmetrotract.shp* in the folder you specified in `setwd()`. You should also see a csv file *sacmetrotractwhite.csv*. First, bring in *sacmetrotract.shp*, which contains polygons representing [census tracts](https://www2.census.gov/geo/pdfs/education/CensusTracts.pdf) in the [Sacrametro metropolitan area](https://en.wikipedia.org/wiki/Sacramento_metropolitan_area).
+
+```{r warning = FALSE, message = FALSE, results= "hide"}
+sacmetrotract <- st_read("sacmetrotract.shp", stringsAsFactors = FALSE)
+```
+
+
+The argument `stringsAsFactors = FALSE` tells R to keep any variables that look like a character as a character and not a factor.  Next bring in *sacmetrotractwhite.csv* which contains non-Hispanic white (*nhwhite*) and total population (*tpopr*) for tracts in the Sacramento metropolitan area. Use the function `read_csv()`.
+
+```{r warning = FALSE, message = FALSE, results= "hide"}
+sacmetrotractwhite <- read_csv("sacmetrotractwhite.csv")
+```
+
+
+You can bring in other types of spatial data other than shapefiles.  See a list of these file types [here](https://cran.r-project.org/web/packages/sf/vignettes/sf2.htmls).
+
+
+<div style="margin-bottom:25px;">
+</div>
+## **Data manipulation**
+\
+
+**sf** objects are data frames.  This means that they are tidy friendly.  You can use many of the functions we learned in the introduction to **tidyverse** [lab](https://geo200cn.github.io/tidyr.html) to manipulate **sf** objects, and this includes our new best friend the pipe `%>%` operator.  For example, let's do the following tasks on *sacmetrotract*.
+
+1. Merge in *nhwhite* and *tpopr* from *sacmetrotractwhite* into *sacmetrotract* using `left_join()`. The common ID is *GEOID*
+2. Create the variable *pwh* which is the percent of the tract population that is non-Hispanic white using `mutate()`
+
+We do this in one line of continuous code using the pipe operator `%>%`
+
+```{r results='hide'}
+sacmetrotract <- sacmetrotract %>%
+            left_join(sacmetrotractwhite, by = "GEOID") %>%
+            mutate(pwh = nhwhite/tpopr) 
+```
+
+
+The main takeaway: **sf** objects are tidy friendly, so you can use many of the tidy functions you learned in the tidy R lab on these objects to manipulate your data set.  
+
+
+<div style="margin-bottom:25px;">
+</div>
+## **Mapping**
+\
+
+There are two ways of mapping **sf** objects: `ggplot()` from the **ggplot2** package and `tm_shape()` from the **tmap** package. Rather than confuse you by presenting both ways, I will cover **tmap**.  If you are interested in using `ggplot()`, check out the resources I linked to in the Resoures section below.
+
+
+<div style="margin-bottom:25px;">
+</div>
+### **tmap**
+\
+
+
+Whether one uses the **tmap** or **ggplot** is a matter of taste, but I find that **tmap** has some benefits, which I will point out below.
+
+**tmap** uses a series of functions that build on one another. The foundation is `tm_shape()`.  You then build on `tm_shape()` by adding one or more elements, in particular `tm_polygons()`. All additional functions take on the form of `tm_`.  Check the full list of `tm_` elements [here](https://www.rdocumentation.org/packages/tmap/versions/2.0/topics/tmap-element).
+
+Let's make a choropleth map of percent white in Sacramento.  Choropleth maps are discussed on page 73-76 in OSU. 
+
+```{r warning = FALSE, message = FALSE}
+tm_shape(sacmetrotract) +
+  tm_polygons(col = "pwh", style = "quantile")
+```
+
+You first put the dataset *sac.city.tracts.c* inside `tm_shape()`. Because you are plotting polygons, you use `tm_polygons()` next. If you are plotting points, you will use `tm_dots()`. The argument `col = "pwh"` tells R to shade the tracts by the variable *pwh*.  The argument `style = "quantile"` tells R to break up the shading into quintiles, or equal groups of 5.  I find that this is where **tmap** offers a distinct advantage over **ggplot** in that users have greater control over the legend and bin breaks.  **tmap** allows users to specify algorithms to automatically create breaks with the `style` argument.  OSU discusses the importance of breaks and classifications on page 75.  You can also change the number of breaks by setting `n=`. The default is `n=5`. Rather than quintiles, you can show quartiles using `n=4`
+
+```{r warning = FALSE, message = FALSE}
+tm_shape(sacmetrotract) +
+  tm_polygons(col = "pwh", style = "quantile", n=4)
+```
+
+Check out [this breakdown](https://geocompr.robinlovelace.net/adv-map.html#color-settings) of the available classification styles in **tmap**.  Play around with `style` and see if your descriptive findings of percent white in Sacramento changes.
+
+We can change the color scheme and tract borders using arguments within `tm_polygons()`. The argument `palette =` defines the color ranges associated with the bins and determined by the `style` arguments.  
+
+```{r warning = FALSE, message = FALSE}
+tm_shape(sacmetrotract) +
+  tm_polygons(col = "pwh", style = "quantile",palette = "Reds", 
+              border.alpha = 0, title = "Percent white") 
+```
+
+Also notice three additional arguments in the above code. `border.alpha` specifies the transparency of the polygon borders, which we set to 0 to indicate totally transparent. This was done because it is difficult to see the color variation in areas with small neighborhoods because of the gray tract borders, such as in downtown Sacramento. The argument `title` specifies the title of the legend. 
+
+We need to add other key elements to the map. Here is where we start adding layout functions using the `+` operator.  First, the scale bar, which you can add using the function `tm_scale_bar()`. Scale bars provide a visual indication of the size of features, and distance between features, on the map.
+
+```{r warning = FALSE, message = FALSE}
+tm_shape(sacmetrotract, unit = "mi") +
+  tm_polygons(col = "pwh", style = "quantile",palette = "Reds", 
+              border.alpha = 0, title = "Percent white") +
+  tm_scale_bar(breaks = c(0, 10, 20), text.size = 1, position = c("left", "bottom")) 
+```
+
+The argument `breaks` tells R the distances to break up and end the bar.  Make sure you use reasonable break points. Sacramento metro is not, for example, 500 miles wide, so you should not use `c(0,10,500)` (try it and see what happens. You won't like it). Note that the scale is in miles (were in America!).  The default is in kilometers (the rest of the world!), but you can specify the units within `tm_shape()` using the argument `unit`.  Here, we used `unit = "mi"`.  The `position =` argument locates the scale bar on the bottom left of the map.
+
+<br>
+
+We can add a title to the map by using the function `tm_layout()`. 
+
+```{r warning = FALSE, message = FALSE}
+tm_shape(sacmetrotract, unit = "mi") +
+  tm_polygons(col = "pwh", style = "quantile",palette = "Reds", 
+              border.alpha = 0, title = "Percent white") +
+  tm_scale_bar(breaks = c(0, 10, 20), text.size = 1, position = c("left", "bottom")) +
+  tm_layout(main.title = "Percent white in Sacramento Metropolitan Area Tracts",         main.title.size = 0.95, frame = FALSE)
+```
+
+We added a title using the argument `main.title`. We made sure the title fits inside the map using `main.title.size`. We eliminated the frame around the map using the argument `frame = FALSE`.
+
+So far we've created static maps. That is, maps that don't "move".  But, we're all likely used to Google or Bing maps - maps that we can move around and zoom into.  You can make interactive maps in R using the package **tmap**.  Here is another benefit of using **tmap** over **ggplot** - the latter does not provide interactivity.
+
+To make your **tmap** object interactive, use the function `tmap_mode()` and specify "view".
+
+```{r, warning = FALSE, message = FALSE}
+tmap_mode("view")
+```
+
+Now that the interactive mode has been ‘turned on’, all maps produced with `tm_shape()` will launch.
+
+```{r, warning = FALSE, message = FALSE}
+tm_shape(sacmetrotract, unit = "mi") +
+  tm_polygons(col = "pwh", style = "quantile",palette = "Reds", 
+              border.alpha = 0, title = "Percent white")
+```
+
+Zoom in and out to find out where percent white is high and low.  To switch back to plotting mode (static), type in 
+
+```{r}
+tmap_mode("plot")
+```
+
+
+Behind the scenes, the package [leaflet](https://rstudio.github.io/leaflet/) is used for generating the interactive map
+
+
+<div style="margin-bottom:25px;">
+</div>
+## **Writing data**
+\                
+
+Earlier you learned how to read in spatial data. We end today's lab by learning how to write spatial data.  The function is `st_write()`.
+
+Let's save the Sacramento metro tract **sf** object containing the number of trees located in each tract as a shapefile `.shp`.
+
+
+```{r warning = FALSE, message = FALSE, results= "hide"}
+st_write(sacmetrotract, "Sacramento_Tract_pwhite.shp", delete_layer = TRUE)
+```
+
+
+The `delete_layer = TRUE` argument tells R to overwrite the file *Sacramento_Tract_pwhite.shp* if it already exists in your current directory.  You should see the files associated with *Sacramento_Tract_pwhite* in your current working directory.
+
+<div style="margin-bottom:25px;">
+</div>
+## **sf vs. sp spatial objects**
+\
+
+The traditional way of handling spatial data in R is to use the **sp** package, **sf**'s evil twin sister (actually, no, but almost). **sp** has been around since 2005, and thus has a rich ecosystem of tools built on top of it. However, it uses a rather complex data structure, which can make it challenging to use.  **sf** is newer (first released in 2016) so it doesn’t have such a rich ecosystem. However, it’s much easier to use and fits in very naturally with the **tidyverse**.  
+
+The trend is gradually shifting towards the use of **sf** as the primary spatial package.  For this reason and because it adheres to tidy principles, I prefer **sf** over **sp**. But because it is relatively new, **sf** is not wholly compatible with all of R's spatial functions, particularly those that perform spatial data analysis, including calculating global measures of spatial correlation and raster analysis (although this is [changing](https://keen-swartz-3146c4.netlify.com/raster.html#raster)). In contrast, **sp** is compatible with most spatial functions. As such, we'll need to convert **sf** objects to **sp** objects in some cases.
+
+Use the `as()` function to convert *sacmetrotract* to an **sp** compatible object. 
+
+```{r warning=FALSE, message=FALSE}
+#this function to R to convert the sf object to an sp, using "Spatial" to designate sp
+sacmetrotract.sp <- as(sacmetrotract, "Spatial")
+```
+
+Then use the `class()` function on the **sp** object to see what kind of object we've just created.
+
+```{r warning=FALSE, message=FALSE}
+class(sacmetrotract.sp)
+```
+
+We find out that *sacmetrotract.sp* is a **SpatialPolygonsDataFrame** object.  
+
+You've completed your introduction to **sf**. Whew! Badge? Yes, please, you earned it!  Time to [celebrate](https://www.youtube.com/watch?v=3GwjfUFyY6M)!
+
+<center>
+![](/Users/noli/Documents/UCD/teaching/GEO 200CN/lab/geo200cn.github.io/sf.gif){ width=25% }
+
+</center>
+
+
+<div style="margin-bottom:25px;">
+</div>
+## **Resources**
+\
+
+This is not a **G**eographic **I**nformation **S**cience class, so we did not touch on the many tools that **sf** offers for manipulating and managing your spatial data.  The best references for **sf** and, more broadly, cleaning, managing and analyzing spatial data in R are [Geocomputation with R](https://geocompr.robinlovelace.net/) (GWR) and [Spatial Data Science](https://keen-swartz-3146c4.netlify.com/) (SDS).  The SDS book is not complete, but what is there is really good (albeit a bit more complex in terms of the coding). Both are freely available through the links provided.  
+
+For more on the **tmap** package, Luc Anselin offers this [tutorial](https://spatialanalysis.github.io/lab_tutorials/4_R_Mapping.html)
+
+For more on using `ggplot()` to map, check out [this](https://ryanpeek.org/2017-11-05-mapping-with-sf-Part-2/) and [this](https://www.r-spatial.org/r/2018/10/25/ggplot2-sf.html)
+
+
+***
+
+
+Website created and maintained by [Noli Brazil](https://nbrazil.faculty.ucdavis.edu/)
