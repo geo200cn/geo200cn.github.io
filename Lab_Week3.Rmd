@@ -10,9 +10,14 @@ output:
     toc_float: true
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
 
-
-
+```{r include=F}
+library(tidyverse)
+library(sp)
+```
 
 
 # Notes on the Hypothesis Test Assignment
@@ -27,8 +32,7 @@ The one sample hypothesis test actually covers material in the chapter on two sa
 
 The code for your F-Test should look something like this, but with the correct columns replacing the words "FAKE"
 
-
-```r
+```{r eval=F}
 var.test(
   x = HDB_in_sqft$FAKE,
   y = HDB_out_sqft$FAKE,
@@ -38,8 +42,7 @@ var.test(
 
 The last `t.test` should look something like this:
 
-
-```r
+```{r eval=F}
 t.test(
   x = HDB_in_sqft$FAKE,
   y = HDB_out_sqft$FAKE,

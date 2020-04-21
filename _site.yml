@@ -19,6 +19,10 @@ navbar:
           href: central.html
         - text: "Hypothesis Testing"
           href: hypothesis.html
+        - text: "Mapping in sf"
+          href: spatialsf.html
+        - text: "Point Pattern Analysis"
+          href: pointpatterns.html
     - text: "Lab Lectures"
       menu:
         - text: "Lab Lecture - 1"
@@ -27,6 +31,8 @@ navbar:
           href: Lab_Week2.html
         - text: "Lab Lecture - 3"
           href: Lab_Week3.html
+        - text: "Lab Lecture - 4"
+          href: Lab_Week4.html
     - text: "Other"
       menu:
         - text:

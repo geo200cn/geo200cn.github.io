@@ -12,7 +12,7 @@
 <meta name="author" content="Kenji Tomari" />
 
 
-<title>Lab Week 3</title>
+<title>Lab Week 4</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -430,73 +430,180 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Lab Week 3</h1>
+<h1 class="title toc-ignore">Lab Week 4</h1>
 <h3 class="subtitle">Spring 2020</h3>
 <h4 class="author">Kenji Tomari</h4>
 
 </div>
 
 
-<div id="notes-on-the-hypothesis-test-assignment" class="section level1">
-<h1>Notes on the Hypothesis Test Assignment</h1>
-<p>The one sample hypothesis test actually covers material in the chapter on two sample hypothesis test (Chapter 9). The reason for this is when you’re comparing pairs of observations, you’re not asking what the difference between two populations are, you’re asking if within the same population there is a change happening. If the number of populations is 1, then you use a one-sample hypothesis test</p>
-<hr />
-<div class="figure">
-<img src="ttest_output.png" alt="Figure. t.test() output." />
-<p class="caption">Figure. t.test() output.</p>
+<div id="part-1---sf" class="section level1">
+<h1>Part 1 - {sf}</h1>
+<p>This section summarizes <a href="https://geo200cn.github.io/spatialsf.html">Mapping using the sf package</a>, focusing on the code necessary to complete Assignment 4.</p>
+<pre class="r"><code>library(tidyverse)
+library(sf)
+library(tmap)</code></pre>
+<div id="a.-read-data-data-exploration" class="section level2">
+<h2>a. read data (&amp; data exploration)</h2>
+<pre class="r"><code># spatial data
+smt &lt;- st_read(&quot;sacmetrotract.shp&quot;)</code></pre>
+<pre><code>## Reading layer `sacmetrotract&#39; from data source `/Users/noli/Documents/UCD/teaching/GEO 200CN/lab/geo200cn.github.io/sacmetrotract.shp&#39; using driver `ESRI Shapefile&#39;
+## Simple feature collection with 486 features and 4 fields
+## geometry type:  POLYGON
+## dimension:      XY
+## bbox:           xmin: 550115.8 ymin: 4208551 xmax: 770923.3 ymax: 4356172
+## epsg (SRID):    NA
+## proj4string:    +proj=utm +zone=10 +ellps=GRS80 +units=m +no_defs</code></pre>
+<pre class="r"><code># non-spatial data
+smtw &lt;- read_csv(&quot;sacmetrotractwhite.csv&quot;)</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   GEOID = col_character(),
+##   nhwhite = col_double(),
+##   tpopr = col_double()
+## )</code></pre>
+<pre class="r"><code># Just look at non-spatial data from this spatial data set.
+smt %&gt;%
+  # this will remove the geometry/spatial data (NOTE: I do not save this.)
+  st_set_geometry(NULL) %&gt;%
+  head()</code></pre>
+<pre><code>##         GEOID               tract           county      state
+## 1 06017030200    Census Tract 302 El Dorado County California
+## 2 06017030301 Census Tract 303.01 El Dorado County California
+## 3 06017030302 Census Tract 303.02 El Dorado County California
+## 4 06017030401 Census Tract 304.01 El Dorado County California
+## 5 06017030402 Census Tract 304.02 El Dorado County California
+## 6 06017030502 Census Tract 305.02 El Dorado County California</code></pre>
+<pre class="r"><code># Just look at non-spatial data from this spatial data set.
+smt %&gt;%
+  # this will remove the geometry/spatial data (NOTE: I do not save this.)
+  st_set_geometry(NULL) %&gt;%
+  str()</code></pre>
+<pre><code>## &#39;data.frame&#39;:    486 obs. of  4 variables:
+##  $ GEOID : Factor w/ 486 levels &quot;06017030200&quot;,..: 1 2 3 4 5 6 7 8 9 10 ...
+##  $ tract : Factor w/ 485 levels &quot;Census Tract 1&quot;,..: 149 150 151 152 153 154 155 156 157 158 ...
+##  $ county: Factor w/ 4 levels &quot;El Dorado County&quot;,..: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ state : Factor w/ 1 level &quot;California&quot;: 1 1 1 1 1 1 1 1 1 1 ...</code></pre>
+<pre class="r"><code>head(smtw)</code></pre>
+<pre><code>## # A tibble: 6 x 3
+##   GEOID       nhwhite tpopr
+##   &lt;chr&gt;         &lt;dbl&gt; &lt;dbl&gt;
+## 1 06017030200    2874  5299
+## 2 06017030301    1731  2874
+## 3 06017030302    2085  2718
+## 4 06017030401    3210  3710
+## 5 06017030402    2671  3972
+## 6 06017030502    2356  2638</code></pre>
 </div>
-<hr />
-<p>The code for your F-Test should look something like this, but with the correct columns replacing the words “FAKE”</p>
-<pre class="r"><code>var.test(
-  x = HDB_in_sqft$FAKE,
-  y = HDB_out_sqft$FAKE,
-  alternative = &quot;two.sided&quot;
-)</code></pre>
-<p>The last <code>t.test</code> should look something like this:</p>
-<pre class="r"><code>t.test(
-  x = HDB_in_sqft$FAKE,
-  y = HDB_out_sqft$FAKE,
-  paired = F,
-  alternative = &quot;two.sided&quot;,
-  var.equal = TRUEORFALSE
-)</code></pre>
-<p>Just replace TRUEORFALSE with the correct <code>TRUE</code> or <code>FALSE</code> value.</p>
-<hr />
-<p>One last note, when reading the output of prob-values, the following are the same:</p>
-<ul>
-<li><p>1.32e-04</p></li>
-<li><p>1.32×10−4</p></li>
-<li><p>0.000132</p></li>
-</ul>
+<div id="b.-mergejoin" class="section level2">
+<h2>b. merge/join</h2>
+<pre class="r"><code># a &quot;merge&quot; or &quot;join&quot; of the two data sets.
+# make sure you select the right &quot;by&quot; value... ie the common column in both
+# data.frames.
+smt &lt;- smt %&gt;%
+  left_join(smtw, by = &quot;GEOID&quot;)</code></pre>
+<pre><code>## Warning: Column `GEOID` joining factor and character vector, coercing into
+## character vector</code></pre>
+<p>Why the warning message? Because GEOID is considered a factor in the <code>smt</code> df, but not in <code>smtw</code>.</p>
 </div>
-<div id="shape-files" class="section level1">
-<h1>Shape Files</h1>
-<p>A note about Shape files: they are always more than one actual file. You’ll find a <code>.shp</code> file, but also <code>.shx</code> and others. The “galap” data for the assignment is actually composed of 4 files. Each file includes important information necessary to use the spatial data, so make sure they’re all together in the same directory when you load a shape file. Shape files are the industry standard, largely as a legacy of the monopoly ArcGIS/ESRI have on GIS. However, there is an increasing push to use open source spatial data files known as “geopackage” with the extension <code>.gpkg</code>. (For the nerds, geopackages are actually just a form of an SQL database.) Unlike Shape files, geopackage files are designed to store multiple different datasets. In both Shapefiles and geopackages, they only store vector data.</p>
+<div id="c.-creating-a-variable" class="section level2">
+<h2>c. creating a variable</h2>
+<p>Let’s create percent non-hispanic white as a column</p>
+<pre class="r"><code>smt &lt;- smt %&gt;%
+  mutate(pwh = nhwhite/tpopr)</code></pre>
 </div>
-<div id="supplemental-notes-on-rspatial-readings" class="section level1">
-<h1>Supplemental Notes on rspatial Readings</h1>
-<div id="chapter-3-sp-objects" class="section level2">
-<h2>Chapter 3: <code>{sp}</code> objects</h2>
-<p>In <a href="https://rspatial.org/raster/spatial/3-vectordata.html">chapter 3</a>, Professor Hijmans goes into some detail about “classes” in R. This is really an advanced topic. Don’t worry if you don’t completely understand it. What’s important is that <code>{sp}</code> data is often stored in these complicated R Objects that behave a lot like <code>list</code> objects. These <code>list</code>-like objects sometimes have a data.frame attached, which would include non-spatial data like rainfall.</p>
-<p>Professor Hijmans also creates spatial data objects from scratch. Will you ever actually have to do this? Maybe. For this course? Not a ton. Particularly when it comes to creating your own <code>SpatialLines</code> and <code>SpatialPolygons</code>, you can skim it. This material will always be available if you ever need to come back to it after all. What is important, is that conceptually these lines and polygons are fundamentally made from connecting a series of points (i.e. coordinates).</p>
+<div id="d.-5-quantile-choropleth-map" class="section level2">
+<h2>d. 5-quantile choropleth map</h2>
+<p>You can use a number of packages to map things in R. Here Noli has us use <code>{tmap}</code>. Read more <a href="https://www.rdocumentation.org/packages/tmap">here</a>. Also, they provide this bit on <a href="https://www.rdocumentation.org/packages/tmap/versions/3.0/vignettes/tmap-getstarted.Rmd">getting started</a>.</p>
+<pre class="r"><code># tmap
+tm_shape(smt) +
+  tm_polygons(col = &quot;pwh&quot;, style = &quot;quantile&quot;, n=5)</code></pre>
+<p><img src="Lab_Week4_files/figure-html/unnamed-chunk-9-1.png" /><!-- --></p>
+<p>FYI:</p>
+<blockquote>
+<p>The “quantile” style provides quantile breaks. <a href="https://www.rdocumentation.org/packages/classInt/versions/0.1-7/topics/classIntervals">Read More.</a></p>
+</blockquote>
+<pre class="r"><code># ggplot2
+smt %&gt;%
+  # create new column for intervals
+  mutate(cuts = cut_number(pwh, n=5)) %&gt;%
+  # make plot
+  ggplot(data = .) +
+  # add spatial geometry, with fill by new &quot;cuts&quot; column
+  # make borders grey with size = 0.1
+  geom_sf(mapping = aes(fill = cuts), color = &quot;grey&quot;, size = 0.1) +
+  # fill colors using the &quot;color brewer&quot;
+  # set NA value to charcoal color.
+  # add title for legend
+  scale_fill_brewer(type=&quot;seq&quot;,
+                    palette = &quot;YlOrBr&quot;,
+                    na.value = &#39;#333333&#39;,
+                    guide = guide_legend(title = &quot;percent white&quot;)) +
+  # add title
+  labs(title = &quot;5-Quantile Map&quot;) +
+  # set background to black and white
+  theme_bw()</code></pre>
+<p><img src="Lab_Week4_files/figure-html/unnamed-chunk-10-1.png" /><!-- --></p>
 </div>
-<div id="chapter-5-readingwriting-vector-files." class="section level2">
-<h2>Chapter 5: Reading/Writing Vector Files.</h2>
-<p>In <a href="https://rspatial.org/raster/spatial/5-files.html">chapter 5</a>, Professor Hijmans suggests using a function from the <code>{raster}</code> package to read <code>.shp</code> files into R. However, I recommend <code>readOGR</code> from <code>{rgdal}</code>. Mainly because you don’t need to use any functions from <code>{raster}</code> if you’re just working with “vector” data (including, points, lines and polygons, but not satellite photos). For instance, the code <code>rgdal::readOGR(&quot;galap.shp&quot;)</code> will load your spatial data into R for Assignment 3. (Similarly, to write <code>{sp}</code> files, I recommend <code>writeOGR</code>.)</p>
-<p>Remember to skip the stuff on Raster for now.</p>
+<div id="e-1.-10-quantile-map" class="section level2">
+<h2>e-1. 10 Quantile Map</h2>
+<p>FYI, the fine folks at colorbrewer strongly advise against more than 9 colors for choropleth maps. Check them out <a href="https://colorbrewer2.org/">here</a>.</p>
+<pre class="r"><code># tmap
+tm_shape(smt) +
+  tm_polygons(col = &quot;pwh&quot;, style = &quot;quantile&quot;, n=10)</code></pre>
+<p><img src="Lab_Week4_files/figure-html/unnamed-chunk-11-1.png" /><!-- --></p>
+<pre class="r"><code># ggplot2
+smt %&gt;%
+  mutate(cuts = cut_number(pwh, n=10)) %&gt;%
+  ggplot(data = .) +
+  geom_sf(mapping = aes(fill = cuts), color = &quot;grey&quot;, size = 0.1) +
+  scale_fill_manual(
+    # fill colors
+    values =
+      c(&#39;#ffffe5&#39;,
+        &#39;#fff7bc&#39;,
+        &#39;#fee391&#39;,
+        &#39;#fec44f&#39;,
+        &#39;#fe9929&#39;,
+        &#39;#ec7014&#39;,
+        &#39;#cc4c02&#39;,
+        &#39;#993404&#39;,
+        &#39;#662506&#39;,
+        &#39;#481a04&#39;),
+    na.value = &#39;#333333&#39;,
+    guide = guide_legend(title = &quot;percent white&quot;)
+  ) +
+  labs(title = &quot;Decile Map&quot;) +
+  theme_bw()</code></pre>
+<p><img src="Lab_Week4_files/figure-html/unnamed-chunk-12-1.png" /><!-- --></p>
 </div>
-<div id="chapter-6-coordinate-reference-systems" class="section level2">
-<h2>Chapter 6: Coordinate Reference Systems</h2>
-<p>The reading in <a href="https://rspatial.org/raster/spatial/6-crs.html">rspatial</a> may be a little opaque in its description of the CRS. For the sake of this course, all we expect for you to know is that the CRS information attached (or omitted) from each piece of spatial data contains instructions for your GIS (whether its R, ArcGIS, QGIS, etc) to correctly place the spatial geometries. In order to do this, your GIS takes the instructions in the CRS information attached to your spatial data file, and then calculates both the 3D model of the planet, and how that 3D image should be presented on your 2D computer screen or printed map. A lot of math is involved in constructing a CRS (both in terms of <a href="https://en.wikipedia.org/wiki/Geodesy">Geodesy</a> and <a href="https://en.wikipedia.org/wiki/Map_projection">Cartography</a>).</p>
-<p>It’s rare that you’ll actually need to mess around with a CRS. Sometimes people will send you spatial data with a missing or incomplete CRS. Often if it is entirely missing, the presumed CRS is some standard mercator coordinate system. (For instance, EPSG 3857. When you go to Google maps, right click somewhere, and click on “What’s here?,” the coordinates that it presents are in EPSG 3857.) It is not uncommon to have two different spatial data sets that you need to use together (say the borders of a state and spatial data you collected), but have a different CRS. It’s pretty trivial now to “transform” one to match the other in R or any other GIS.</p>
-<p><em>Supplemental</em></p>
-<ul>
-<li>A thorough guide on CRS from <a href="https://docs.qgis.org/3.10/en/docs/gentle_gis_introduction/coordinate_reference_systems.html">QGIS</a></li>
-</ul>
-</div>
-<div id="chapter-7-vector-data-manipulation" class="section level2">
-<h2>Chapter 7: Vector Data Manipulation</h2>
-<p>Just a reminder, a variable in Data Science is different from a variable in programming. In this chapter, when Professor Hijmans writes about variables, he is talking about variables in the former sense (i.e. columns in a table).</p>
+<div id="e-2.-5-equal-interval-map" class="section level2">
+<h2>e-2. 5 Equal Interval Map</h2>
+<blockquote>
+<p>The “equal” style divides the range of the variable into n parts. <a href="https://www.rdocumentation.org/packages/classInt/versions/0.1-7/topics/classIntervals">Read More.</a></p>
+</blockquote>
+<pre class="r"><code># tmap
+tm_shape(smt) +
+  tm_polygons(col = &quot;pwh&quot;, style = &quot;equal&quot;, n=5)</code></pre>
+<p><img src="Lab_Week4_files/figure-html/unnamed-chunk-13-1.png" /><!-- --></p>
+<p>Before, we used <code>cut_number</code>, but now we’ll use <code>cut_interval</code>.</p>
+<pre class="r"><code># ggplot2
+smt %&gt;%
+  mutate(cuts = cut_interval(pwh, n=5)) %&gt;%
+  # make a plot
+  ggplot(data = .) +
+  # make geometry/polygons
+  geom_sf(mapping = aes(fill = cuts), color = &quot;grey&quot;, size = 0.1) +
+  # fill colors
+  scale_fill_brewer(type=&quot;seq&quot;,
+                    palette = &quot;YlOrBr&quot;,
+                    na.value = &#39;#333333&#39;,
+                    guide = guide_legend(title = &quot;percent white&quot;)) +
+  # title
+  labs(title = &quot;5 Equal Interval Map&quot;) +
+  # make background black and white.
+  theme_bw()</code></pre>
+<p><img src="Lab_Week4_files/figure-html/unnamed-chunk-14-1.png" /><!-- --></p>
 </div>
 </div>
 

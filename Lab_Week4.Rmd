@@ -1,0 +1,187 @@
+---
+title: "Lab Week 4"
+author: "Kenji Tomari"
+subtitle: "Spring 2020"
+output: 
+  html_document:
+    theme: readable
+    toc: true
+    toc_depth: 3
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Part 1 - {sf}
+
+This section summarizes [Mapping using the sf package](https://geo200cn.github.io/spatialsf.html), focusing on the code necessary to complete Assignment 4.
+
+```{r message = F, warning = F, error = F}
+library(tidyverse)
+library(sf)
+library(tmap)
+```
+
+## a. read data (& data exploration)
+
+```{r}
+# spatial data
+smt <- st_read("sacmetrotract.shp")
+```
+
+```{r}
+# non-spatial data
+smtw <- read_csv("sacmetrotractwhite.csv")
+```
+
+
+```{r}
+# Just look at non-spatial data from this spatial data set.
+smt %>%
+  # this will remove the geometry/spatial data (NOTE: I do not save this.)
+  st_set_geometry(NULL) %>%
+  head()
+```
+
+```{r}
+# Just look at non-spatial data from this spatial data set.
+smt %>%
+  # this will remove the geometry/spatial data (NOTE: I do not save this.)
+  st_set_geometry(NULL) %>%
+  str()
+```
+
+```{r}
+head(smtw)
+```
+
+## b. merge/join
+
+```{r}
+# a "merge" or "join" of the two data sets.
+# make sure you select the right "by" value... ie the common column in both
+# data.frames.
+smt <- smt %>%
+  left_join(smtw, by = "GEOID")
+```
+
+Why the warning message? Because GEOID is considered a factor in the `smt` df, but not in `smtw`.
+
+## c. creating a variable
+
+Let's create percent non-hispanic white as a column
+
+```{r}
+smt <- smt %>%
+  mutate(pwh = nhwhite/tpopr)
+```
+
+## d. 5-quantile choropleth map
+
+You can use a number of packages to map things in R. Here Noli has us use `{tmap}`. Read more [here](https://www.rdocumentation.org/packages/tmap). Also, they provide this bit on [getting started](https://www.rdocumentation.org/packages/tmap/versions/3.0/vignettes/tmap-getstarted.Rmd).
+
+```{r}
+# tmap
+tm_shape(smt) +
+  tm_polygons(col = "pwh", style = "quantile", n=5)
+```
+
+FYI:
+
+> The "quantile" style provides quantile breaks. [Read More.](https://www.rdocumentation.org/packages/classInt/versions/0.1-7/topics/classIntervals)
+
+```{r}
+# ggplot2
+smt %>%
+  # create new column for intervals
+  mutate(cuts = cut_number(pwh, n=5)) %>%
+  # make plot
+  ggplot(data = .) +
+  # add spatial geometry, with fill by new "cuts" column
+  # make borders grey with size = 0.1
+  geom_sf(mapping = aes(fill = cuts), color = "grey", size = 0.1) +
+  # fill colors using the "color brewer"
+  # set NA value to charcoal color.
+  # add title for legend
+  scale_fill_brewer(type="seq",
+                    palette = "YlOrBr",
+                    na.value = '#333333',
+                    guide = guide_legend(title = "percent white")) +
+  # add title
+  labs(title = "5-Quantile Map") +
+  # set background to black and white
+  theme_bw()
+```
+
+## e-1. 10 Quantile Map
+
+FYI, the fine folks at colorbrewer strongly advise against more than 9 colors for choropleth maps. Check them out [here](https://colorbrewer2.org/).
+
+```{r}
+# tmap
+tm_shape(smt) +
+  tm_polygons(col = "pwh", style = "quantile", n=10)
+```
+
+
+```{r}
+# ggplot2
+smt %>%
+  mutate(cuts = cut_number(pwh, n=10)) %>%
+  ggplot(data = .) +
+  geom_sf(mapping = aes(fill = cuts), color = "grey", size = 0.1) +
+  scale_fill_manual(
+    # fill colors
+    values =
+      c('#ffffe5',
+        '#fff7bc',
+        '#fee391',
+        '#fec44f',
+        '#fe9929',
+        '#ec7014',
+        '#cc4c02',
+        '#993404',
+        '#662506',
+        '#481a04'),
+    na.value = '#333333',
+    guide = guide_legend(title = "percent white")
+  ) +
+  labs(title = "Decile Map") +
+  theme_bw()
+```
+
+
+## e-2. 5 Equal Interval Map
+
+> The "equal" style divides the range of the variable into n parts. [Read More.](https://www.rdocumentation.org/packages/classInt/versions/0.1-7/topics/classIntervals)
+
+```{r}
+# tmap
+tm_shape(smt) +
+  tm_polygons(col = "pwh", style = "equal", n=5)
+```
+
+Before, we used `cut_number`, but now we'll use `cut_interval`.
+
+```{r}
+# ggplot2
+smt %>%
+  mutate(cuts = cut_interval(pwh, n=5)) %>%
+  # make a plot
+  ggplot(data = .) +
+  # make geometry/polygons
+  geom_sf(mapping = aes(fill = cuts), color = "grey", size = 0.1) +
+  # fill colors
+  scale_fill_brewer(type="seq",
+                    palette = "YlOrBr",
+                    na.value = '#333333',
+                    guide = guide_legend(title = "percent white")) +
+  # title
+  labs(title = "5 Equal Interval Map") +
+  # make background black and white.
+  theme_bw()
+```
+
+
