@@ -499,14 +499,14 @@ h2.title {
 <h2><strong>Installing and loading packages</strong></h2>
 <p><br />
 We’ll be using a couple of new packages in this lab. First, you’ll need to install them. The following code checks if you’ve already installed these packages before. If you haven’t, it will install them.</p>
-<pre class="r"><code>if (!require(&quot;rspatial&quot;)) devtools::install_github(&#39;rspatial/rspatial&#39;)
-if (!require(&quot;spatstat&quot;)) install.packages(&quot;spatstat&quot;)
-if (!require(&quot;maptools&quot;)) install.packages(&quot;maptools&quot;)</code></pre>
+<pre class="r"><code>if (!require(&quot;spatstat&quot;)) install.packages(&quot;spatstat&quot;)
+if (!require(&quot;maptools&quot;)) install.packages(&quot;maptools&quot;)
+if (!require(&quot;rgdal&quot;)) install.packages(&quot;rgdal&quot;)</code></pre>
 <p>Next, load these and other required packages for this lab using the function <code>library()</code></p>
 <pre class="r"><code>library(sf)
+library(rgdal)
 library(maptools)
 library(spatstat)
-library(rspatial)
 library(tidyverse)</code></pre>
 <div style="margin-bottom:25px;">
 
@@ -531,14 +531,22 @@ Point data give us the locations of objects or events within an area. Objects ca
 <div id="bringing-in-the-data" class="section level2">
 <h2><strong>Bringing in the data</strong></h2>
 <p><br />
-We are using a dataset of crimes in a city. These data come directly from the <strong>rspatial</strong> package. Bring in crime data and a shapefile of our city using the following code</p>
-<pre class="r"><code>city &lt;- sp_data(&quot;city&quot;)
-crime &lt;- sp_data(&quot;crime.rds&quot;)</code></pre>
+I zipped up and uploaded onto GitHub a folder containing files for this lab. Set your working directory to an appropriate folder and use the following code to download and unzip the file.</p>
+<pre class="r"><code>#insert the pathway to the folder you want your data stored into
+setwd(&quot;insert your pathway here&quot;)
+#downloads file into your working directory 
+download.file(url = &quot;https://raw.githubusercontent.com/geo200cn/data/master/assignment4_data.zip&quot;, destfile = &quot;assignment4_data.zip&quot;)
+#unzips the zipped file
+unzip(zipfile = &quot;assignment4_data.zip&quot;)</code></pre>
+<p>The data are also located on Canvas in the Labs and Assignments Week 4 folder.</p>
+<p>We are using a dataset of crimes in a city. Bring in crime data and a shapefile of our city using the following code</p>
+<pre class="r"><code>city &lt;- readOGR(&quot;assignment4_city.shp&quot;)
+crime &lt;- readOGR(&quot;assignment4_crime.shp&quot;)</code></pre>
 <p><em>city</em> is an <strong>sp</strong> spatial polygon object containing the boundaries of a city. <em>crime</em> is an <strong>sp</strong> spatial points object containing crimes in the city. To see what we got, plot it</p>
 <pre class="r"><code>par(mai=c(0,0,0,0))
 plot(city, col=&#39;light blue&#39;)
 points(crime, col=&#39;red&#39;, cex=.5, pch=&#39;+&#39;)</code></pre>
-<p><img src="pointpatterns_files/figure-html/unnamed-chunk-4-1.png" /><!-- --></p>
+<p><img src="pointpatterns_files/figure-html/unnamed-chunk-6-1.png" /><!-- --></p>
 <p>Does this city look familiar to you?</p>
 <p>All point pattern analysis tools used in this tutorial are available in the <strong>spatstat</strong> package. These tools are designed to work with points stored as <em>ppp</em> objects and not <em>SpatialPointsDataFrame</em> or <em>sf</em> objects. So, yes, another spatial object to learn about. We won’t go through the nuts and bolts of how <strong>ppp</strong> objects work. We’ll cover what is only necessary for running our analyses.</p>
 <p>We need to convert our <strong>sp</strong> <em>crime</em> points object into a <em>ppp</em> object. Use the <code>as()</code> function</p>
@@ -554,27 +562,38 @@ points(crime, col=&#39;red&#39;, cex=.5, pch=&#39;+&#39;)</code></pre>
 ## Mark variables: CATEGORY, CASEN, ODT1, OFFDESC1, OFFDESC2, OFFDESC3, OFFDESC4, 
 ## OFFDESC5, OFFDESC6
 ## Summary:
-##    CATEGORY             CASEN              ODT1             OFFDESC1        
-##  Length:2661        Min.   :11101199   Length:2661        Length:2661       
-##  Class :character   1st Qu.:11102435   Class :character   Class :character  
-##  Mode  :character   Median :11103645   Mode  :character   Mode  :character  
-##                     Mean   :11125352                                        
-##                     3rd Qu.:11104804                                        
-##                     Max.   :11201168                                        
-##    OFFDESC2           OFFDESC3           OFFDESC4           OFFDESC5        
-##  Length:2661        Length:2661        Length:2661        Length:2661       
-##  Class :character   Class :character   Class :character   Class :character  
-##  Mode  :character   Mode  :character   Mode  :character   Mode  :character  
-##                                                                             
-##                                                                             
-##                                                                             
-##    OFFDESC6        
-##  Length:2661       
-##  Class :character  
-##  Mode  :character  
-##                    
-##                    
-##                    
+##                  CATEGORY       CASEN                  ODT1     
+##  Petty Theft         :665   Min.   :11101199   2011/04/16:  51  
+##  Vandalism           :355   1st Qu.:11102435   2011/05/14:  21  
+##  Drunk in Public     :232   Median :11103645   2011/10/30:  19  
+##  Vehicle Burglary    :221   Mean   :11125352   2011/04/04:  18  
+##  Residential Burglary:219   3rd Qu.:11104804   2011/07/13:  18  
+##  DUI                 :212   Max.   :11201168   2011/09/03:  16  
+##  (Other)             :757                      (Other)   :2518  
+##                      OFFDESC1                        OFFDESC2   
+##  Petty Theft             : 560   Dui Alcohol/0.08 Percent: 181  
+##  Burglary (Vehicle)      : 241   Petty Theft             :  80  
+##  Disord Conduct:alcohol  : 223   Disord Conduct:alcohol  :  44  
+##  Burglary (Residential)  : 215   RESIST/OBSTRUCT OFFICER :  36  
+##  Dui Alcohol/Drugs       : 196   Battery On Person       :  25  
+##  Vandalism; Under $400.00: 160   (Other)                 : 429  
+##  (Other)                 :1066   NA&#39;s                    :1866  
+##                           OFFDESC3                                OFFDESC4   
+##  Under 21, .05 BAC            :  24   VEHICLE TOW - DRIVER ARRESTED   :  13  
+##  RESIST/OBSTRUCT OFFICER      :  19   Unauthorized use; Identity Theft:   5  
+##  VEHICLE TOW - DRIVER ARRESTED:  14   Battery with GBI                :   4  
+##  Disord Conduct:alcohol       :  10   MINOR POSSESS TOBACCO           :   4  
+##  Suspended license DUI        :  10   Poss Controlled Substance       :   4  
+##  (Other)                      : 210   (Other)                         :  90  
+##  NA&#39;s                         :2374   NA&#39;s                            :2541  
+##                           OFFDESC5                             OFFDESC6   
+##  Poss Marij Und 28.5 Grams    :   5   Conspiracy:commit Crime      :   4  
+##  VEHICLE TOW - DRIVER ARRESTED:   5   Damage Prop:vio Civl Rght    :   4  
+##  Obstruct/Resist Exec Off     :   4   VEHICLE TOW - DRIVER ARRESTED:   4  
+##  Transp/Sell Narc/Cntl Sub    :   4   RESIST/OBSTRUCT OFFICER      :   3  
+##  Transp/Etc Cntl Sub          :   3   Violation Of Parole:fel      :   3  
+##  (Other)                      :  30   (Other)                      :   5  
+##  NA&#39;s                         :2610   NA&#39;s                         :2638  
 ## 
 ## Window: rectangle = [6620751, 6653993] x [1957331.9, 1971237.4] units
 ##                     (33240 x 13910 units)
@@ -640,13 +659,13 @@ A basic yet descriptively useful visualization of point density is to create a g
 <p>The object <em>qcounts1</em> stores the number of points inside each quadrat. You can plot the quadrats along with the counts as follows:</p>
 <pre class="r"><code>plot(crime.ppp, pch=20, cols=&quot;grey70&quot;, main=NULL)  # Plot points
 plot(qcounts1, add=TRUE)  # Add quadrat grid</code></pre>
-<p><img src="pointpatterns_files/figure-html/unnamed-chunk-15-1.png" /><!-- --></p>
+<p><img src="pointpatterns_files/figure-html/unnamed-chunk-17-1.png" /><!-- --></p>
 <p>Wow, 582 crimes in that one bottom cell. That place must be <em>really</em> dangerous. Three-by-six might be too small. Let’s instead make a 15 by 30 grid.</p>
 <pre class="r"><code>qcounts2 &lt;- quadratcount(crime.ppp, nx= 30, ny=15)</code></pre>
 <p>then plot</p>
 <pre class="r"><code>plot(crime.ppp, pch=20, cols=&quot;grey70&quot;, main=NULL)  # Plot points
 plot(qcounts2, add=TRUE)  # Add quadrat grid. </code></pre>
-<p><img src="pointpatterns_files/figure-html/unnamed-chunk-17-1.png" /><!-- --></p>
+<p><img src="pointpatterns_files/figure-html/unnamed-chunk-19-1.png" /><!-- --></p>
 <p>In real life one should always try a range of row and column sizes to get a sense of how sensitive the results are.</p>
 <p>We’ll need to convert the resulting <em>qcounts2</em> object into a data frame to calculate the variance-mean ratio (VMR) described on page 130 in OSU.</p>
 <pre class="r"><code>Qcount&lt;-data.frame(qcounts2)</code></pre>
@@ -692,17 +711,17 @@ The kernel density approach is an extension of the quadrat method: Like the quad
 <pre class="r"><code>ds &lt;- density.ppp(crime.ppp)
 par(mai=c(0,0,0.5,0.5))
 plot(ds, main=&#39;crime density&#39;)</code></pre>
-<p><img src="pointpatterns_files/figure-html/unnamed-chunk-21-1.png" /><!-- --></p>
+<p><img src="pointpatterns_files/figure-html/unnamed-chunk-23-1.png" /><!-- --></p>
 <p>We can alter the bandwidth using the <code>sigma =</code> argument. A really large <code>sigma</code> makes the map too smooth</p>
 <pre class="r"><code>ds &lt;- density.ppp(crime.ppp, sigma = 10000)
 par(mai=c(0,0,0.5,0.5))
 plot(ds, main=&#39;crime density&#39;)</code></pre>
-<p><img src="pointpatterns_files/figure-html/unnamed-chunk-22-1.png" /><!-- --></p>
+<p><img src="pointpatterns_files/figure-html/unnamed-chunk-24-1.png" /><!-- --></p>
 <p>A small <code>sigma</code> creates a map that captures really localized clusters</p>
 <pre class="r"><code>ds &lt;- density.ppp(crime.ppp, sigma = 1000)
 par(mai=c(0,0,0.5,0.5))
 plot(ds, main=&#39;crime density&#39;)</code></pre>
-<p><img src="pointpatterns_files/figure-html/unnamed-chunk-23-1.png" /><!-- --></p>
+<p><img src="pointpatterns_files/figure-html/unnamed-chunk-25-1.png" /><!-- --></p>
 You can also change the kernel function by specifying <code>kernel =</code> to one of four options “gaussian” (the default), “epanechnikov”, “quartic” or “disc”.
 <div style="margin-bottom:25px;">
 
@@ -763,14 +782,14 @@ The F, G, K and L functions are discussed on pages 145-148. Our new friend <stro
 <p>Then plot it like on page 146 in OSU.</p>
 <pre class="r"><code>par(mfrow=c(1,1))
 plot(K)</code></pre>
-<p><img src="pointpatterns_files/figure-html/unnamed-chunk-29-1.png" /><!-- --></p>
+<p><img src="pointpatterns_files/figure-html/unnamed-chunk-31-1.png" /><!-- --></p>
 <p>The plot returns different estimates of K depending on the edge correction chosen. By default, the isotropic, translate and border corrections are implemented. Edge corrections are discussed on pages 137-139 in OSU.</p>
 <p>Unsurprisingly, to calculate the G, F and L functions, use the functions <code>Gest()</code>, <code>Fest()</code>, and <code>Lest()</code>, respectively, which take on the same form as <code>Kest()</code>.</p>
 <p>OSU discusses calculating envelopes around the functions to examine whether the observed functions are simply due to chance. Use the <code>envelope()</code> function to create the envelopes. Here, we use 49 Monte Carlo simulations. This might take some time, so kick back a bit, and grab a cool be…, errr, i mean a glass of organic non-GMO electrolyte coconut water (no offense if you like this, it’s all good).</p>
 <pre class="r"><code>#takes awhile
 envK &lt;- envelope(crime.ppp, fun = Kest, nsim = 49)
 plot(envK)</code></pre>
-<p><img src="pointpatterns_files/figure-html/unnamed-chunk-30-1.png" /><!-- --></p>
+<p><img src="pointpatterns_files/figure-html/unnamed-chunk-32-1.png" /><!-- --></p>
 <p>It’s hard to see, but R is plotting the envelopes. They are just really narrow. Replace <code>Kest</code> with <code>Gest</code>, <code>Fest</code>, and <code>Lest</code> to get envelopes for the other alphabet functions.</p>
 <p><br></p>
 <p class="comment" , style="font-style:normal">
@@ -796,7 +815,7 @@ Window(crime2.ppp) &lt;- cityOwin</code></pre>
 <pre class="r"><code>spp &lt;- split.ppp(crime2.ppp)</code></pre>
 <p>We can plot arsons</p>
 <pre class="r"><code>plot(spp$Arson, main = &quot;Arsons&quot;)</code></pre>
-<p><img src="pointpatterns_files/figure-html/unnamed-chunk-34-1.png" /><!-- --></p>
+<p><img src="pointpatterns_files/figure-html/unnamed-chunk-36-1.png" /><!-- --></p>
 <p><br></p>
 <p class="comment" , style="font-style:normal">
 <strong>Bonus Question</strong>: Using the <em>spp</em> object we created, use one first order and one second order method to compare the clustering of crime across the following types: Residential Burglary, Auto Theft, Drunk in Public, and Assaults. Summarize your results.

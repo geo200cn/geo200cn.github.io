@@ -71,18 +71,18 @@ To help us accomplish these learning objectives, we will be examining crime in a
 We'll be using a couple of new packages in this lab.  First, you'll need to install them.  The following code checks if you've already installed these packages before.  If you haven't, it will install them.
 
 ```{r}
-if (!require("rspatial")) devtools::install_github('rspatial/rspatial')
 if (!require("spatstat")) install.packages("spatstat")
 if (!require("maptools")) install.packages("maptools")
+if (!require("rgdal")) install.packages("rgdal")
 ```
 
 Next, load these and other required packages for this lab using the function `library()`
 
 ```{r}
 library(sf)
+library(rgdal)
 library(maptools)
 library(spatstat)
-library(rspatial)
 library(tidyverse)
 ```
 
@@ -110,11 +110,30 @@ Our research questions in this lab are: Does crime cluster in a nondescript Amer
 ## **Bringing in the data**
 \
 
-We are using a dataset of crimes in a city. These data come directly from the **rspatial** package.  Bring in crime data and a shapefile of our city using the following code
+I zipped up and uploaded onto GitHub a folder containing files for this lab.  Set your working directory to an appropriate folder and use the following code to download and unzip the file.
 
-```{r}
-city <- sp_data("city")
-crime <- sp_data("crime.rds")
+```{r warning = FALSE, message = FALSE, eval = FALSE}
+#insert the pathway to the folder you want your data stored into
+setwd("insert your pathway here")
+#downloads file into your working directory 
+download.file(url = "https://raw.githubusercontent.com/geo200cn/data/master/assignment4_data.zip", destfile = "assignment4_data.zip")
+#unzips the zipped file
+unzip(zipfile = "assignment4_data.zip")
+```
+
+```{r warning = FALSE, message = FALSE, echo=FALSE}
+download.file(url = "https://raw.githubusercontent.com/geo200cn/data/master/assignment4_data.zip", destfile = "assignment4_data.zip")
+unzip(zipfile = "assignment4_data.zip")
+```
+
+The data are also located on Canvas in the Labs and Assignments Week 4 folder. 
+
+We are using a dataset of crimes in a city. Bring in crime data and a shapefile of our city
+using the following code
+
+```{r results ="hide"}
+city <- readOGR("assignment4_city.shp")
+crime <- readOGR("assignment4_crime.shp")
 ```
 
 *city* is an **sp** spatial polygon object containing the boundaries of a city.  *crime* is an **sp** spatial points object containing crimes in the city.  To see what we got, plot it
