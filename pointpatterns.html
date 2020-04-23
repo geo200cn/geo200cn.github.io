@@ -790,7 +790,11 @@ plot(K)</code></pre>
 envK &lt;- envelope(crime.ppp, fun = Kest, nsim = 49)
 plot(envK)</code></pre>
 <p><img src="pointpatterns_files/figure-html/unnamed-chunk-32-1.png" /><!-- --></p>
-<p>It’s hard to see, but R is plotting the envelopes. They are just really narrow. Replace <code>Kest</code> with <code>Gest</code>, <code>Fest</code>, and <code>Lest</code> to get envelopes for the other alphabet functions.</p>
+<p>It’s hard to see, but R is plotting the envelopes. They are just really narrow. The default envelopes are the maximum and minimum values. This is set by <code>nrank</code> in <code>envelope()</code>, which is <code>nrank=1</code>. This means your confidence interval is</p>
+<pre class="r"><code>1-(2/50)</code></pre>
+<pre><code>## [1] 0.96</code></pre>
+<p>The highest and lowest gives you two. And there are 50 K functions (49 simulations + observed K). Hence 2/50. Subtract by 1 to get the confidence level. OSU talks about the disadvantages of a simulation approach for computationally intensive calculations on page 151.</p>
+<p>Replace <code>Kest</code> with <code>Gest</code>, <code>Fest</code>, and <code>Lest</code> to get envelopes for the other alphabet functions.</p>
 <p><br></p>
 <p class="comment" , style="font-style:normal">
 <strong>Question 4</strong>: Calculate the F and G functions. Interpret the results.
@@ -815,7 +819,7 @@ Window(crime2.ppp) &lt;- cityOwin</code></pre>
 <pre class="r"><code>spp &lt;- split.ppp(crime2.ppp)</code></pre>
 <p>We can plot arsons</p>
 <pre class="r"><code>plot(spp$Arson, main = &quot;Arsons&quot;)</code></pre>
-<p><img src="pointpatterns_files/figure-html/unnamed-chunk-36-1.png" /><!-- --></p>
+<p><img src="pointpatterns_files/figure-html/unnamed-chunk-37-1.png" /><!-- --></p>
 <p><br></p>
 <p class="comment" , style="font-style:normal">
 <strong>Bonus Question</strong>: Using the <em>spp</em> object we created, use one first order and one second order method to compare the clustering of crime across the following types: Residential Burglary, Auto Theft, Drunk in Public, and Assaults. Summarize your results.

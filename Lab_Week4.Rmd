@@ -1,7 +1,6 @@
 ---
 title: "Lab Week 4"
 author: "Kenji Tomari"
-subtitle: "Spring 2020"
 output: 
   html_document:
     theme: readable
@@ -13,6 +12,29 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
+# Supplemental Tips
+
+For many folks, exploring a new package is quite challenging. There are tons of online resources for the more popular packages, like `{sf}`. There are few for others. In any case, most packages usually have starting place in their "vignette." If you go to rdocumentation.org and look up a package, you can usually scroll down to where the vignettes are listed. Unfortunately, these are sometimes out of date. You actually have access to all the vignettes for the packages you have installed right from RStudio/R.
+
+Go to your console and type the following in order to get a list of available vignettes.
+
+```{r eval=F}
+vignette(package = "sf")
+```
+
+Once you've picked a vignette topic, try:
+
+```{r eval=F}
+vignette(topic = "sf1", package = "sf")
+```
+
+This week you'll use the spatial points package known as `{spatstat}`. You might want to check out their "getting started" vignette.
+
+```{r eval=F}
+vignette(topic = "getstart", package = "spatstat")
+```
+
 
 # Part 1 - {sf}
 
@@ -85,7 +107,9 @@ You can use a number of packages to map things in R. Here Noli has us use `{tmap
 ```{r}
 # tmap
 tm_shape(smt) +
-  tm_polygons(col = "pwh", style = "quantile", n=5)
+  tm_polygons(col = "pwh", 
+              style = "quantile", 
+              n=5)
 ```
 
 FYI:
@@ -184,4 +208,74 @@ smt %>%
   theme_bw()
 ```
 
+# Part 2 - Point Pattern Analysis
 
+## Notes on Loading Packages/Data
+
+Originally, this lab guide was written by Professor Hijmans and he pulls in data that he set up in a package he calls `rspatial`. So, he has folks use the package `devtools` to pull in this data. However, devtools has a number of dependencies (other packages that are part of it) that may present some challenges to downloading it. So, for this lab, skip the code that runs `devtools::install_github('rspatial/rspatial')` and instead use the data we provide to you on Canvas. You can use this code to load in the data.
+
+```{r eval=F}
+city <- rgdal::readOGR("assignment4_city.shp")
+crime <- rgdal::readOGR("assignment4_crime.shp")
+```
+
+## Notes on Material
+
+### Overall Density
+
+*Supplemental*
+
+*Note* in the lab guide on "Overall Density," it says that `area` measures the city in feet squared. This is not because of the function itself, but a product of the CRS. Note how it says "+units=us-ft" when you run `crs(city)`. In order to change this, you need to "transform" the CRS. You could do this, for instance, by using `sp::spTransform(city, CRS=CRS("+init=epsg:3857"))` which will convert the CRS of `city` to EPSG 3857. Also, you could do a CRS transformation in `{sf}` as well. Assuming you're beginning with an sf object, the appropriate code would be: `st_transform(city, 3857)`.
+
+Also take note that both the `city` and `crime` data have to have the same CRS! You can test this pretty easily like this:
+
+```{r eval=F}
+sp::identicalCRS(city, crime)
+```
+
+Keep in mind that EPSG 3857 may not be the CRS you actually want to work with. You may instead choose to use a more California-centric CRS like NAD83 California Albers, EPSG 3310. 
+
+
+### QUESTION 1
+
+Explain why a VMR greater than 1 indicates spatial clustering. 
+
+OSU p 130. Also read a summary of Poisson on BBR p 228 and OSU 142-3.
+
+### Hypothesis Testing
+
+*Supplemental*
+
+Note, we use a chi-squared test (and not a t-test) because a frequency table of quadrats with events uses categorical variables, and not continous variables. Whereas, when we were examining rainfall or asset prices of houses in Assignment 2, the data were were testing was (evidently) continous (i.e. in inches or dollars per sq ft.). In other words, points/events per quadrat are discrete values (eg. 3 events some quadrat), and the frequency table is composed of categorical variables (eg. how many quadrats had exactly 3 events).
+
+### QUESTION 2
+
+Question 2: What does the VMR score combined with the chi-square test tell us about the point pattern? 
+
+See OSU p 142.
+
+### Kernel Density
+
+*Supplemental*
+
+Note: chapter 5 doesn't go into to KDE very much, but it is related to Quadrats, because its looking at density/1st order effects.
+
+### QUESTION 3
+
+What do the Clark Evans test results tell us about the point pattern? Explain why an R less than 1 indicates spatial clustering? 
+
+See OSU p 143-4.
+
+### Distance Functions (F, G, K, & L)
+
+*Supplemental*
+
+Note, the K function is not related to Kernel Density Estimation (KDE). The former is a distance function, and the latter is a density function.
+
+Also, interpreting the plot of the K function is quite challenging. If you look at `K$r` and `K$theo` you can quickly deduce that the relationship between distance, `r`, and the expected value `theo` is described on page 146 in OSU in equation 5.13.
+
+### QUESTION 4
+
+Calculate the F and G functions. Interpret the results. 
+
+See OSU p 134 for information about comparing G and F functions.

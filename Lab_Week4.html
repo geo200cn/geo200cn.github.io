@@ -431,12 +431,21 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Lab Week 4</h1>
-<h3 class="subtitle">Spring 2020</h3>
 <h4 class="author">Kenji Tomari</h4>
 
 </div>
 
 
+<div id="supplemental-tips" class="section level1">
+<h1>Supplemental Tips</h1>
+<p>For many folks, exploring a new package is quite challenging. There are tons of online resources for the more popular packages, like <code>{sf}</code>. There are few for others. In any case, most packages usually have starting place in their “vignette.” If you go to rdocumentation.org and look up a package, you can usually scroll down to where the vignettes are listed. Unfortunately, these are sometimes out of date. You actually have access to all the vignettes for the packages you have installed right from RStudio/R.</p>
+<p>Go to your console and type the following in order to get a list of available vignettes.</p>
+<pre class="r"><code>vignette(package = &quot;sf&quot;)</code></pre>
+<p>Once you’ve picked a vignette topic, try:</p>
+<pre class="r"><code>vignette(topic = &quot;sf1&quot;, package = &quot;sf&quot;)</code></pre>
+<p>This week you’ll use the spatial points package known as <code>{spatstat}</code>. You might want to check out their “getting started” vignette.</p>
+<pre class="r"><code>vignette(topic = &quot;getstart&quot;, package = &quot;spatstat&quot;)</code></pre>
+</div>
 <div id="part-1---sf" class="section level1">
 <h1>Part 1 - {sf}</h1>
 <p>This section summarizes <a href="https://geo200cn.github.io/spatialsf.html">Mapping using the sf package</a>, focusing on the code necessary to complete Assignment 4.</p>
@@ -517,8 +526,10 @@ smt &lt;- smt %&gt;%
 <p>You can use a number of packages to map things in R. Here Noli has us use <code>{tmap}</code>. Read more <a href="https://www.rdocumentation.org/packages/tmap">here</a>. Also, they provide this bit on <a href="https://www.rdocumentation.org/packages/tmap/versions/3.0/vignettes/tmap-getstarted.Rmd">getting started</a>.</p>
 <pre class="r"><code># tmap
 tm_shape(smt) +
-  tm_polygons(col = &quot;pwh&quot;, style = &quot;quantile&quot;, n=5)</code></pre>
-<p><img src="Lab_Week4_files/figure-html/unnamed-chunk-9-1.png" /><!-- --></p>
+  tm_polygons(col = &quot;pwh&quot;, 
+              style = &quot;quantile&quot;, 
+              n=5)</code></pre>
+<p><img src="Lab_Week4_files/figure-html/unnamed-chunk-12-1.png" /><!-- --></p>
 <p>FYI:</p>
 <blockquote>
 <p>The “quantile” style provides quantile breaks. <a href="https://www.rdocumentation.org/packages/classInt/versions/0.1-7/topics/classIntervals">Read More.</a></p>
@@ -543,7 +554,7 @@ smt %&gt;%
   labs(title = &quot;5-Quantile Map&quot;) +
   # set background to black and white
   theme_bw()</code></pre>
-<p><img src="Lab_Week4_files/figure-html/unnamed-chunk-10-1.png" /><!-- --></p>
+<p><img src="Lab_Week4_files/figure-html/unnamed-chunk-13-1.png" /><!-- --></p>
 </div>
 <div id="e-1.-10-quantile-map" class="section level2">
 <h2>e-1. 10 Quantile Map</h2>
@@ -551,7 +562,7 @@ smt %&gt;%
 <pre class="r"><code># tmap
 tm_shape(smt) +
   tm_polygons(col = &quot;pwh&quot;, style = &quot;quantile&quot;, n=10)</code></pre>
-<p><img src="Lab_Week4_files/figure-html/unnamed-chunk-11-1.png" /><!-- --></p>
+<p><img src="Lab_Week4_files/figure-html/unnamed-chunk-14-1.png" /><!-- --></p>
 <pre class="r"><code># ggplot2
 smt %&gt;%
   mutate(cuts = cut_number(pwh, n=10)) %&gt;%
@@ -575,7 +586,7 @@ smt %&gt;%
   ) +
   labs(title = &quot;Decile Map&quot;) +
   theme_bw()</code></pre>
-<p><img src="Lab_Week4_files/figure-html/unnamed-chunk-12-1.png" /><!-- --></p>
+<p><img src="Lab_Week4_files/figure-html/unnamed-chunk-15-1.png" /><!-- --></p>
 </div>
 <div id="e-2.-5-equal-interval-map" class="section level2">
 <h2>e-2. 5 Equal Interval Map</h2>
@@ -585,7 +596,7 @@ smt %&gt;%
 <pre class="r"><code># tmap
 tm_shape(smt) +
   tm_polygons(col = &quot;pwh&quot;, style = &quot;equal&quot;, n=5)</code></pre>
-<p><img src="Lab_Week4_files/figure-html/unnamed-chunk-13-1.png" /><!-- --></p>
+<p><img src="Lab_Week4_files/figure-html/unnamed-chunk-16-1.png" /><!-- --></p>
 <p>Before, we used <code>cut_number</code>, but now we’ll use <code>cut_interval</code>.</p>
 <pre class="r"><code># ggplot2
 smt %&gt;%
@@ -603,7 +614,63 @@ smt %&gt;%
   labs(title = &quot;5 Equal Interval Map&quot;) +
   # make background black and white.
   theme_bw()</code></pre>
-<p><img src="Lab_Week4_files/figure-html/unnamed-chunk-14-1.png" /><!-- --></p>
+<p><img src="Lab_Week4_files/figure-html/unnamed-chunk-17-1.png" /><!-- --></p>
+</div>
+</div>
+<div id="part-2---point-pattern-analysis" class="section level1">
+<h1>Part 2 - Point Pattern Analysis</h1>
+<div id="notes-on-loading-packagesdata" class="section level2">
+<h2>Notes on Loading Packages/Data</h2>
+<p>Originally, this lab guide was written by Professor Hijmans and he pulls in data that he set up in a package he calls <code>rspatial</code>. So, he has folks use the package <code>devtools</code> to pull in this data. However, devtools has a number of dependencies (other packages that are part of it) that may present some challenges to downloading it. So, for this lab, skip the code that runs <code>devtools::install_github('rspatial/rspatial')</code> and instead use the data we provide to you on Canvas. You can use this code to load in the data.</p>
+<pre class="r"><code>city &lt;- rgdal::readOGR(&quot;assignment4_city.shp&quot;)
+crime &lt;- rgdal::readOGR(&quot;assignment4_crime.shp&quot;)</code></pre>
+</div>
+<div id="notes-on-material" class="section level2">
+<h2>Notes on Material</h2>
+<div id="overall-density" class="section level3">
+<h3>Overall Density</h3>
+<p><em>Supplemental</em></p>
+<p><em>Note</em> in the lab guide on “Overall Density,” it says that <code>area</code> measures the city in feet squared. This is not because of the function itself, but a product of the CRS. Note how it says “+units=us-ft” when you run <code>crs(city)</code>. In order to change this, you need to “transform” the CRS. You could do this, for instance, by using <code>sp::spTransform(city, CRS=CRS(&quot;+init=epsg:3857&quot;))</code> which will convert the CRS of <code>city</code> to EPSG 3857. Also, you could do a CRS transformation in <code>{sf}</code> as well. Assuming you’re beginning with an sf object, the appropriate code would be: <code>st_transform(city, 3857)</code>.</p>
+<p>Also take note that both the <code>city</code> and <code>crime</code> data have to have the same CRS! You can test this pretty easily like this:</p>
+<pre class="r"><code>sp::identicalCRS(city, crime)</code></pre>
+<p>Keep in mind that EPSG 3857 may not be the CRS you actually want to work with. You may instead choose to use a more California-centric CRS like NAD83 California Albers, EPSG 3310.</p>
+</div>
+<div id="question-1" class="section level3">
+<h3>QUESTION 1</h3>
+<p>Explain why a VMR greater than 1 indicates spatial clustering.</p>
+<p>OSU p 130. Also read a summary of Poisson on BBR p 228 and OSU 142-3.</p>
+</div>
+<div id="hypothesis-testing" class="section level3">
+<h3>Hypothesis Testing</h3>
+<p><em>Supplemental</em></p>
+<p>Note, we use a chi-squared test (and not a t-test) because a frequency table of quadrats with events uses categorical variables, and not continous variables. Whereas, when we were examining rainfall or asset prices of houses in Assignment 2, the data were were testing was (evidently) continous (i.e. in inches or dollars per sq ft.). In other words, points/events per quadrat are discrete values (eg. 3 events some quadrat), and the frequency table is composed of categorical variables (eg. how many quadrats had exactly 3 events).</p>
+</div>
+<div id="question-2" class="section level3">
+<h3>QUESTION 2</h3>
+<p>Question 2: What does the VMR score combined with the chi-square test tell us about the point pattern?</p>
+<p>See OSU p 142.</p>
+</div>
+<div id="kernel-density" class="section level3">
+<h3>Kernel Density</h3>
+<p><em>Supplemental</em></p>
+<p>Note: chapter 5 doesn’t go into to KDE very much, but it is related to Quadrats, because its looking at density/1st order effects.</p>
+</div>
+<div id="question-3" class="section level3">
+<h3>QUESTION 3</h3>
+<p>What do the Clark Evans test results tell us about the point pattern? Explain why an R less than 1 indicates spatial clustering?</p>
+<p>See OSU p 143-4.</p>
+</div>
+<div id="distance-functions-f-g-k-l" class="section level3">
+<h3>Distance Functions (F, G, K, &amp; L)</h3>
+<p><em>Supplemental</em></p>
+<p>Note, the K function is not related to Kernel Density Estimation (KDE). The former is a distance function, and the latter is a density function.</p>
+<p>Also, interpreting the plot of the K function is quite challenging. If you look at <code>K$r</code> and <code>K$theo</code> you can quickly deduce that the relationship between distance, <code>r</code>, and the expected value <code>theo</code> is described on page 146 in OSU in equation 5.13.</p>
+</div>
+<div id="question-4" class="section level3">
+<h3>QUESTION 4</h3>
+<p>Calculate the F and G functions. Interpret the results.</p>
+<p>See OSU p 134 for information about comparing G and F functions.</p>
+</div>
 </div>
 </div>
 
