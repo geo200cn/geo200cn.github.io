@@ -185,7 +185,7 @@ Sharing a border and/or vertex is a common way of defining a neighbor.  The two 
 
 
 <center>
-![Figure 1: Geographic contiguity](/Users/noli/Documents/UCD/teaching/CRD 230/Lab/crd230.github.io/fig1.png)
+![Figure 1: Geographic contiguity](/Users/noli/Documents/UCD/teaching/GEO 200CN/lab/geo200cn.github.io/fig1.png)
 
 </center>
 
@@ -219,7 +219,7 @@ The average number of neighbors (adjacent polygons) is 6.3, 1 polygon has 1 neig
 In distance based connectivity, features within a given radius are considered to be neighbors. The length of the radius is left up to the researcher to decide. For example, [Weisburd, Groff and Yang (2012)](https://www.oxfordscholarship.com/view/10.1093/acprof:oso/9780195369083.001.0001/acprof-9780195369083) use a quarter mile (approximately 3-4 city blocks) in their study of crime clusters in Seattle. Often studies test different distances to test the robustness of the findings (e.g. [Poulsen et al. 2010](https://journals.sagepub.com/doi/abs/10.1068/a42181)). When dealing with polygons, x and y are the coordinates of their centroids (the center of the polygon). You create a radius of distance *d2* around the observation of interest - other polygons whose centroids fall inside this radius are tagged as neighbors. 
 
 <center>
-![Figure 2: Distance based](/Users/noli/Documents/UCD/teaching/CRD 230/Lab/crd230.github.io/fig3.png)
+![Figure 2: Distance based](/Users/noli/Documents/UCD/teaching/GEO 200CN/lab/geo200cn.github.io/fig3.png)
 
 </center>
 
@@ -252,7 +252,7 @@ Sacnb_dist1 <- dnearneigh(sac.coords, d1 = 0, d2 = 32186.9,
 Another common method for defining neighbors is k-nearest neighbors. This will find the k closest observations for each observation of interest, where k is some integer. For instance, if we define k=3, then each observation will have 3 neighbors, which are the 3 closest observations to it, regardless of the distance between them. Using the k-nearest neighbor rule, two observations could potentially be very far apart and still be considered neighbors.
 
 <center>
-![Figure 2: k-nearest neighbors: k = 3](/Users/noli/Documents/UCD/teaching/CRD 230/Lab/crd230.github.io/fig2.png)
+![Figure 2: k-nearest neighbors: k = 3](/Users/noli/Documents/UCD/teaching/GEO 200CN/lab/geo200cn.github.io/fig2.png)
 
 </center>
 
