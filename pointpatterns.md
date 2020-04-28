@@ -70,9 +70,9 @@ We'll be using a couple of new packages in this lab.  First, you'll need to inst
 
 
 ```r
-if (!require("rspatial")) devtools::install_github('rspatial/rspatial')
 if (!require("spatstat")) install.packages("spatstat")
 if (!require("maptools")) install.packages("maptools")
+if (!require("rgdal")) install.packages("rgdal")
 ```
 
 Next, load these and other required packages for this lab using the function `library()`
@@ -80,9 +80,9 @@ Next, load these and other required packages for this lab using the function `li
 
 ```r
 library(sf)
+library(rgdal)
 library(maptools)
 library(spatstat)
-library(rspatial)
 library(tidyverse)
 ```
 
@@ -110,12 +110,29 @@ Our research questions in this lab are: Does crime cluster in a nondescript Amer
 ## **Bringing in the data**
 \
 
-We are using a dataset of crimes in a city. These data come directly from the **rspatial** package.  Bring in crime data and a shapefile of our city using the following code
+I zipped up and uploaded onto GitHub a folder containing files for this lab.  Set your working directory to an appropriate folder and use the following code to download and unzip the file.
 
 
 ```r
-city <- sp_data("city")
-crime <- sp_data("crime.rds")
+#insert the pathway to the folder you want your data stored into
+setwd("insert your pathway here")
+#downloads file into your working directory 
+download.file(url = "https://raw.githubusercontent.com/geo200cn/data/master/assignment4_data.zip", destfile = "assignment4_data.zip")
+#unzips the zipped file
+unzip(zipfile = "assignment4_data.zip")
+```
+
+
+
+The data are also located on Canvas in the Labs and Assignments Week 4 folder. 
+
+We are using a dataset of crimes in a city. Bring in crime data and a shapefile of our city
+using the following code
+
+
+```r
+city <- readOGR("assignment4_city.shp")
+crime <- readOGR("assignment4_crime.shp")
 ```
 
 *city* is an **sp** spatial polygon object containing the boundaries of a city.  *crime* is an **sp** spatial points object containing crimes in the city.  To see what we got, plot it
@@ -127,7 +144,7 @@ plot(city, col='light blue')
 points(crime, col='red', cex=.5, pch='+')
 ```
 
-![](pointpatterns_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
+![](pointpatterns_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
 
 Does this city look familiar to you?
 
@@ -159,27 +176,38 @@ summary(crime.ppp)
 ## Mark variables: CATEGORY, CASEN, ODT1, OFFDESC1, OFFDESC2, OFFDESC3, OFFDESC4, 
 ## OFFDESC5, OFFDESC6
 ## Summary:
-##    CATEGORY             CASEN              ODT1             OFFDESC1        
-##  Length:2661        Min.   :11101199   Length:2661        Length:2661       
-##  Class :character   1st Qu.:11102435   Class :character   Class :character  
-##  Mode  :character   Median :11103645   Mode  :character   Mode  :character  
-##                     Mean   :11125352                                        
-##                     3rd Qu.:11104804                                        
-##                     Max.   :11201168                                        
-##    OFFDESC2           OFFDESC3           OFFDESC4           OFFDESC5        
-##  Length:2661        Length:2661        Length:2661        Length:2661       
-##  Class :character   Class :character   Class :character   Class :character  
-##  Mode  :character   Mode  :character   Mode  :character   Mode  :character  
-##                                                                             
-##                                                                             
-##                                                                             
-##    OFFDESC6        
-##  Length:2661       
-##  Class :character  
-##  Mode  :character  
-##                    
-##                    
-##                    
+##                  CATEGORY       CASEN                  ODT1     
+##  Petty Theft         :665   Min.   :11101199   2011/04/16:  51  
+##  Vandalism           :355   1st Qu.:11102435   2011/05/14:  21  
+##  Drunk in Public     :232   Median :11103645   2011/10/30:  19  
+##  Vehicle Burglary    :221   Mean   :11125352   2011/04/04:  18  
+##  Residential Burglary:219   3rd Qu.:11104804   2011/07/13:  18  
+##  DUI                 :212   Max.   :11201168   2011/09/03:  16  
+##  (Other)             :757                      (Other)   :2518  
+##                      OFFDESC1                        OFFDESC2   
+##  Petty Theft             : 560   Dui Alcohol/0.08 Percent: 181  
+##  Burglary (Vehicle)      : 241   Petty Theft             :  80  
+##  Disord Conduct:alcohol  : 223   Disord Conduct:alcohol  :  44  
+##  Burglary (Residential)  : 215   RESIST/OBSTRUCT OFFICER :  36  
+##  Dui Alcohol/Drugs       : 196   Battery On Person       :  25  
+##  Vandalism; Under $400.00: 160   (Other)                 : 429  
+##  (Other)                 :1066   NA's                    :1866  
+##                           OFFDESC3                                OFFDESC4   
+##  Under 21, .05 BAC            :  24   VEHICLE TOW - DRIVER ARRESTED   :  13  
+##  RESIST/OBSTRUCT OFFICER      :  19   Unauthorized use; Identity Theft:   5  
+##  VEHICLE TOW - DRIVER ARRESTED:  14   Battery with GBI                :   4  
+##  Disord Conduct:alcohol       :  10   MINOR POSSESS TOBACCO           :   4  
+##  Suspended license DUI        :  10   Poss Controlled Substance       :   4  
+##  (Other)                      : 210   (Other)                         :  90  
+##  NA's                         :2374   NA's                            :2541  
+##                           OFFDESC5                             OFFDESC6   
+##  Poss Marij Und 28.5 Grams    :   5   Conspiracy:commit Crime      :   4  
+##  VEHICLE TOW - DRIVER ARRESTED:   5   Damage Prop:vio Civl Rght    :   4  
+##  Obstruct/Resist Exec Off     :   4   VEHICLE TOW - DRIVER ARRESTED:   4  
+##  Transp/Sell Narc/Cntl Sub    :   4   RESIST/OBSTRUCT OFFICER      :   3  
+##  Transp/Etc Cntl Sub          :   3   Violation Of Parole:fel      :   3  
+##  (Other)                      :  30   (Other)                      :   5  
+##  NA's                         :2610   NA's                         :2638  
 ## 
 ## Window: rectangle = [6620751, 6653993] x [1957331.9, 1971237.4] units
 ##                     (33240 x 13910 units)
@@ -306,7 +334,7 @@ plot(crime.ppp, pch=20, cols="grey70", main=NULL)  # Plot points
 plot(qcounts1, add=TRUE)  # Add quadrat grid
 ```
 
-![](pointpatterns_files/figure-html/unnamed-chunk-15-1.png)<!-- -->
+![](pointpatterns_files/figure-html/unnamed-chunk-17-1.png)<!-- -->
 
 Wow, 582 crimes in that one bottom cell. That place must be *really* dangerous. Three-by-six might be too small. Let’s instead make a 15 by 30 grid.
 
@@ -323,7 +351,7 @@ plot(crime.ppp, pch=20, cols="grey70", main=NULL)  # Plot points
 plot(qcounts2, add=TRUE)  # Add quadrat grid. 
 ```
 
-![](pointpatterns_files/figure-html/unnamed-chunk-17-1.png)<!-- -->
+![](pointpatterns_files/figure-html/unnamed-chunk-19-1.png)<!-- -->
 
 In real life one should always try a range of row and column sizes to get a sense of how sensitive the results are.
 
@@ -396,7 +424,7 @@ par(mai=c(0,0,0.5,0.5))
 plot(ds, main='crime density')
 ```
 
-![](pointpatterns_files/figure-html/unnamed-chunk-21-1.png)<!-- -->
+![](pointpatterns_files/figure-html/unnamed-chunk-23-1.png)<!-- -->
 
 We can alter the bandwidth using the `sigma =` argument.  A really large `sigma` makes the map too smooth
 
@@ -407,7 +435,7 @@ par(mai=c(0,0,0.5,0.5))
 plot(ds, main='crime density')
 ```
 
-![](pointpatterns_files/figure-html/unnamed-chunk-22-1.png)<!-- -->
+![](pointpatterns_files/figure-html/unnamed-chunk-24-1.png)<!-- -->
 
 A small `sigma` creates a map that captures really localized clusters
 
@@ -418,7 +446,7 @@ par(mai=c(0,0,0.5,0.5))
 plot(ds, main='crime density')
 ```
 
-![](pointpatterns_files/figure-html/unnamed-chunk-23-1.png)<!-- -->
+![](pointpatterns_files/figure-html/unnamed-chunk-25-1.png)<!-- -->
 
 You can also change the kernel function by specifying `kernel =` to one of four options "gaussian" (the default), "epanechnikov", "quartic" or "disc". 
 <div style="margin-bottom:25px;">
@@ -515,7 +543,7 @@ par(mfrow=c(1,1))
 plot(K)
 ```
 
-![](pointpatterns_files/figure-html/unnamed-chunk-29-1.png)<!-- -->
+![](pointpatterns_files/figure-html/unnamed-chunk-31-1.png)<!-- -->
 
 The plot returns different estimates of K depending on the edge correction chosen. By default, the isotropic, translate and border corrections are implemented.  Edge corrections are discussed on pages 137-139 in OSU.
 
@@ -530,9 +558,22 @@ envK <- envelope(crime.ppp, fun = Kest, nsim = 49)
 plot(envK)
 ```
 
-![](pointpatterns_files/figure-html/unnamed-chunk-30-1.png)<!-- -->
+![](pointpatterns_files/figure-html/unnamed-chunk-32-1.png)<!-- -->
 
-It’s hard to see, but R is plotting the envelopes. They are just really narrow. Replace `Kest` with `Gest`, `Fest`, and `Lest` to get envelopes for the other alphabet functions.
+It’s hard to see, but R is plotting the envelopes. They are just really narrow. The default envelopes are the maximum and minimum values. This is set by `nrank` in `envelope()`, which is `nrank=1`. This means your confidence interval is 
+
+
+```r
+1-(2/50)
+```
+
+```
+## [1] 0.96
+```
+
+The highest and lowest gives you two. And there are 50 K functions (49 simulations + observed K). Hence 2/50. Subtract by 1 to get the confidence level.  OSU talks about the disadvantages of a simulation approach for computationally intensive calculations on page 151.
+
+Replace `Kest` with `Gest`, `Fest`, and `Lest` to get envelopes for the other alphabet functions.
 
 <br>
 
@@ -578,7 +619,7 @@ We can plot arsons
 plot(spp$Arson, main = "Arsons")
 ```
 
-![](pointpatterns_files/figure-html/unnamed-chunk-34-1.png)<!-- -->
+![](pointpatterns_files/figure-html/unnamed-chunk-37-1.png)<!-- -->
 
 <br>
 

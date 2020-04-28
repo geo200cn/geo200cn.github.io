@@ -12,7 +12,7 @@
 <meta name="author" content="Kenji Tomari" />
 
 
-<title>Lab Week 3</title>
+<title>Lab Lecture 5</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -439,73 +439,237 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Lab Week 3</h1>
-<h3 class="subtitle">Spring 2020</h3>
+<h1 class="title toc-ignore">Lab Lecture 5</h1>
 <h4 class="author">Kenji Tomari</h4>
 
 </div>
 
 
-<div id="notes-on-the-hypothesis-test-assignment" class="section level1">
-<h1>Notes on the Hypothesis Test Assignment</h1>
-<p>The one sample hypothesis test actually covers material in the chapter on two sample hypothesis test (Chapter 9). The reason for this is when you’re comparing pairs of observations, you’re not asking what the difference between two populations are, you’re asking if within the same population there is a change happening. If the number of populations is 1, then you use a one-sample hypothesis test</p>
-<hr />
-<div class="figure">
-<img src="ttest_output.png" alt="Figure. t.test() output." />
-<p class="caption">Figure. t.test() output.</p>
+<pre class="r"><code>library(tidyverse)
+library(sf)
+library(spdep)
+library(tmap)</code></pre>
+<pre class="r"><code>counties &lt;- st_read(&quot;countiescovid.shp&quot;)</code></pre>
+<pre><code>## Reading layer `countiescovid&#39; from data source `/Users/noli/Documents/UCD/teaching/GEO 200CN/lab/geo200cn.github.io/countiescovid.shp&#39; using driver `ESRI Shapefile&#39;
+## Simple feature collection with 3108 features and 5 fields
+## geometry type:  MULTIPOLYGON
+## dimension:      XY
+## bbox:           xmin: -2031905 ymin: -2114925 xmax: 2516374 ymax: 732103.3
+## epsg (SRID):    NA
+## proj4string:    +proj=laea +lat_0=45 +lon_0=-100 +x_0=0 +y_0=0 +a=6370997 +b=6370997 +units=m +no_defs</code></pre>
+<pre class="r"><code># Let&#39;s just look at California.
+ca &lt;- counties %&gt;%
+  filter(state == &quot;California&quot;)
+
+ca.sp &lt;- ca %&gt;%
+  as(&quot;Spatial&quot;)</code></pre>
+<pre class="r"><code># How many counties in CA?
+nrow(ca)</code></pre>
+<pre><code>## [1] 58</code></pre>
+<pre class="r"><code># quick map
+ggplot() +
+  geom_sf(data=ca, mapping = aes(fill = log(cases)), color = &quot;red&quot;)</code></pre>
+<p><img src="Lab_Week5_files/figure-html/unnamed-chunk-5-1.png" /><!-- --></p>
+<p>Before I begin the rest of the steps, I’ll get the centroids.</p>
+<pre class="r"><code># get centroids of polygons
+ca.coords &lt;- coordinates(ca.sp)</code></pre>
+<div id="queen-contiguity" class="section level1">
+<h1>Queen Contiguity</h1>
+<pre class="r"><code># create neighborhood matrix
+ca_q_nb &lt;- poly2nb(ca.sp, queen=T)
+ca_q_nb</code></pre>
+<pre><code>## Neighbour list object:
+## Number of regions: 58 
+## Number of nonzero links: 276 
+## Percentage nonzero weights: 8.204518 
+## Average number of links: 4.758621</code></pre>
+<pre class="r"><code># head
+# take a look at the first 6 counties in the neighborhood matrix
+ca_q_nb[1:6]</code></pre>
+<pre><code>## [[1]]
+## [1]  9 28 39 49 57
+## 
+## [[2]]
+## [1]  3 10 11 26 35
+## 
+## [[3]]
+## [1]  2  5 11 20 35 55
+## 
+## [[4]]
+## [1]  7 27 34 37
+## 
+## [[5]]
+## [1]  3 20 24 55
+## 
+## [[6]]
+## [1] 12 26 38 47 54 56</code></pre>
+<pre class="r"><code># create spatial weights matrix
+ca_q_w &lt;- nb2listw(ca_q_nb, style=&quot;W&quot;, zero.policy= TRUE)
+ca_q_w</code></pre>
+<pre><code>## Characteristics of weights list object:
+## Neighbour list object:
+## Number of regions: 58 
+## Number of nonzero links: 276 
+## Percentage nonzero weights: 8.204518 
+## Average number of links: 4.758621 
+## 
+## Weights style: W 
+## Weights constants summary:
+##    n   nn S0      S1       S2
+## W 58 3364 58 26.8846 238.3498</code></pre>
+<pre class="r"><code># quick look at the weights
+ca_q_w$weights[1:6]</code></pre>
+<pre><code>## [[1]]
+## [1] 0.2 0.2 0.2 0.2 0.2
+## 
+## [[2]]
+## [1] 0.2 0.2 0.2 0.2 0.2
+## 
+## [[3]]
+## [1] 0.1666667 0.1666667 0.1666667 0.1666667 0.1666667 0.1666667
+## 
+## [[4]]
+## [1] 0.25 0.25 0.25 0.25
+## 
+## [[5]]
+## [1] 0.25 0.25 0.25 0.25
+## 
+## [[6]]
+## [1] 0.1666667 0.1666667 0.1666667 0.1666667 0.1666667 0.1666667</code></pre>
+<pre class="r"><code># quick plot
+plot(ca.sp, border = &quot;grey60&quot;)
+plot(ca_q_w, coords = ca.coords, add=T, col=2)</code></pre>
+<p><img src="Lab_Week5_files/figure-html/unnamed-chunk-11-1.png" /><!-- --></p>
+<pre class="r"><code># global moran&#39;s I using Monte Carlo
+moran.mc(ca.sp$crate, ca_q_w, nsim=999, zero.policy= TRUE)</code></pre>
+<pre><code>## 
+##  Monte-Carlo simulation of Moran I
+## 
+## data:  ca.sp$crate 
+## weights: ca_q_w  
+## number of simulations + 1: 1000 
+## 
+## statistic = 0.41994, observed rank = 1000, p-value = 0.001
+## alternative hypothesis: greater</code></pre>
+<p><strong>Insert your interpretation here.</strong></p>
 </div>
-<hr />
-<p>The code for your F-Test should look something like this, but with the correct columns replacing the words “FAKE”</p>
-<pre class="r"><code>var.test(
-  x = HDB_in_sqft$FAKE,
-  y = HDB_out_sqft$FAKE,
-  alternative = &quot;two.sided&quot;
-)</code></pre>
-<p>The last <code>t.test</code> should look something like this:</p>
-<pre class="r"><code>t.test(
-  x = HDB_in_sqft$FAKE,
-  y = HDB_out_sqft$FAKE,
-  paired = F,
-  alternative = &quot;two.sided&quot;,
-  var.equal = TRUEORFALSE
-)</code></pre>
-<p>Just replace TRUEORFALSE with the correct <code>TRUE</code> or <code>FALSE</code> value.</p>
-<hr />
-<p>One last note, when reading the output of prob-values, the following are the same:</p>
-<ul>
-<li><p>1.32e-04</p></li>
-<li><p>1.32×10−4</p></li>
-<li><p>0.000132</p></li>
-</ul>
+<div id="distance-50mi" class="section level1">
+<h1>Distance, 50mi</h1>
+<p>50 miles is 80467.2 meters.</p>
+<pre class="r"><code>ca_nb_dist50 &lt;- dnearneigh(ca.coords, 
+                           d1 = 0, 
+                           d2 = 80467.2, 
+                           row.names = ca.sp$county)
+
+ca_nb_dist50_w &lt;-nb2listw(ca_nb_dist50, style=&quot;W&quot;, zero.policy= TRUE)</code></pre>
+<pre class="r"><code># global moran&#39;s I using Monte Carlo
+moran.mc(ca.sp$crate, ca_nb_dist50_w, nsim=999, zero.policy= TRUE)</code></pre>
+<pre><code>## 
+##  Monte-Carlo simulation of Moran I
+## 
+## data:  ca.sp$crate 
+## weights: ca_nb_dist50_w  
+## number of simulations + 1: 1000 
+## 
+## statistic = 0.19799, observed rank = 982, p-value = 0.018
+## alternative hypothesis: greater</code></pre>
+<p><strong>Insert your interpretation here.</strong></p>
 </div>
-<div id="shape-files" class="section level1">
-<h1>Shape Files</h1>
-<p>A note about Shape files: they are always more than one actual file. You’ll find a <code>.shp</code> file, but also <code>.shx</code> and others. The “galap” data for the assignment is actually composed of 4 files. Each file includes important information necessary to use the spatial data, so make sure they’re all together in the same directory when you load a shape file. Shape files are the industry standard, largely as a legacy of the monopoly ArcGIS/ESRI have on GIS. However, there is an increasing push to use open source spatial data files known as “geopackage” with the extension <code>.gpkg</code>. (For the nerds, geopackages are actually just a form of an SQL database.) Unlike Shape files, geopackage files are designed to store multiple different datasets. In both Shapefiles and geopackages, they only store vector data.</p>
+<div id="distance-100mi" class="section level1">
+<h1>Distance, 100mi</h1>
+<p>100 mi is 160934.4 meters.</p>
+<pre class="r"><code>ca_nb_dist100 &lt;- dnearneigh(ca.coords, 
+                           d1 = 0, 
+                           d2 = 160934.4, 
+                           row.names = ca.sp$county)
+
+ca_nb_dist100_w &lt;-nb2listw(ca_nb_dist50, style=&quot;W&quot;, zero.policy= TRUE)</code></pre>
+<pre class="r"><code># global moran&#39;s I using Monte Carlo
+moran.mc(ca.sp$crate, ca_nb_dist100_w, nsim=999, zero.policy= TRUE)</code></pre>
+<pre><code>## 
+##  Monte-Carlo simulation of Moran I
+## 
+## data:  ca.sp$crate 
+## weights: ca_nb_dist100_w  
+## number of simulations + 1: 1000 
+## 
+## statistic = 0.19799, observed rank = 983, p-value = 0.017
+## alternative hypothesis: greater</code></pre>
+<p><strong>Insert your interpretation here.</strong></p>
 </div>
-<div id="supplemental-notes-on-rspatial-readings" class="section level1">
-<h1>Supplemental Notes on rspatial Readings</h1>
-<div id="chapter-3-sp-objects" class="section level2">
-<h2>Chapter 3: <code>{sp}</code> objects</h2>
-<p>In <a href="https://rspatial.org/raster/spatial/3-vectordata.html">chapter 3</a>, Professor Hijmans goes into some detail about “classes” in R. This is really an advanced topic. Don’t worry if you don’t completely understand it. What’s important is that <code>{sp}</code> data is often stored in these complicated R Objects that behave a lot like <code>list</code> objects. These <code>list</code>-like objects sometimes have a data.frame attached, which would include non-spatial data like rainfall.</p>
-<p>Professor Hijmans also creates spatial data objects from scratch. Will you ever actually have to do this? Maybe. For this course? Not a ton. Particularly when it comes to creating your own <code>SpatialLines</code> and <code>SpatialPolygons</code>, you can skim it. This material will always be available if you ever need to come back to it after all. What is important, is that conceptually these lines and polygons are fundamentally made from connecting a series of points (i.e. coordinates).</p>
+<div id="lisa" class="section level1">
+<h1>LISA</h1>
+<div id="queen" class="section level2">
+<h2>Queen</h2>
+<pre class="r"><code># lets get neighboods, ie spatial structure matrix, including selves
+ca_q_nb.self &lt;- include.self(ca_q_nb)
+# create weights matrix
+ca_q_nb.self_w &lt;- nb2listw(ca_q_nb.self, style=&quot;W&quot;, zero.policy= TRUE)
+# use G*
+localgstar &lt;- localG(ca.sp$crate, ca_q_nb.self_w, zero.policy = TRUE)
+# Examine summary values
+summary(localgstar)</code></pre>
+<pre><code>##     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+## -2.76901 -1.52049  0.02529 -0.10387  1.08722  2.80376</code></pre>
+<p><strong>Insert your interpretation here.</strong></p>
+<pre class="r"><code># turn back into sf object for mapping
+queen_sf &lt;- mutate(ca, localgstar = as.numeric(localgstar))</code></pre>
+<pre class="r"><code># map with quintile
+tm_shape(queen_sf, unit = &quot;mi&quot;) +
+  tm_polygons(col = &quot;localgstar&quot;, 
+              title = &quot;Gi* value&quot;,
+              palette = &quot;-RdBu&quot;, 
+              style = &quot;quantile&quot;) +
+  tm_scale_bar(breaks = c(0, 10, 20), text.size = 1) +
+  tm_layout(frame = F, main.title = &quot;Queen Continguity&quot;,
+            legend.outside = T) </code></pre>
+<pre><code>## Variable &quot;localgstar&quot; contains positive and negative values, so midpoint is set to 0. Set midpoint = NA to show the full spectrum of the color palette.</code></pre>
+<p><img src="Lab_Week5_files/figure-html/unnamed-chunk-19-1.png" /><!-- --></p>
 </div>
-<div id="chapter-5-readingwriting-vector-files." class="section level2">
-<h2>Chapter 5: Reading/Writing Vector Files.</h2>
-<p>In <a href="https://rspatial.org/raster/spatial/5-files.html">chapter 5</a>, Professor Hijmans suggests using a function from the <code>{raster}</code> package to read <code>.shp</code> files into R. However, I recommend <code>readOGR</code> from <code>{rgdal}</code>. Mainly because you don’t need to use any functions from <code>{raster}</code> if you’re just working with “vector” data (including, points, lines and polygons, but not satellite photos). For instance, the code <code>rgdal::readOGR(&quot;galap.shp&quot;)</code> will load your spatial data into R for Assignment 3. (Similarly, to write <code>{sp}</code> files, I recommend <code>writeOGR</code>.)</p>
-<p>Remember to skip the stuff on Raster for now.</p>
+<div id="dist-50mi" class="section level2">
+<h2>Dist 50mi</h2>
+<pre class="r"><code>ca_nb_dist50.self &lt;- include.self(ca_nb_dist50)
+ca_nb_dist50.self_w &lt;- nb2listw(ca_nb_dist50.self , style=&quot;W&quot;, zero.policy= TRUE)
+localgstar &lt;- localG(ca.sp$crate, ca_nb_dist50.self_w, zero.policy = TRUE)
+summary(localgstar)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+## -2.2674 -1.1579 -0.1851 -0.1357  0.9700  2.3396</code></pre>
+<p><strong>Insert your interpretation here.</strong></p>
+<pre class="r"><code>dist50_sf &lt;- mutate(ca, localgstar = as.numeric(localgstar))</code></pre>
+<pre class="r"><code># map with decile
+tm_shape(dist50_sf, unit = &quot;mi&quot;) +
+  tm_polygons(col = &quot;localgstar&quot;, 
+              title = &quot;Gi* value&quot;,
+              palette = &quot;-RdBu&quot;, 
+              style = &quot;quantile&quot;,
+              n = 10) +
+  tm_scale_bar(breaks = c(0, 10, 20), text.size = 1) +
+  tm_layout(frame = F, main.title = &quot;Distance 50 mi&quot;,
+            legend.outside = T) </code></pre>
+<pre><code>## Variable &quot;localgstar&quot; contains positive and negative values, so midpoint is set to 0. Set midpoint = NA to show the full spectrum of the color palette.</code></pre>
+<p><img src="Lab_Week5_files/figure-html/unnamed-chunk-22-1.png" /><!-- --></p>
 </div>
-<div id="chapter-6-coordinate-reference-systems" class="section level2">
-<h2>Chapter 6: Coordinate Reference Systems</h2>
-<p>The reading in <a href="https://rspatial.org/raster/spatial/6-crs.html">rspatial</a> may be a little opaque in its description of the CRS. For the sake of this course, all we expect for you to know is that the CRS information attached (or omitted) from each piece of spatial data contains instructions for your GIS (whether its R, ArcGIS, QGIS, etc) to correctly place the spatial geometries. In order to do this, your GIS takes the instructions in the CRS information attached to your spatial data file, and then calculates both the 3D model of the planet, and how that 3D image should be presented on your 2D computer screen or printed map. A lot of math is involved in constructing a CRS (both in terms of <a href="https://en.wikipedia.org/wiki/Geodesy">Geodesy</a> and <a href="https://en.wikipedia.org/wiki/Map_projection">Cartography</a>).</p>
-<p>It’s rare that you’ll actually need to mess around with a CRS. Sometimes people will send you spatial data with a missing or incomplete CRS. Often if it is entirely missing, the presumed CRS is some standard mercator coordinate system. (For instance, EPSG 3857. When you go to Google maps, right click somewhere, and click on “What’s here?,” the coordinates that it presents are in EPSG 3857.) It is not uncommon to have two different spatial data sets that you need to use together (say the borders of a state and spatial data you collected), but have a different CRS. It’s pretty trivial now to “transform” one to match the other in R or any other GIS.</p>
-<p><em>Supplemental</em></p>
-<ul>
-<li>A thorough guide on CRS from <a href="https://docs.qgis.org/3.10/en/docs/gentle_gis_introduction/coordinate_reference_systems.html">QGIS</a></li>
-</ul>
-</div>
-<div id="chapter-7-vector-data-manipulation" class="section level2">
-<h2>Chapter 7: Vector Data Manipulation</h2>
-<p>Just a reminder, a variable in Data Science is different from a variable in programming. In this chapter, when Professor Hijmans writes about variables, he is talking about variables in the former sense (i.e. columns in a table).</p>
+<div id="dist-100mi" class="section level2">
+<h2>Dist 100mi</h2>
+<pre class="r"><code>ca_nb_dist100.self &lt;- include.self(ca_nb_dist100)
+ca_nb_dist100.self_w &lt;- nb2listw(ca_nb_dist100.self , style=&quot;W&quot;, zero.policy= TRUE)
+localgstar &lt;- localG(ca.sp$crate, ca_nb_dist100.self_w, zero.policy = TRUE)
+summary(localgstar)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+## -3.6885 -2.0339 -0.2704 -0.4514  0.9357  2.3869</code></pre>
+<p><strong>Insert your interpretation here.</strong></p>
+<pre class="r"><code>dist100_sf &lt;- mutate(ca, localgstar = as.numeric(localgstar))</code></pre>
+<pre class="r"><code>breaks &lt;- c(-Inf, -2.58, -1.96, -1.65, 1.65, 1.96, 2.58, Inf)
+
+# map with z-scores as break
+tm_shape(dist100_sf, unit = &quot;mi&quot;) +
+  tm_polygons(col = &quot;localgstar&quot;, title = &quot;Gi* value&quot;, palette = &quot;-RdBu&quot;,
+              breaks = breaks) +
+  tm_scale_bar(breaks = c(0, 10, 20), text.size = 1) +
+  tm_layout(frame = F, main.title = &quot;Distance 100 mi&quot;,
+            legend.outside = T)</code></pre>
+<pre><code>## Variable &quot;localgstar&quot; contains positive and negative values, so midpoint is set to 0. Set midpoint = NA to show the full spectrum of the color palette.</code></pre>
+<p><img src="Lab_Week5_files/figure-html/unnamed-chunk-25-1.png" /><!-- --></p>
 </div>
 </div>
 

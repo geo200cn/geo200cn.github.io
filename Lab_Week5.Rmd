@@ -1,0 +1,225 @@
+---
+title: "Lab Lecture 5"
+author: "Kenji Tomari"
+output: 
+  html_document:
+    theme: readable
+    toc: true
+    toc_depth: 3
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r message = F, warning = F, error = F}
+library(tidyverse)
+library(sf)
+library(spdep)
+library(tmap)
+```
+
+```{r}
+counties <- st_read("countiescovid.shp")
+```
+
+```{r}
+# Let's just look at California.
+ca <- counties %>%
+  filter(state == "California")
+
+ca.sp <- ca %>%
+  as("Spatial")
+```
+
+```{r}
+# How many counties in CA?
+nrow(ca)
+```
+
+
+```{r}
+# quick map
+ggplot() +
+  geom_sf(data=ca, mapping = aes(fill = log(cases)), color = "red")
+```
+
+Before I begin the rest of the steps, I'll get the centroids.
+
+```{r}
+# get centroids of polygons
+ca.coords <- coordinates(ca.sp)
+```
+
+# Queen Contiguity
+
+```{r}
+# create neighborhood matrix
+ca_q_nb <- poly2nb(ca.sp, queen=T)
+ca_q_nb
+```
+
+```{r}
+# head
+# take a look at the first 6 counties in the neighborhood matrix
+ca_q_nb[1:6]
+```
+
+
+```{r}
+# create spatial weights matrix
+ca_q_w <- nb2listw(ca_q_nb, style="W", zero.policy= TRUE)
+ca_q_w
+```
+
+```{r}
+# quick look at the weights
+ca_q_w$weights[1:6]
+```
+
+
+```{r}
+# quick plot
+plot(ca.sp, border = "grey60")
+plot(ca_q_w, coords = ca.coords, add=T, col=2)
+```
+
+```{r}
+# global moran's I using Monte Carlo
+moran.mc(ca.sp$crate, ca_q_w, nsim=999, zero.policy= TRUE)
+```
+
+**Insert your interpretation here.**
+
+# Distance, 50mi
+
+50 miles is 80467.2 meters.
+
+```{r}
+ca_nb_dist50 <- dnearneigh(ca.coords, 
+                           d1 = 0, 
+                           d2 = 80467.2, 
+                           row.names = ca.sp$county)
+
+ca_nb_dist50_w <-nb2listw(ca_nb_dist50, style="W", zero.policy= TRUE)
+```
+
+```{r}
+# global moran's I using Monte Carlo
+moran.mc(ca.sp$crate, ca_nb_dist50_w, nsim=999, zero.policy= TRUE)
+```
+
+**Insert your interpretation here.**
+
+# Distance, 100mi
+
+100 mi is 160934.4 meters.
+
+```{r}
+ca_nb_dist100 <- dnearneigh(ca.coords, 
+                           d1 = 0, 
+                           d2 = 160934.4, 
+                           row.names = ca.sp$county)
+
+ca_nb_dist100_w <-nb2listw(ca_nb_dist50, style="W", zero.policy= TRUE)
+```
+
+```{r}
+# global moran's I using Monte Carlo
+moran.mc(ca.sp$crate, ca_nb_dist100_w, nsim=999, zero.policy= TRUE)
+```
+
+**Insert your interpretation here.**
+
+# LISA
+
+## Queen
+
+```{r}
+# lets get neighboods, ie spatial structure matrix, including selves
+ca_q_nb.self <- include.self(ca_q_nb)
+# create weights matrix
+ca_q_nb.self_w <- nb2listw(ca_q_nb.self, style="W", zero.policy= TRUE)
+# use G*
+localgstar <- localG(ca.sp$crate, ca_q_nb.self_w, zero.policy = TRUE)
+# Examine summary values
+summary(localgstar)
+```
+
+**Insert your interpretation here.**
+
+```{r}
+# turn back into sf object for mapping
+queen_sf <- mutate(ca, localgstar = as.numeric(localgstar))
+```
+
+```{r}
+# map with quintile
+tm_shape(queen_sf, unit = "mi") +
+  tm_polygons(col = "localgstar", 
+              title = "Gi* value",
+              palette = "-RdBu", 
+              style = "quantile") +
+  tm_scale_bar(breaks = c(0, 10, 20), text.size = 1) +
+  tm_layout(frame = F, main.title = "Queen Continguity",
+            legend.outside = T) 
+```
+
+
+## Dist 50mi
+
+```{r}
+ca_nb_dist50.self <- include.self(ca_nb_dist50)
+ca_nb_dist50.self_w <- nb2listw(ca_nb_dist50.self , style="W", zero.policy= TRUE)
+localgstar <- localG(ca.sp$crate, ca_nb_dist50.self_w, zero.policy = TRUE)
+summary(localgstar)
+```
+
+**Insert your interpretation here.**
+
+```{r}
+dist50_sf <- mutate(ca, localgstar = as.numeric(localgstar))
+```
+
+```{r}
+# map with decile
+tm_shape(dist50_sf, unit = "mi") +
+  tm_polygons(col = "localgstar", 
+              title = "Gi* value",
+              palette = "-RdBu", 
+              style = "quantile",
+              n = 10) +
+  tm_scale_bar(breaks = c(0, 10, 20), text.size = 1) +
+  tm_layout(frame = F, main.title = "Distance 50 mi",
+            legend.outside = T) 
+```
+
+## Dist 100mi
+
+```{r}
+ca_nb_dist100.self <- include.self(ca_nb_dist100)
+ca_nb_dist100.self_w <- nb2listw(ca_nb_dist100.self , style="W", zero.policy= TRUE)
+localgstar <- localG(ca.sp$crate, ca_nb_dist100.self_w, zero.policy = TRUE)
+summary(localgstar)
+```
+
+**Insert your interpretation here.**
+
+```{r}
+dist100_sf <- mutate(ca, localgstar = as.numeric(localgstar))
+```
+
+
+```{r}
+breaks <- c(-Inf, -2.58, -1.96, -1.65, 1.65, 1.96, 2.58, Inf)
+
+# map with z-scores as break
+tm_shape(dist100_sf, unit = "mi") +
+  tm_polygons(col = "localgstar", title = "Gi* value", palette = "-RdBu",
+              breaks = breaks) +
+  tm_scale_bar(breaks = c(0, 10, 20), text.size = 1) +
+  tm_layout(frame = F, main.title = "Distance 100 mi",
+            legend.outside = T)
+```
+

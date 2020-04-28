@@ -23,6 +23,10 @@ navbar:
           href: spatialsf.html
         - text: "Point Pattern Analysis"
           href: pointpatterns.html
+        - text: "Spatial Autocorrelation"
+          href: spatialautocorrelation.html
+        - text: "Linear Regression I"
+          href: linearregression.html
     - text: "Lab Lectures"
       menu:
         - text: "Lab Lecture - 1"
@@ -33,6 +37,8 @@ navbar:
           href: Lab_Week3.html
         - text: "Lab Lecture - 4"
           href: Lab_Week4.html
+        - text: "Lab Lecture - 5"
+          href: Lab_Week5.html
     - text: "Other"
       menu:
         - text:
