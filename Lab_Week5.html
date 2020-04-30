@@ -445,10 +445,9 @@ div.tocify {
 </div>
 
 
-<pre class="r"><code>library(tidyverse)
-library(sf)
-library(spdep)
-library(tmap)</code></pre>
+<div id="part-1" class="section level1">
+<h1>Part 1</h1>
+<p>Below is a run through of Part 1 of Assignment 5.</p>
 <pre class="r"><code>counties &lt;- st_read(&quot;countiescovid.shp&quot;)</code></pre>
 <pre><code>## Reading layer `countiescovid&#39; from data source `/Users/noli/Documents/UCD/teaching/GEO 200CN/lab/geo200cn.github.io/countiescovid.shp&#39; using driver `ESRI Shapefile&#39;
 ## Simple feature collection with 3108 features and 5 fields
@@ -457,6 +456,7 @@ library(tmap)</code></pre>
 ## bbox:           xmin: -2031905 ymin: -2114925 xmax: 2516374 ymax: 732103.3
 ## epsg (SRID):    NA
 ## proj4string:    +proj=laea +lat_0=45 +lon_0=-100 +x_0=0 +y_0=0 +a=6370997 +b=6370997 +units=m +no_defs</code></pre>
+<pre class="r"><code>counties.sp &lt;- as(counties, &quot;Spatial&quot;)</code></pre>
 <pre class="r"><code># Let&#39;s just look at California.
 ca &lt;- counties %&gt;%
   filter(state == &quot;California&quot;)
@@ -470,12 +470,17 @@ nrow(ca)</code></pre>
 ggplot() +
   geom_sf(data=ca, mapping = aes(fill = log(cases)), color = &quot;red&quot;)</code></pre>
 <p><img src="Lab_Week5_files/figure-html/unnamed-chunk-5-1.png" /><!-- --></p>
+<div id="grab-coordinates" class="section level2">
+<h2>Grab Coordinates</h2>
 <p>Before I begin the rest of the steps, I’ll get the centroids.</p>
 <pre class="r"><code># get centroids of polygons
 ca.coords &lt;- coordinates(ca.sp)</code></pre>
-<div id="queen-contiguity" class="section level1">
-<h1>Queen Contiguity</h1>
+</div>
+<div id="queen-contiguity" class="section level2">
+<h2>Queen Contiguity</h2>
+<p>Here we define the neighborhood using Queen Contiguity, and from this definition we assign weights to neighbors, and finally use Monte Carlo simulation to calculate the significance of our test of spatial autocorrelation (Moran’s I).</p>
 <pre class="r"><code># create neighborhood matrix
+# Note that strictly speaking, the R object is not matrix
 ca_q_nb &lt;- poly2nb(ca.sp, queen=T)
 ca_q_nb</code></pre>
 <pre><code>## Neighbour list object:
@@ -504,6 +509,7 @@ ca_q_nb[1:6]</code></pre>
 ## [[6]]
 ## [1] 12 26 38 47 54 56</code></pre>
 <pre class="r"><code># create spatial weights matrix
+# Note that strictly speaking, the R object is not matrix
 ca_q_w &lt;- nb2listw(ca_q_nb, style=&quot;W&quot;, zero.policy= TRUE)
 ca_q_w</code></pre>
 <pre><code>## Characteristics of weights list object:
@@ -517,6 +523,7 @@ ca_q_w</code></pre>
 ## Weights constants summary:
 ##    n   nn S0      S1       S2
 ## W 58 3364 58 26.8846 238.3498</code></pre>
+<p>Note, you may run across an error when running this code above. When I run <code>ca_q_w</code> by itself, its actually invoking the <code>print</code> function, but specified to work with the output of <code>nb2listw</code>. So, you need to tell it to ignore regions with no neighbors, just like you did in <code>nb2listw</code>. So instead, you could type <code>print(ca_q_w, zero.policy = TRUE)</code>.</p>
 <pre class="r"><code># quick look at the weights
 ca_q_w$weights[1:6]</code></pre>
 <pre><code>## [[1]]
@@ -553,8 +560,8 @@ moran.mc(ca.sp$crate, ca_q_w, nsim=999, zero.policy= TRUE)</code></pre>
 ## alternative hypothesis: greater</code></pre>
 <p><strong>Insert your interpretation here.</strong></p>
 </div>
-<div id="distance-50mi" class="section level1">
-<h1>Distance, 50mi</h1>
+<div id="distance-50mi" class="section level2">
+<h2>Distance, 50mi</h2>
 <p>50 miles is 80467.2 meters.</p>
 <pre class="r"><code>ca_nb_dist50 &lt;- dnearneigh(ca.coords, 
                            d1 = 0, 
@@ -562,6 +569,7 @@ moran.mc(ca.sp$crate, ca_q_w, nsim=999, zero.policy= TRUE)</code></pre>
                            row.names = ca.sp$county)
 
 ca_nb_dist50_w &lt;-nb2listw(ca_nb_dist50, style=&quot;W&quot;, zero.policy= TRUE)</code></pre>
+<p>Note, the <code>row.names</code> argument must be unique. So for the entire US, the <code>county</code> column is actually not unique. Try using <code>countyFIPS</code>.</p>
 <pre class="r"><code># global moran&#39;s I using Monte Carlo
 moran.mc(ca.sp$crate, ca_nb_dist50_w, nsim=999, zero.policy= TRUE)</code></pre>
 <pre><code>## 
@@ -571,12 +579,12 @@ moran.mc(ca.sp$crate, ca_nb_dist50_w, nsim=999, zero.policy= TRUE)</code></pre>
 ## weights: ca_nb_dist50_w  
 ## number of simulations + 1: 1000 
 ## 
-## statistic = 0.19799, observed rank = 982, p-value = 0.018
+## statistic = 0.19799, observed rank = 991, p-value = 0.009
 ## alternative hypothesis: greater</code></pre>
 <p><strong>Insert your interpretation here.</strong></p>
 </div>
-<div id="distance-100mi" class="section level1">
-<h1>Distance, 100mi</h1>
+<div id="distance-100mi" class="section level2">
+<h2>Distance, 100mi</h2>
 <p>100 mi is 160934.4 meters.</p>
 <pre class="r"><code>ca_nb_dist100 &lt;- dnearneigh(ca.coords, 
                            d1 = 0, 
@@ -593,14 +601,14 @@ moran.mc(ca.sp$crate, ca_nb_dist100_w, nsim=999, zero.policy= TRUE)</code></pre>
 ## weights: ca_nb_dist100_w  
 ## number of simulations + 1: 1000 
 ## 
-## statistic = 0.19799, observed rank = 983, p-value = 0.017
+## statistic = 0.19799, observed rank = 977, p-value = 0.023
 ## alternative hypothesis: greater</code></pre>
 <p><strong>Insert your interpretation here.</strong></p>
 </div>
-<div id="lisa" class="section level1">
-<h1>LISA</h1>
-<div id="queen" class="section level2">
-<h2>Queen</h2>
+<div id="lisa" class="section level2">
+<h2>LISA</h2>
+<div id="queen" class="section level3">
+<h3>Queen</h3>
 <pre class="r"><code># lets get neighboods, ie spatial structure matrix, including selves
 ca_q_nb.self &lt;- include.self(ca_q_nb)
 # create weights matrix
@@ -626,8 +634,8 @@ tm_shape(queen_sf, unit = &quot;mi&quot;) +
 <pre><code>## Variable &quot;localgstar&quot; contains positive and negative values, so midpoint is set to 0. Set midpoint = NA to show the full spectrum of the color palette.</code></pre>
 <p><img src="Lab_Week5_files/figure-html/unnamed-chunk-19-1.png" /><!-- --></p>
 </div>
-<div id="dist-50mi" class="section level2">
-<h2>Dist 50mi</h2>
+<div id="dist-50mi" class="section level3">
+<h3>Dist 50mi</h3>
 <pre class="r"><code>ca_nb_dist50.self &lt;- include.self(ca_nb_dist50)
 ca_nb_dist50.self_w &lt;- nb2listw(ca_nb_dist50.self , style=&quot;W&quot;, zero.policy= TRUE)
 localgstar &lt;- localG(ca.sp$crate, ca_nb_dist50.self_w, zero.policy = TRUE)
@@ -649,8 +657,8 @@ tm_shape(dist50_sf, unit = &quot;mi&quot;) +
 <pre><code>## Variable &quot;localgstar&quot; contains positive and negative values, so midpoint is set to 0. Set midpoint = NA to show the full spectrum of the color palette.</code></pre>
 <p><img src="Lab_Week5_files/figure-html/unnamed-chunk-22-1.png" /><!-- --></p>
 </div>
-<div id="dist-100mi" class="section level2">
-<h2>Dist 100mi</h2>
+<div id="dist-100mi" class="section level3">
+<h3>Dist 100mi</h3>
 <pre class="r"><code>ca_nb_dist100.self &lt;- include.self(ca_nb_dist100)
 ca_nb_dist100.self_w &lt;- nb2listw(ca_nb_dist100.self , style=&quot;W&quot;, zero.policy= TRUE)
 localgstar &lt;- localG(ca.sp$crate, ca_nb_dist100.self_w, zero.policy = TRUE)
@@ -670,6 +678,45 @@ tm_shape(dist100_sf, unit = &quot;mi&quot;) +
             legend.outside = T)</code></pre>
 <pre><code>## Variable &quot;localgstar&quot; contains positive and negative values, so midpoint is set to 0. Set midpoint = NA to show the full spectrum of the color palette.</code></pre>
 <p><img src="Lab_Week5_files/figure-html/unnamed-chunk-25-1.png" /><!-- --></p>
+</div>
+</div>
+</div>
+<div id="part-ii" class="section level1">
+<h1>Part II</h1>
+<div id="question-1" class="section level2">
+<h2>Question 1</h2>
+<p>Read BBR p 182-3 on residuals and p 174-7 beginning with “Estimation of a Linear Regression Function” for an introduction on fitting a line.</p>
+<p>Also, these may be useful references as well from Statistics by Jim: <a href="https://statisticsbyjim.com/glossary/fitted-values/">fitted values</a> and <a href="https://statisticsbyjim.com/glossary/residuals/">residuals</a>.</p>
+</div>
+<div id="question-2" class="section level2">
+<h2>Question 2</h2>
+<p>Again, BBR p174 should be useful in answering this question.</p>
+</div>
+<div id="question-3" class="section level2">
+<h2>Question 3</h2>
+<p>Use equation 4-4 and the values reported under “Coefficients” and “Estimate” when running <code>summary(lm1)</code>.</p>
+</div>
+<div id="question-4" class="section level2">
+<h2>Question 4</h2>
+<p>The simplest way to do this in R would be to use two functions followed by each other in the same code chunk, <code>plot</code> and <code>lines</code>, like so:</p>
+<pre class="r"><code>plot(your_response_variable ~ your_independent_variable, your_data_frame)
+lines(your_data_frame$your_response_variable, 
+      predict(your_lm_object), 
+      col = &quot;blue&quot;)</code></pre>
+<p>Replace all the arguments beginning with <code>your_</code> with the appropriate names.</p>
+</div>
+<div id="question-5" class="section level2">
+<h2>Question 5</h2>
+<p>Where does the <em>name</em> <code>poorPoor</code> actually come from? Well because the <code>poor</code> column in <code>zctanyc</code> is qualitative, the output for the <code>Poor</code> category in the column <code>poor</code> is given the prefix <code>poor</code>. You’ll see in the next question, when running <code>lm</code> on the <code>borough</code> column, a similar naming scheme: “boroughBrooklyn”, “boroughQueens”, etc.</p>
+<p>For more information on interpeting the “Coefficients” in the summary output of <code>lm</code>, check out this article on <a href="http://www.sthda.com/english/articles/40-regression-analysis/163-regression-with-categorical-variables-dummy-coding-essentials-in-r/">Regression with Categorical Variables</a>.</p>
+</div>
+<div id="question-6" class="section level2">
+<h2>Question 6</h2>
+<p>See Question 5.</p>
+</div>
+<div id="question-7" class="section level2">
+<h2>Question 7</h2>
+<p>The r^2 is described beginning on the bottom of p. 182 in BBR. This <a href="https://statisticsbyjim.com/regression/interpret-r-squared-regression/">article</a> may be of use as well.</p>
 </div>
 </div>
 
