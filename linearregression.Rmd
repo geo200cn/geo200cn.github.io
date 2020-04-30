@@ -170,11 +170,13 @@ ggplot(zctanyc.sf) +
 ## **Correlation**
 \
 
-We are interested in understanding the ecological characteristics associated with zipcode level COVID-19 cases per 1,000 residents (*covidrate*). Let's examine its association with neighborhood percent black *pblk*.  One of the first steps in conducting a data analysis is to plot the two variables to detect whether a relationship exists.  Because COVID-19 rates and percent black are numeric variables, we can construct a scatter plot to examine the relationship. Let's use our reliable friend `ggplot()` again.
+We are interested in understanding the ecological characteristics associated with zipcode level COVID-19 cases per 1,000 residents (*covidrate*). Let's examine its association with neighborhood percent black *pblk*.  One of the first steps in conducting a data analysis is to plot the two variables to detect whether a relationship exists.  Because COVID-19 rates and percent black are numeric variables, we can construct a scatter plot to examine the relationship. First, let's scale *pblk* to be from 0 to 100 (as opposed to 0 to 1).
 
 ```{r}
 zctanyc <- mutate(zctanyc, pblk = pblk*100)
 ```
+
+Let's use our reliable friend `ggplot()` again.
 
 ```{r}
 ggplot(zctanyc) +

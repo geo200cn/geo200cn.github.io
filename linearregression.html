@@ -582,8 +582,9 @@ Your first instinct as a Geographer when given new data is to map. MAP, Map, map
 <div id="correlation" class="section level2">
 <h2><strong>Correlation</strong></h2>
 <p><br />
-We are interested in understanding the ecological characteristics associated with zipcode level COVID-19 cases per 1,000 residents (<em>covidrate</em>). Let’s examine its association with neighborhood percent black <em>pblk</em>. One of the first steps in conducting a data analysis is to plot the two variables to detect whether a relationship exists. Because COVID-19 rates and percent black are numeric variables, we can construct a scatter plot to examine the relationship. Let’s use our reliable friend <code>ggplot()</code> again.</p>
+We are interested in understanding the ecological characteristics associated with zipcode level COVID-19 cases per 1,000 residents (<em>covidrate</em>). Let’s examine its association with neighborhood percent black <em>pblk</em>. One of the first steps in conducting a data analysis is to plot the two variables to detect whether a relationship exists. Because COVID-19 rates and percent black are numeric variables, we can construct a scatter plot to examine the relationship. First, let’s scale <em>pblk</em> to be from 0 to 100 (as opposed to 0 to 1).</p>
 <pre class="r"><code>zctanyc &lt;- mutate(zctanyc, pblk = pblk*100)</code></pre>
+<p>Let’s use our reliable friend <code>ggplot()</code> again.</p>
 <pre class="r"><code>ggplot(zctanyc) +
     geom_point(mapping = aes(x = pblk, y = covidrate)) +
     xlab(&quot;Percent black&quot;) +
