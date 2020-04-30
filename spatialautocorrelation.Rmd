@@ -252,7 +252,7 @@ Sacnb_dist1 <- dnearneigh(sac.coords, d1 = 0, d2 = 32186.9,
 Another common method for defining neighbors is k-nearest neighbors. This will find the k closest observations for each observation of interest, where k is some integer. For instance, if we define k=3, then each observation will have 3 neighbors, which are the 3 closest observations to it, regardless of the distance between them. Using the k-nearest neighbor rule, two observations could potentially be very far apart and still be considered neighbors.
 
 <center>
-![Figure 2: k-nearest neighbors: k = 3](/Users/noli/Documents/UCD/teaching/GEO 200CN/lab/geo200cn.github.io/fig2.png)
+![Figure 3: k-nearest neighbors: k = 3](/Users/noli/Documents/UCD/teaching/GEO 200CN/lab/geo200cn.github.io/fig2.png)
 
 </center>
 
