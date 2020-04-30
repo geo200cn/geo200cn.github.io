@@ -583,11 +583,12 @@ Your first instinct as a Geographer when given new data is to map. MAP, Map, map
 <h2><strong>Correlation</strong></h2>
 <p><br />
 We are interested in understanding the ecological characteristics associated with zipcode level COVID-19 cases per 1,000 residents (<em>covidrate</em>). Let’s examine its association with neighborhood percent black <em>pblk</em>. One of the first steps in conducting a data analysis is to plot the two variables to detect whether a relationship exists. Because COVID-19 rates and percent black are numeric variables, we can construct a scatter plot to examine the relationship. Let’s use our reliable friend <code>ggplot()</code> again.</p>
+<pre class="r"><code>zctanyc &lt;- mutate(zctanyc, pblk = pblk*100)</code></pre>
 <pre class="r"><code>ggplot(zctanyc) +
     geom_point(mapping = aes(x = pblk, y = covidrate)) +
     xlab(&quot;Percent black&quot;) +
     ylab(&quot;COVID-19 cases per 1,000&quot;)</code></pre>
-<p><img src="linearregression_files/figure-html/unnamed-chunk-8-1.png" /><!-- --></p>
+<p><img src="linearregression_files/figure-html/unnamed-chunk-9-1.png" /><!-- --></p>
 <p>The relationship is not super clear. The next step is to calculate the correlation between variables to get a numerical summary of the relationship. A picture and a numerical summary is a good combination.</p>
 <p>Use the function <code>cor.test()</code> to calculate the Pearson correlation between COVID-19 case rates and median household income.</p>
 <pre class="r"><code>cor.test(zctanyc$covidrate, zctanyc$pblk) </code></pre>
@@ -629,7 +630,7 @@ We use the function <code>lm()</code> to run a regression of COVID-19 case rates
 ## 
 ## Coefficients:
 ## (Intercept)         pblk  
-##      15.585        9.636</code></pre>
+##    15.58486      0.09636</code></pre>
 <p><code>names()</code> function reveals what’s contained in the <em>lm1</em> object.</p>
 <pre class="r"><code>names(lm1)</code></pre>
 <pre><code>##  [1] &quot;coefficients&quot;  &quot;residuals&quot;     &quot;effects&quot;       &quot;rank&quot;         
@@ -656,8 +657,8 @@ We use the function <code>lm()</code> to run a regression of COVID-19 case rates
 ## 
 ## Coefficients:
 ##             Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)  15.5849     0.6319  24.664  &lt; 2e-16 ***
-## pblk          9.6359     2.0439   4.714 4.93e-06 ***
+## (Intercept) 15.58486    0.63189  24.664  &lt; 2e-16 ***
+## pblk         0.09636    0.02044   4.714 4.93e-06 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
@@ -671,8 +672,8 @@ We use the function <code>lm()</code> to run a regression of COVID-19 case rates
 <pre><code>## # A tibble: 2 x 5
 ##   term        estimate std.error statistic  p.value
 ##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
-## 1 (Intercept)    15.6      0.632     24.7  7.60e-59
-## 2 pblk            9.64     2.04       4.71 4.93e- 6</code></pre>
+## 1 (Intercept)  15.6       0.632      24.7  7.60e-59
+## 2 pblk          0.0964    0.0204      4.71 4.93e- 6</code></pre>
 <p><br></p>
 <p class="comment" , style="font-style:normal">
 <strong>Question 2</strong>: What is the interpretation of the intercept? What is the interpretation of the slope coefficient?
@@ -768,8 +769,8 @@ BBR on page 181 asks: how well does the line fit the original data. BBR introduc
 ## 
 ## Coefficients:
 ##             Estimate Std. Error t value             Pr(&gt;|t|)    
-## (Intercept)  15.5849     0.6319  24.664 &lt; 0.0000000000000002 ***
-## pblk          9.6359     2.0439   4.714           0.00000493 ***
+## (Intercept) 15.58486    0.63189  24.664 &lt; 0.0000000000000002 ***
+## pblk         0.09636    0.02044   4.714           0.00000493 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
