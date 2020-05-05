@@ -27,6 +27,10 @@ navbar:
           href: spatialautocorrelation.html
         - text: "Linear Regression I"
           href: linearregression.html
+        - text: "Linear Regression II"
+          href: linearregression2.html
+        - text: "Spatial Regression"
+          href: spatialreg.html
     - text: "Lab Lectures"
       menu:
         - text: "Lab Lecture - 1"
@@ -39,6 +43,8 @@ navbar:
           href: Lab_Week4.html
         - text: "Lab Lecture - 5"
           href: Lab_Week5.html
+        - text: "Lab Lecture - 6"
+          href: Lab_Week6.html
     - text: "Other"
       menu:
         - text:

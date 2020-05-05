@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Spatial Regression</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/yeti.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 45px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h2 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h3 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h4 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h5 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h6 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">GEO 200CN: Winter 2020</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="syllabus.html">Syllabus</a>
+</li>
+<li>
+  <a href="hw_guidelines.html">Assignment Guidelines</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Labs
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="getting_started.html">Getting Started</a>
+    </li>
+    <li>
+      <a href="tidyr.html">Intro to tidyverse</a>
+    </li>
+    <li>
+      <a href="central.html">Sampling, CIs, CLT</a>
+    </li>
+    <li>
+      <a href="hypothesis.html">Hypothesis Testing</a>
+    </li>
+    <li>
+      <a href="spatialsf.html">Mapping in sf</a>
+    </li>
+    <li>
+      <a href="pointpatterns.html">Point Pattern Analysis</a>
+    </li>
+    <li>
+      <a href="spatialautocorrelation.html">Spatial Autocorrelation</a>
+    </li>
+    <li>
+      <a href="linearregression.html">Linear Regression I</a>
+    </li>
+    <li>
+      <a href="linearregression2.html">Linear Regression II</a>
+    </li>
+    <li>
+      <a href="spatialreg.html">Spatial Regression</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Lab Lectures
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="Lab_Week1.html">Lab Lecture - 1</a>
+    </li>
+    <li>
+      <a href="Lab_Week2.html">Lab Lecture - 2</a>
+    </li>
+    <li>
+      <a href="Lab_Week3.html">Lab Lecture - 3</a>
+    </li>
+    <li>
+      <a href="Lab_Week4.html">Lab Lecture - 4</a>
+    </li>
+    <li>
+      <a href="Lab_Week5.html">Lab Lecture - 5</a>
+    </li>
+    <li>
+      <a href="Lab_Week6.html">Lab Lecture - 6</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Other
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a></a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Spatial Regression</h1>
+<h3 class="subtitle"><h4 style="font-style:normal">
+GEO 200CN - Quantitative Geography
+</h4></h3>
+<h4 class="author"><h4 style="font-style:normal">
+Professor Noli Brazil
+</h4></h4>
+
+</div>
+
+
+<style>
+p.comment {
+background-color: #DBDBDB;
+padding: 10px;
+border: 1px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: italic;
+}
+
+.figure {
+   margin-top: 20px;
+   margin-bottom: 20px;
+}
+
+h1.title {
+  font-weight: bold;
+  font-family: Arial;  
+}
+
+h2.title {
+  font-family: Arial;  
+}
+
+</style>
+<style type="text/css">
+#TOC {
+  font-size: 13px;
+  font-family: Arial;
+}
+</style>
+<p><br />
+</p>
+<p>In this lab guide, we formally incorporate spatial relationships between units of observations in a regression framework. We will be closely following Chi &amp; Zhu Chapter 4. The objectives of this lab are as follows</p>
+<ol style="list-style-type: decimal">
+<li>Learn how to run and interpret a spatial lag model</li>
+<li>Learn how to run and interpret a spatial error model</li>
+<li>Learn how to decide between an ordinary least squares, spatial lag, and spatial error model.</li>
+</ol>
+<p>To help us accomplish these learning objectives, we will continue examining the association between neighborhood characteristics and COVID-19 case rates in New York City.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+<div id="installing-and-loading-packages" class="section level2">
+<h2><strong>Installing and loading packages</strong></h2>
+<p><br />
+We’ll be using one new package in this lab, <strong>spatialreg</strong>, which contains the functions we need to perform spatial regression models in R. First, install the package.</p>
+<pre class="r"><code>if (!require(&quot;spatialreg&quot;)) install.packages(&quot;spatialreg&quot;)</code></pre>
+<p>Then load it and the other packages we’ll be using.</p>
+<pre class="r"><code>library(tidyverse)
+library(sf)
+library(sp)
+library(spdep)
+library(tmap)
+library(spatialreg)</code></pre>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="why-run-a-spatial-regression" class="section level2">
+<h2><strong>Why run a spatial regression</strong></h2>
+<p><br />
+The reasons why you run a spatial regression significantly overlap with the reasons for <a href="https://geo200cn.github.io/linearregression.html#why_linear_regression">running a regular linear regression</a>. However, there is one additional important motivation: to explicitly incorporate spatial dependency in the model. There are two common flavors of spatial regression: the spatial error model (SEM) and the spatial lag model (SLM). The main reason to run a spatial error model is to control for spatial autocorrelation. We want to do this because spatial autocorrelation breaks the very important assumption that our regression errors are not correlated (Assumption 3 in BBR). The main reason to run a spatial lag model is to formally model spatial contagion. We are modelling the impact of our neighbors’ outcomes on our own outcome. For example, the impact of nearby crime on neighborhood crime. Or the impact of a plot’s crop yield on its neighboring plot’s yield.</p>
+<p>So, in one case, we are using spatial regression because we see spatial dependency as a nuisance to control for. In the other case, we are using spatial regression because there is substantive interest in formally examining the impact of neighboring areas.</p>
+<p>Our research questions in this lab is: What ecological characteristics are associated with zip code COVID-19 case rates in New York City? Do these relationships change after accounting for unobserved spatial dependency? Do nearby COVID-19 rates influence the rates in a neighborhood?</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="bringing-in-the-data" class="section level2">
+<h2><strong>Bringing in the data</strong></h2>
+<p><br />
+We will bring in a shape file containing COVID-19 cases per 1,000 residents and demographic and socioeconomic characteristics for New York city zip codes. I zipped up the file and uploaded it onto Github. Set your working directory to an appropriate folder and use the following code to download and unzip the file. I also uploaded the file in Canvas in the Lab and Assignments Week 6 folder.</p>
+<pre class="r"><code>#insert the pathway to the folder you want your data stored into
+setwd(&quot;insert your pathway here&quot;)
+#downloads file into your working directory 
+download.file(url = &quot;https://raw.githubusercontent.com/geo200cn/data/master/zctanyccovidwk6.zip&quot;, destfile = &quot;zctanyccovidwk6.zip&quot;)
+#unzips the zipped file
+unzip(zipfile = &quot;zctanyccovidwk6.zip&quot;)</code></pre>
+<p>Bring in the New York City zip code shape file into R using <code>st_read()</code></p>
+<pre class="r"><code>zctanyc &lt;- st_read(&quot;zctanyccovidwk6.shp&quot;)</code></pre>
+<p>COVID-19 case data were downloaded from the <a href="https://github.com/nychealth/coronavirus-data">NYC Department of Health and Mental Hygiene</a> (confirmed cases up through May 1, 2020). Socioeconomic and demographic data were downloaded from the 2014-2018 <a href="https://www.census.gov/programs-surveys/acs">American Community Survey</a>. A record layout of the data can be found <a href="https://raw.githubusercontent.com/geo200cn/data/master/zctanyccovidRL.txt">here</a>.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="basic-multiple-linear-regression" class="section level2">
+<h2><strong>Basic multiple linear regression</strong></h2>
+<p><br />
+We’re interested in examining the zip code characteristics associated with the number of COVID-19 cases per 1,000 residents. We run a standard multiple linear regression model, which we should always do first before running any type of spatial regression model. Let’s run the regression model we left off with in the last lab guide. Our dependent variable is <em>covidrate</em> and our independent variables are percent black <em>pblk</em>, percent Hispanic <em>phisp</em>, median household income <em>medincome</em>, total population <em>totp</em>, and percent of residents 65 years old and older <em>p65old</em>. Use the function <code>lm()</code>. Save the results in an object named <em>fit.ols</em>.</p>
+<pre class="r"><code>#eliminate scientific notation
+options(scipen=999)
+
+fit.ols &lt;- lm(covidrate ~  pblk + phisp +  medincome +totp + p65old, data = zctanyc)</code></pre>
+<p>What are the results? Use <code>summary()</code></p>
+<pre class="r"><code>summary(fit.ols)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = covidrate ~ pblk + phisp + medincome + totp + p65old, 
+##     data = zctanyc)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -10.5625  -4.2955  -0.8762   3.7455  15.4670 
+## 
+## Coefficients:
+##                Estimate  Std. Error t value  Pr(&gt;|t|)    
+## (Intercept) 12.57451167  3.21496495   3.911  0.000132 ***
+## pblk         0.09056056  0.02013347   4.498 0.0000126 ***
+## phisp        0.12825817  0.03007490   4.265 0.0000331 ***
+## medincome   -0.00004588  0.00001737  -2.642  0.009012 ** 
+## totp        -0.00004357  0.00001757  -2.480  0.014097 *  
+## p65old       0.36634418  0.09276337   3.949  0.000114 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 5.48 on 171 degrees of freedom
+## Multiple R-squared:  0.3767, Adjusted R-squared:  0.3585 
+## F-statistic: 20.67 on 5 and 171 DF,  p-value: 0.0000000000000004017</code></pre>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="exploratory-spatial-data-analysis" class="section level2">
+<h2><strong>Exploratory spatial data analysis</strong></h2>
+<p><br />
+The next step is to conduct an Exploratory Spatial Data Analysis (ESDA) to gain an understanding of how your data are spatially structured. Perhaps there is no spatial dependency present in your data. So, why fancy it up if when you don’t need to?</p>
+<div style="margin-bottom:25px;">
+
+</div>
+<div id="map-your-data" class="section level3">
+<h3><strong>Map your data</strong></h3>
+<p><br />
+The first step in ESDA is to map your dependent variable. Map the COVID-19 case rates</p>
+<pre class="r"><code>tm_shape(zctanyc, unit = &quot;mi&quot;) +
+  tm_polygons(col = &quot;covidrate&quot;, style = &quot;quantile&quot;,palette = &quot;Blues&quot;, 
+              border.alpha = 0, title = &quot;&quot;) +
+  tm_scale_bar(breaks = c(0, 2.5, 5), text.size = 1, position = c(&quot;right&quot;, &quot;bottom&quot;)) +
+  tm_layout(main.title = &quot;COVID-19 cases per 1,000 residents by NYC zip codes&quot;,  main.title.size = 0.95, frame = FALSE, legend.outside = TRUE)</code></pre>
+<p><img src="spatialreg_files/figure-html/unnamed-chunk-8-1.png" /><!-- --></p>
+<p>Does it look like our dependent variable exhibits spatial autocorrelation?</p>
+<p>Next, you’ll want to map the residuals from your OLS regression model. To extract the residuals from <em>fit.ols</em>, use the <code>resid()</code> function. Save it back into <em>zctanyc</em>.</p>
+<pre class="r"><code>zctanyc &lt;- mutate(zctanyc, olsresid = resid(fit.ols))</code></pre>
+<p>Next, map the residuals</p>
+<pre class="r"><code>tm_shape(zctanyc, unit = &quot;mi&quot;) +
+  tm_polygons(col = &quot;olsresid&quot;, style = &quot;quantile&quot;,palette = &quot;Reds&quot;, 
+              border.alpha = 0, title = &quot;&quot;, midpoint = 0) +
+  tm_scale_bar(breaks = c(0, 2.5, 5), text.size = 1, position = c(&quot;right&quot;, &quot;bottom&quot;)) +
+  tm_layout(main.title = &quot;Residuals from linear regression&quot;,  main.title.size = 0.95, frame = FALSE, legend.outside = TRUE)</code></pre>
+<p><img src="spatialreg_files/figure-html/unnamed-chunk-10-1.png" /><!-- --></p>
+<p>Looks spatially clustered. Spatial autocorrelation in the residuals breaks BBR assumption X (page X).</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="spatial-weights-matrix" class="section level3">
+<h3><strong>Spatial weights matrix</strong></h3>
+<p><br />
+The exploratory maps show signs of spatial dependency. Rather than eyeballing it, let’s formally test it using a measure of spatial autocorrelation. Before we do so, we need to convert <em>zctanyc</em> to an <strong>sp</strong> object because <code>moran.mc()</code> only takes in <strong>sp</strong> objects. Use the command <code>as()</code></p>
+<pre class="r"><code>nyc.sp &lt;- as(zctanyc, &quot;Spatial&quot;)</code></pre>
+<p>We then need to create a neighbor object and its associated spatial weights matrix. You need to define</p>
+<ol style="list-style-type: decimal">
+<li>Neighbor connectivity (who is you neighbor?)</li>
+<li>Neighbor weights (how much does your neighbor matter?)</li>
+</ol>
+<p>Neighbor relationships in R are represented by neighbor <em>nb</em> objects. An <em>nb</em> object identifies the neighbors for each feature in the dataset. We use the command <code>poly2nb()</code> from the <strong>spdep</strong> package to create a contiguity-based neighbor object. Let’s specify Queen connectivity.</p>
+<pre class="r"><code>nycb&lt;-poly2nb(nyc.sp, queen=T)</code></pre>
+<p>The other two neighbor types we discussed in the spatial autocorrelation guide include <a href="">k-nearest neighbor</a> and <a href="">distance based neighbor</a>.</p>
+<p>The next step is to assign weights to each neighbor relationship. The weight determines <em>how much</em> each neighbor counts. You will need to employ the <code>nb2listw()</code> command. Let’s create a weights object <em>nycw</em> for our Queen contiguity defined neighbor object <em>nycb</em>. We might have zero neighbor zip codes, so include the <code>zero.policy = TRUE</code> argument.</p>
+<pre class="r"><code>nycw&lt;-nb2listw(nycb, style=&quot;W&quot;, zero.policy = TRUE)</code></pre>
+<p>Here, style = “W” indicates that the weights for each spatial unit are standardized to sum to 1 (this is known as row standardization).</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="morans-scatterplot" class="section level3">
+<h3><strong>Moran’s Scatterplot</strong></h3>
+<p><br />
+We’ve now defined what we mean by neighbor by creating an <em>nb</em> object and the influence of each neighbor by creating a spatial weights matrix. Now we can examine the Moran scatter plot for the dependent variable <em>covidrate</em>.</p>
+<pre class="r"><code>moran.plot(nyc.sp$covidrate, listw=nycw, xlab=&quot;Standardized COVID-19 Case Rate&quot;, ylab=&quot;Standardized Lagged COVID-19 Case Rate&quot;,
+main=c(&quot;Moran Scatterplot for COVID-19 case rates&quot;, &quot;in New York&quot;), zero.policy = TRUE )</code></pre>
+<p><img src="spatialreg_files/figure-html/unnamed-chunk-14-1.png" /><!-- --></p>
+<p>Does it look like there is an association? Yes.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="spatial-autocorrelation" class="section level3">
+<h3><strong>Spatial autocorrelation</strong></h3>
+<p><br />
+The map and Moran scatter plot provide descriptive visualizations of clustering (autocorrelation) in COVID-19 case rates. But, rather than eyeballing the correlation, we can calculate a global index of spatial autocorrelation.</p>
+<p>The most popular test of spatial autocorrelation is the Global Moran’s I test. We’ll use the command <code>moran.mc()</code> in the <strong>spdep</strong> package to calculate the Moran’s I using Monte Carlo simulation to obtain statistical inference.</p>
+<pre class="r"><code>moran.mc(nyc.sp$covidrate, listw = nycw, nsim=999, zero.policy = TRUE)</code></pre>
+<pre><code>## 
+##  Monte-Carlo simulation of Moran I
+## 
+## data:  nyc.sp$covidrate 
+## weights: nycw  
+## number of simulations + 1: 1000 
+## 
+## statistic = 0.7491, observed rank = 1000, p-value = 0.001
+## alternative hypothesis: greater</code></pre>
+<p>We should also test spatial autocorrelation in the residuals. Use the <code>lm.morantest()</code> function. The main arguments are your <em>lm</em> object and spatial weights object.</p>
+<pre class="r"><code>lm.morantest(fit.ols, listw = nycw, zero.policy=TRUE)</code></pre>
+<pre><code>## 
+##  Global Moran I for regression residuals
+## 
+## data:  
+## model: lm(formula = covidrate ~ pblk + phisp + medincome + totp +
+## p65old, data = zctanyc)
+## weights: nycw
+## 
+## Moran I statistic standard deviate = 12.578, p-value &lt;
+## 0.00000000000000022
+## alternative hypothesis: greater
+## sample estimates:
+## Observed Moran I      Expectation         Variance 
+##      0.633692666     -0.021814188      0.002715825</code></pre>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+</div>
+<div id="spatial-lag-model" class="section level2">
+<h2><strong>Spatial lag model</strong></h2>
+<p><br />
+Based on the exploratory mapping, Moran scatter plot, and the Moran’s I, there appears to be spatial autocorrelation in the dependent variable. This means that if there is a spatial lag process going on and we fit an OLS model our coefficients will be biased and inefficient. That is, the coefficient size and sign are not close to their true value and its standard errors are underestimated. This means <a href="https://www.youtube.com/watch?v=FPzI4dpEcF8">trouble</a>. <a href="https://www.youtube.com/watch?v=cGIIhcMCquc">Big trouble</a>. <a href="https://www.youtube.com/watch?v=AXsBBqPb5YE">Real big trouble</a>.</p>
+<p>A spatial lag model (SLM) can be estimated in R using the command <code>lagsarlm()</code>, which is in the <strong>spatialreg</strong> package. Fit the SLM</p>
+<pre class="r"><code>fit.lag&lt;-lagsarlm(covidrate ~  pblk + phisp +  medincome +totp + p65old, data = nyc.sp, listw = nycw, zero.policy=TRUE) </code></pre>
+<p>The only difference between the code for <code>lm()</code> and <code>lagsarlm()</code> is the argument <code>listw</code>, which you use to specify the spatial weights matrix. Also note that <code>lm()</code> uses OLS to estimate the model whereas <code>lagsarlm()</code> uses Maximum Likelihood Estimation (described on pages 66 and 76 in Chi and Zhu).</p>
+<p>Let’s calculate the Moran’s I on the model’s residuals</p>
+<pre class="r"><code>moran.mc(resid(fit.lag), nycw, nsim=999, zero.policy=TRUE)</code></pre>
+<pre><code>## 
+##  Monte-Carlo simulation of Moran I
+## 
+## data:  resid(fit.lag) 
+## weights: nycw  
+## number of simulations + 1: 1000 
+## 
+## statistic = 0.023944, observed rank = 736, p-value = 0.264
+## alternative hypothesis: greater</code></pre>
+<p>A summary of results</p>
+<pre class="r"><code>summary(fit.lag)</code></pre>
+<pre><code>## 
+## Call:spatialreg::lagsarlm(formula = formula, data = data, listw = listw, 
+##     na.action = na.action, Durbin = Durbin, type = type, method = method, 
+##     quiet = quiet, zero.policy = zero.policy, interval = interval, 
+##     tol.solve = tol.solve, trs = trs, control = control)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -7.70893 -2.21115 -0.51621  2.03252 12.76569 
+## 
+## Type: lag 
+## Regions with no neighbours included:
+##  59 
+## Coefficients: (numerical Hessian approximate standard errors) 
+##                 Estimate   Std. Error z value Pr(&gt;|z|)
+## (Intercept)  2.181482373  2.105676268  1.0360 0.300202
+## pblk         0.040057707  0.012931381  3.0977 0.001950
+## phisp        0.062861580  0.019179040  3.2776 0.001047
+## medincome   -0.000014023  0.000011011 -1.2735 0.202828
+## totp        -0.000023471  0.000011017 -2.1304 0.033139
+## p65old       0.186119523  0.058884404  3.1608 0.001574
+## 
+## Rho: 0.70864, LR test value: 132.91, p-value: &lt; 0.000000000000000222
+## Approximate (numerical Hessian) standard error: 0.043758
+##     z-value: 16.195, p-value: &lt; 0.000000000000000222
+## Wald statistic: 262.27, p-value: &lt; 0.000000000000000222
+## 
+## Log likelihood: -482.7463 for lag model
+## ML residual variance (sigma squared): 11.661, (sigma: 3.4148)
+## Number of observations: 177 
+## Number of parameters estimated: 8 
+## AIC: 981.49, (AIC for lm: 1112.4)</code></pre>
+<p>The results are formatted in a similar way as the OLS results. The major difference is the inclusion of the results for the spatial lag coefficient labelled “Rho”. R provides different ways to test the statistical significance of Rho depending on the null distribution. Right next to Rho, R shows the LR test value and its associated p-value. Below Rho is the test statistic “z-value” and its associated p-value, which are based on the standard normal distribution. Finally, R shows the Wald statistic and its associated p-value. To be clear, all are testing the statistical significance of the spatial lag term (null hypothesis is Rho is equal to 0).</p>
+<p class="comment" , style="font-style:normal">
+<strong>Question 1</strong>: In your own words, interpret the meaning of the spatial lag coefficient Rho value 0.70864.
+</p>
+<p class="comment" , style="font-style:normal">
+<strong>Question 2</strong>: What are the differences between the slope coefficient results produced by the SLM and OLS? Focus on differences in statistical significance and effect sizes. What may be some reasons explaining these differences?
+</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="spatial-error-model" class="section level2">
+<h2><strong>Spatial error model</strong></h2>
+<p><br />
+The spatial error model (SEM) incorporates spatial dependence in the errors. If there is a spatial error process going on and we fit an OLS model our coefficients will be unbiased but inefficient. That is, the coefficient size and sign are asymptotically correct but its standard errors are underestimated.</p>
+<p>We can estimate a spatial error model in R using the command <code>errorsarlm()</code> also in the <strong>spatialreg</strong> package.</p>
+<pre class="r"><code>fit.err&lt;-errorsarlm(covidrate ~  pblk + phisp +  medincome +totp + p65old, data = nyc.sp, listw = nycw, zero.policy=TRUE) </code></pre>
+<p>And the Moran’s I of the residuals</p>
+<pre class="r"><code>moran.mc(resid(fit.err), nycw, nsim=999, zero.policy=TRUE)</code></pre>
+<pre><code>## 
+##  Monte-Carlo simulation of Moran I
+## 
+## data:  resid(fit.err) 
+## weights: nycw  
+## number of simulations + 1: 1000 
+## 
+## statistic = -0.04723, observed rank = 224, p-value = 0.776
+## alternative hypothesis: greater</code></pre>
+<p>A summary of the model</p>
+<pre class="r"><code>summary(fit.err)</code></pre>
+<pre><code>## 
+## Call:spatialreg::errorsarlm(formula = formula, data = data, listw = listw, 
+##     na.action = na.action, Durbin = Durbin, etype = etype, method = method, 
+##     quiet = quiet, zero.policy = zero.policy, interval = interval, 
+##     tol.solve = tol.solve, trs = trs, control = control)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -7.2334 -1.9737 -0.3498  1.6442 13.4324 
+## 
+## Type: error 
+## Regions with no neighbours included:
+##  59 
+## Coefficients: (asymptotic standard errors) 
+##                 Estimate   Std. Error z value    Pr(&gt;|z|)
+## (Intercept) 12.226926447  2.689463319  4.5462 0.000005461
+## pblk         0.061604533  0.022419247  2.7478    0.005999
+## phisp        0.122124864  0.029625877  4.1222 0.000037521
+## medincome   -0.000019168  0.000014531 -1.3191    0.187120
+## totp        -0.000020288  0.000011160 -1.8180    0.069068
+## p65old       0.188907342  0.070122943  2.6939    0.007061
+## 
+## Lambda: 0.78837, LR test value: 136.64, p-value: &lt; 0.000000000000000222
+## Approximate (numerical Hessian) standard error: 0.042457
+##     z-value: 18.569, p-value: &lt; 0.000000000000000222
+## Wald statistic: 344.8, p-value: &lt; 0.000000000000000222
+## 
+## Log likelihood: -480.8819 for error model
+## ML residual variance (sigma squared): 10.804, (sigma: 3.287)
+## Number of observations: 177 
+## Number of parameters estimated: 8 
+## AIC: 977.76, (AIC for lm: 1112.4)</code></pre>
+<p class="comment" , style="font-style:normal">
+<strong>Question 3</strong>: In your own words, interpret the meaning of the spatial error lag coefficient Lambda value 0.78837.
+</p>
+<p class="comment" , style="font-style:normal">
+<strong>Question 4</strong>: Interpret the coefficient <em>pblk</em> for each of the three models, OLS, SLM and SEM.
+</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="model-selection" class="section level2">
+<h2><strong>Model Selection</strong></h2>
+<p><br />
+We’ve run all three models, so the question then is which one to choose: OLS, Spatial lag, or Spatial error? You can make this decision a couple of ways. First, rely on comparisons of goodness of fit measures, specifically the Akaike Information Criterion (AIC) and Bayesian Information Criterion (BIC). Second, run formal hypothesis tests comparing the models using Lagrange Multiplier tests.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+<div id="aic-and-bic" class="section level3">
+<h3><strong>AIC and BIC</strong></h3>
+<p><br />
+AIC and BIC rely on the log likelihood, which captures the probability of the observed data given the model parameters. The lower the AIC and BIC, the better model fit. Rather than rely on one vs another, in general, it might be best to use AIC and BIC together in model selection.</p>
+<p>The <code>lagsarlm()</code> and <code>errorsarlm()</code> already provide the AIC at the bottom of the summary output. But, you can call it up by using the <code>AIC()</code> function. Here are the AICs for the OLS, SLM and SEM models.</p>
+<pre class="r"><code>AIC(fit.ols)</code></pre>
+<pre><code>## [1] 1112.401</code></pre>
+<pre class="r"><code>AIC(fit.lag)</code></pre>
+<pre><code>## [1] 981.4927</code></pre>
+<pre class="r"><code>AIC(fit.err)</code></pre>
+<pre><code>## [1] 977.7638</code></pre>
+<p>To get the BIC, use the function <code>BIC()</code></p>
+<pre class="r"><code>BIC(fit.ols)</code></pre>
+<pre><code>## [1] 1134.634</code></pre>
+<pre class="r"><code>BIC(fit.lag)</code></pre>
+<pre><code>## [1] 1006.902</code></pre>
+<pre class="r"><code>BIC(fit.err)</code></pre>
+<pre><code>## [1] 1003.173</code></pre>
+<p>What’s the conclusion?</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="lagrange-multiplier-tests" class="section level3">
+<h3><strong>Lagrange Multiplier Tests</strong></h3>
+<p><br />
+A popular set of tests to determine the appropriate model was proposed by <a href="https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1538-4632.1988.tb00159.x">Anselin (1988)</a> (also see <a href="https://www.sciencedirect.com/science/article/abs/pii/0166046295021116">Anselin et al. 1996</a>), These tests are elegantly known as Lagrange Multiplier (LM) tests and are discussed by Chi and Zhu throughout Chapter 3. The null in these tests is the OLS model. A test showing statistical significance rejects this null.</p>
+<p>The LM test uses the likelihood of the models being compared to assess their fit. The likelihood is the probability the data given the parameter estimates. The goal of a model is to find values for the regression coefficients that maximize the likelihood, that is, to find the set of parameter estimates that make the data most likely. The Lagrange multiplier compares the likelihood of two models. In our case, you are comparing whether the likelihood of a spatial model (alternative) is statistically higher than that of an OLS (null). We’ll use <span class="math inline">\(LM_{lag}\)</span> to refer to a test of SLM vs. OLS and <span class="math inline">\(LM_{err}\)</span> to refer to a test of SEM vs. OLS.</p>
+<p>The issue with the Lagrange Multiplier test is when you are comparing the OLS to the spatial lag, you are not taking into account the presence of the spatial error (and vice versa). In other words, a test of the SLM against the null of an OLS may be rejecting the null in the presence of the spatial error model. Recognizing this issue, <a href="https://www.sciencedirect.com/science/article/abs/pii/0166046295021116">Anselin et al. (1996)</a> make an asymptotic adjustment to the LM test to correct for this. They formulate robust versions of the LM tests - robust to the presence of the other spatial model.</p>
+<p>We will not go into great detail on how these LM tests are derived. If you are interested in these details, I suggest reading <a href="https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1538-4632.1988.tb00159.x">Anselin (1988)</a>, which formulates the non robust LM tests, and <a href="https://www.sciencedirect.com/science/article/abs/pii/0166046295021116">Anselin et al. (1996)</a>, which constructs the robust LM tests.</p>
+<p>We’re still not quite there in terms of how to choose between the three different models. The LM test tests between the OLS and SLM and the OLS and SEM, but cannot directly compare SLM and SEM. The SLM and SEM are non-nested models (the OLS is a nested model of SLM - take out <span class="math inline">\(Wy\)</span> and you get the OLS), and thus statistical tests like the LM (and others using the likelihood and other fit statistics) cannot make direct comparisons. However, Anselin (1996) formulated a set of decision steps using the LM tests to decide between SLM and SEM (and OLS). The steps are as follows</p>
+<p><br></p>
+<ol style="list-style-type: decimal">
+<li>Run the non robust LM tests. If neither <span class="math inline">\(LM_{lag}\)</span> nor <span class="math inline">\(LM_{err}\)</span> reject the null, go with the OLS.</li>
+<li>If one of <span class="math inline">\(LM_{lag}\)</span> or <span class="math inline">\(LM_{err}\)</span> rejects the null but the other does not, select the model that rejects the null</li>
+<li>When both reject the null, turn to the robust LM tests</li>
+<li>If one of robust <span class="math inline">\(LM_{lag}\)</span> or robust <span class="math inline">\(LM_{err}\)</span> rejects the null but the other does not, select the model that rejects the null</li>
+<li>When both reject the null, choose the one that is “More significant” (higher LM test statistic)</li>
+</ol>
+<p><br></p>
+<p>Although it is important to run these tests, whether SLM or SEM is most appropriate is really a prior theoretical question, which must be considered relative to the goals of a specific research question. If we expect to see, or are interested in estimating, spatial feedback, then SLM would be a more appropriate model. For example, if you are interested in understanding whether crime diffuses across neighborhood borders, an SLM is the most appropriate model. If you are interested in understanding whether airbnb rates in a neighborhood are influenced by the airbnb rates in nearby neighbors, run SLM. If you are interested in simply controlling for spatial dependency as a nuisance, run an SEM.</p>
+<p>To run the LM tests in R, use the <code>lm.LMtests()</code> command in the <strong>spatialreg</strong> package. The argument <code>test = &quot;all&quot;</code> runs all the tests. You should look at <em>LMerr</em> (Spatial Error), <em>LMlag</em> (Spatial Lag), <em>RLMerr</em> (Robust Spatial Error) and <em>RLMlag</em> (Robust Spatial Lag).</p>
+<pre class="r"><code>lm.LMtests(fit.ols, listw = nycw, test = &quot;all&quot;, zero.policy=TRUE)</code></pre>
+<pre><code>## 
+##  Lagrange multiplier diagnostics for spatial dependence
+## 
+## data:  
+## model: lm(formula = covidrate ~ pblk + phisp + medincome + totp +
+## p65old, data = zctanyc)
+## weights: nycw
+## 
+## LMerr = 139.96, df = 1, p-value &lt; 0.00000000000000022
+## 
+## 
+##  Lagrange multiplier diagnostics for spatial dependence
+## 
+## data:  
+## model: lm(formula = covidrate ~ pblk + phisp + medincome + totp +
+## p65old, data = zctanyc)
+## weights: nycw
+## 
+## LMlag = 137.42, df = 1, p-value &lt; 0.00000000000000022
+## 
+## 
+##  Lagrange multiplier diagnostics for spatial dependence
+## 
+## data:  
+## model: lm(formula = covidrate ~ pblk + phisp + medincome + totp +
+## p65old, data = zctanyc)
+## weights: nycw
+## 
+## RLMerr = 11.124, df = 1, p-value = 0.0008521
+## 
+## 
+##  Lagrange multiplier diagnostics for spatial dependence
+## 
+## data:  
+## model: lm(formula = covidrate ~ pblk + phisp + medincome + totp +
+## p65old, data = zctanyc)
+## weights: nycw
+## 
+## RLMlag = 8.5867, df = 1, p-value = 0.003386
+## 
+## 
+##  Lagrange multiplier diagnostics for spatial dependence
+## 
+## data:  
+## model: lm(formula = covidrate ~ pblk + phisp + medincome + totp +
+## p65old, data = zctanyc)
+## weights: nycw
+## 
+## SARMA = 148.55, df = 2, p-value &lt; 0.00000000000000022</code></pre>
+<p class="comment" , style="font-style:normal">
+<strong>Question 5</strong>: Using the steps outlined by Anselin (1996) above, specify which model is “best”? Why?
+</p>
+<hr />
+<p>Website created and maintained by <a href="https://nbrazil.faculty.ucdavis.edu/">Noli Brazil</a></p>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("show" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "site_libs/mathjax-local/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

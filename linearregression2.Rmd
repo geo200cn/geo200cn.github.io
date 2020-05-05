@@ -1,0 +1,485 @@
+---
+title: "Linear Regression II"
+subtitle: <h4 style="font-style:normal">GEO 200CN - Quantitative Geography</h4>
+author: <h4 style="font-style:normal">Professor Noli Brazil</h4>
+output: 
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    theme: yeti
+    code_folding: show
+---
+
+
+<style>
+p.comment {
+background-color: #DBDBDB;
+padding: 10px;
+border: 1px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: italic;
+}
+
+.figure {
+   margin-top: 20px;
+   margin-bottom: 20px;
+}
+
+h1.title {
+  font-weight: bold;
+  font-family: Arial;  
+}
+
+h2.title {
+  font-family: Arial;  
+}
+
+</style>
+
+
+<style type="text/css">
+#TOC {
+  font-size: 13px;
+  font-family: Arial;
+}
+</style>
+
+
+\
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message = FALSE)
+```
+
+
+We're in the second leg of our journey into linear regression.  In this lab, we go through the R functions for running regression diagnostics and multiple linear regression. The objectives of this lab are as follows
+
+1. Learn how to interpret regression statistical inference from R output
+2. Learn how to run diagnostic tools to test Ordinary Least Squares (OLS) regression assumptions
+3. Learn how to run and evaluate a multiple linear regression model
+4. Learn how to standardize variables 
+5. Learn how to detect multicollinearity
+
+To help us accomplish these learning objectives, we will continue examining the association between neighborhood characteristics and COVID-19 case rates in New York City. We'll be following BBR chapters 12 and 13.
+
+
+<div style="margin-bottom:25px;">
+</div>
+## **Installing and loading packages**
+\
+
+We'll be using a couple of new packages in this lab.  First, you'll need to install them.  The code checks if you've already installed these packages before.  If you haven't, it will install them.
+
+```{r eval = FALSE}
+if (!require("GGally")) install.packages("GGally")
+if (!require("standardize")) install.packages("standardize")
+if (!require("lmtest")) install.packages("lmtest")
+```
+
+Load these packages and others we will need for this lab.
+
+```{r warning=FALSE, message=FALSE}
+library(MASS)
+library(tidyverse)
+library(GGally)
+library(gridExtra)
+library(car)
+library(standardize)
+library(lmtest)
+library(sf)
+```
+
+
+
+<div style="margin-bottom:25px;">
+</div>
+## **Bringing in the data**
+\
+
+We will bring in a shape file containing COVID-19 cases per 1,000 residents and demographic and socioeconomic characteristics for New York city zip codes. I zipped up the file and uploaded it onto Github.  Set your working directory to an appropriate folder and use the following code to download and unzip the file.  I also uploaded the file in Canvas in the Lab and Assignments Week 6 folder.
+
+```{r eval = FALSE}
+#insert the pathway to the folder you want your data stored into
+setwd("insert your pathway here")
+#downloads file into your working directory 
+download.file(url = "https://raw.githubusercontent.com/geo200cn/data/master/zctanyccovidwk6.zip", destfile = "zctanyccovidwk6.zip")
+#unzips the zipped file
+unzip(zipfile = "zctanyccovidwk6.zip")
+```
+
+```{r warning = FALSE, message = FALSE, echo=FALSE}
+download.file(url = "https://raw.githubusercontent.com/geo200cn/data/master/zctanyccovidwk6.zip", destfile = "zctanyccovidwk6.zip")
+unzip(zipfile = "zctanyccovidwk6.zip")
+```
+
+Bring in the New York City zip code shape file into R using `st_read()`
+
+```{r warning=FALSE, message=FALSE, results ="hide"}
+zctanyc <- st_read("zctanyccovidwk6.shp")
+```
+
+COVID-19 case data were downloaded from the [NYC Department of Health and Mental Hygiene](https://github.com/nychealth/coronavirus-data) (confirmed cases up through May 1, 2020).  Socioeconomic and demographic data were downloaded from the 2014-2018 [American Community Survey](https://www.census.gov/programs-surveys/acs). A record layout of the data can be found [here](https://raw.githubusercontent.com/geo200cn/data/master/zctanyccovidRL.txt).   Our research question in this guide is: What ecological characteristics are associated with zip code COVID-19 case rates in New York City?
+
+<div style="margin-bottom:25px;">
+</div>
+## **Statistical Inference**
+\
+
+In the last lab guide, we ran a simple regression model using ordinary least squares (OLS) to estimate the relationship between COVID-19 cases per 1,000 residents and percent black at the zip code level. Let's run this model using `lm()` and save its results in an object named *lm1*. Our dependent variable is *covidrate* and the independent variable is *pblk*.
+
+```{r}
+#eliminate scientific notation
+options(scipen=999)
+
+lm1 <- lm(covidrate ~ pblk, data = zctanyc)
+```
+
+We asked you in last lab guide to interpret the coefficients in terms of how they characterize the relationship between the dependent and independent variables.  We did not ask you, however, to make any statistical inferences regarding the significance of the coefficients (e.g. is the coefficient statistically significant from 0). After reading BBR Ch. 12, we now have the tools to make these inferences.  Let's get a summary of our regression results
+
+```{r}
+summary(lm1)
+```
+
+What is this output showing?
+
+* The values under "Estimate" provide the coefficient estimates. In last assignment, you interpreted what the values 15.585 and 0.096 mean. In the case of the *pblk* coefficient, we say that for each one percentage point increase in percent black, COVID-19 case rates per 1,000 residents increase by 0.09636. 
+* The values under "Std. Error" provide the standard error of each coefficient.  We are conducting two hypothesis tests, one for each coefficient.  The null hypothesis is the coefficient  (Intercept or the coefficient for *pblk*) is equal to 0, the alternative is the coefficient is not equal to 0. 
+* The values under "t value" show the values of the test statistic *t* for these hypothesis tests. The use of the *t* value indicates that were going to be using the *t* distribution as the null distribution (hence we conduct a *t*-test). More precisely, if the null hypothesis is true, the test statistic has a *t* distribution with degrees of freedom of 175, which is denoted next to "Residual standard error". 
+* The values under the column  "Pr(>|t|)" indicate the p-value, which is the probability of obtaining an effect at least as extreme as the one in your sample data, assuming the truth of the null hypothesis.  
+* The asterisks after the p-value indicate the significance level of the test: 0.001, 0.01, 0.05 and 0.1.  We find that the coefficient value for *pblk* is statistically significant at the 0.001 level.  The actual p-value is much smaller than 0.001, indicating a very small probability that the effect we find is due to chance.  
+
+
+<div style="margin-bottom:25px;">
+</div>
+## **Checking OLS assumptions**
+\
+
+BBR Ch. 12 outlines the core assumptions that need to be met in order to obtain unbiased regression estimates from an OLS model.  BBR Ch. 12.4 goes through several diagnostic tools for examining whether an OLS model breaks these assumptions. In this section, we will go through how to run these diagnostics in R. 
+
+Let's also create a fake dataset that meets the OLS assumptions to act as a point of comparison along the way. We'll call this the *goodreg* model.
+
+```{r}
+set.seed(08544)
+x <-rnorm(5000, mean = 7, sd = 1.56)# just some normally distributed data
+
+## We're establishing here a linear relationship,
+## What's this "true" linear relationship we're setting up?
+## So that y = 12 - .4x + some normally distributed error values
+y <- 12 - 0.4*x +rnorm(5000, mean = 0, sd = 1)
+
+goodreg <- lm(y ~ x)
+summary(goodreg)
+```
+
+To be clear, we know the exact functional form of this model, all OLS assumptions should be met, and therefore this model should pass all diagnostics.
+
+<div style="margin-bottom:25px;">
+</div>
+### **Histogram of residuals**
+\
+
+The first graphical diagnostic tool that BBR recommends is a histogram of residuals.  The histogram will test Assumption 4, errors are normally distributed.  We can extract the residuals from an *lm* object using the function `resid()`. We will need to use the residuals for other diagnostics, so let's save them into the *zctanyc*  data frame under the variable *resid* using the `mutate()` function.
+
+```{r}
+zctanyc <- mutate(zctanyc, resid = resid(lm1))
+```
+
+The order of the tracts in`resid(lm1)` is the same as the order of the tracts in *zctanyc* and that's why we were able to directly column bind it like we did in the above code rather than doing a `left_join()`.
+
+Now, we create a histogram of residuals using our best bud `ggplot()`
+
+```{r}
+ggplot(zctanyc) + geom_histogram(mapping = (aes(x=resid))) + xlab("Absolute Residuals")
+```
+
+
+We're trying to see if its shape is that of a normal distribution (bell curve). This is a histogram of absolute residuals. To get a histogram of standardized residuals like the one shown in Fig 12-12 (b) on page 489 in BBR, use the function `stdres()`, where the main argument is our model results *lm1*
+
+```{r warning = FALSE}
+ggplot(zctanyc) + geom_histogram((aes(x=stdres(lm1)))) + xlab("Standardized Residuals")
+```
+
+For comparison, the following is what the residuals from our simulated good data look like 
+
+```{r}
+ggplot() + geom_histogram(aes(x = stdres(goodreg))) +
+  xlab("Standardized Residuals") +
+  ggtitle("Distribution of Residuals - Simulated Data")
+```
+
+
+<div style="margin-bottom:25px;">
+</div>
+### **Q-Q plot of residuals**
+\
+
+BBR next suggests a normal probability plot, also known as a Q-Q plot, to check error normality. Use the function `qqnorm()` and just plug in the model residuals. The function `qqline()` adds the line for what normally distributed data should theoretically follow.
+
+
+```{r}
+qqnorm(zctanyc$resid)
+qqline(zctanyc$resid,col="red")
+```
+
+In short, if the points of the plot do not closely follow a straight line, this would suggest that the data do not come from a normal distribution.  What does the Q-Q plot look like for our good model?
+
+```{r}
+qqnorm(stdres(goodreg))
+qqline(stdres(goodreg),col="red")
+```
+
+<br>
+
+<p class="comment", style="font-style:normal">**Question 1**: What do you conclude by visually examining the histogram and Q-Q plot of the *lm1* residuals?</p>
+
+<br>
+
+<div style="margin-bottom:25px;">
+</div>
+### **Shapiro-Wilk test**
+\
+
+Histograms and Q-Q plots give a nice visual presentation of the residual distribution, however if we are interested in formal hypothesis testing, there are a number of options available. A commonly used test is the Shapiro–Wilk test, which is implemented in R using the function `shapiro.test()`. The null is that the data are normally distributed.  Our good model *goodreg* should not reject the null
+
+```{r}
+shapiro.test(resid(goodreg))
+```
+
+What about our simple linear regression model?
+
+```{r}
+shapiro.test(resid(lm1))
+```
+
+
+
+<div style="margin-bottom:25px;">
+</div>
+### **Residual scatterplots**
+\
+
+BBR on page 490-492 suggests a plot of the residuals against the fitted values to test assumptions 1-4. In particular, the plot will is useful for checking both the linearity and homoscedasticity assumptions.  We should look for two things in this plot.
+
+* At any fitted value, the mean of the residuals should be roughly 0. If this is the case, the linearity assumption is valid. For this reason, we generally add a horizontal line in the plot at y = 0 to emphasize this point.
+* At every fitted value, the spread of the residuals should be roughly the same. If this is the case, the homoscedasticity (equal variance) assumption is valid.
+
+
+<br>
+
+<p class="comment", style="font-style:normal">**Question 2**: Create a residual against fitted value plot as described by BBR for the *lm1* model.  Do the same for the *goodreg* model. What do you conclude from these plots?</p>
+
+<br>
+
+
+We know what diagnostic plots should like when we have good data. But what about for bad data? Below is an example of some bad data that breaks the linearity assumption. Don't worry too much about the intricacies of the code - were just trying creating simulated data that is deliberately not normal so you can see what nonlinearity looks like in the context of the diagnostic tools we've been running.
+
+```{r}
+set.seed(42)
+sim_3 = function(sample_size = 500) {
+  x = runif(n = sample_size) * 5
+  y = 3 + 5 * x ^ 2 + rnorm(n = sample_size, mean = 0, sd = 5)
+  data.frame(x, y)
+}
+
+sim_data_3 = sim_3()
+badreg = lm(y ~ x, data = sim_data_3)
+```
+
+Here is the residual vs fitted values plot for *badreg*
+
+```{r}
+plot(fitted(badreg), resid(badreg), col = "grey", pch = 20,
+     xlab = "Fitted", ylab = "Residuals", main = "Data from Bad Model")
+abline(h = 0, col = "darkorange", lwd = 2)
+```
+
+
+BBR's final diagnostic tool is a plot of the residuals against omitted variables (page 492-494). The utility of this tool is to determine if omitted variable bias is present. It can also test for linearity and constant variance. The residuals are on the y-axis and the omitted variable is on the x-axis.  
+
+<br>
+
+<p class="comment", style="font-style:normal">**Question 3**: Create residual against omitted variable plots for *medincome* and one more numeric variable not already included in the model *lm1*.  What do you conclude from these plots?</p>
+
+<br>
+
+
+<div style="margin-bottom:25px;">
+</div>
+## **Multiple linear regression**
+\
+
+A simple linear regression is, well, too simple.  You'll want to add more variables in your model to
+
+1. Obtain more precise predictions
+2. Examine the relationship between the response and more than one variable
+3. Control for variables that are confounding the relationship between *X* and *Y*. 
+
+Reason (3) is particularly important for avoiding violations of the OLS assumptions.  Let's go through this reason first to help motivate why to include more than one variable in the model.
+
+
+<div style="margin-bottom:25px;">
+</div>
+### **Controlling for variables**
+\
+
+The most common reason why your model is breaking OLS assumptions is because you've failed to include a variable that is confounding the relationship between your primary independent variable(s) and the outcome.  Here, we are interested in examining the impact of a variable X on the outcome Y controlling for the impact of another variable Z.  In other words, we don't really care about the effect of Z, but simply want to control for it so we can get an unbiased estimate of the effect of X.  In this case, Z is a confounding variable.  Let's try to make clear what we mean by confounding.  Here are three ways to define a confounding variable, all saying the same thing, but in different ways. 
+
+* Confounding variables or confounders are often defined as variables that correlate (positively or negatively) with both the dependent variable and the independent variable
+
+* A confounder is an extraneous variable whose presence affects the variables being studied so that the results do not reflect the actual relationship between the variables under study.
+
+*  A third variable, not the dependent (outcome) or main independent(exposure) variable of interest, that distorts the observed relationship between the exposure and outcome. 
+
+Confounding can have serious consequences on your results.  For example, consider the COVID-19 case rate in Florida, which is much higher than in Michigan. Before concluding that Florida is a riskier place to live, one needs to consider confounding factors such as age. Florida has a higher proportion of people of retirement age and older than does Michigan, and older people are at higher risk of getting COVID-19. Therefore, one must "adjust" or control for age before drawing any conclusions about the influence of some other variable on COVID-19 case rates.
+
+Going back to our case study of New York City let's say we ran a simple linear regression of COVID-19 rates on percent unemployment
+
+```{r}
+summary(lm(covidrate ~  punemp, data = zctanyc))
+```
+
+We would conclude that a one percentage point increase in percent unemployment in a neighborhood is associated with an increase of 0.827 COVID-19 cases per 1,000 residents. The results also show that the coefficient has a p-value of 0.000101, which indicates that the *punemp* coefficient is statistically significant at the 0.001 level. This means that the probability that the association between *punemp* and *covidrate* is due to chance is less than 100*0.001 = 0.1 percent.  In other words, the probability of seeing the association 0.8267 just by chance if the null hypothesis is true is 0.1 percent.
+
+But, when you include percent black, you get
+
+```{r}
+summary(lm(covidrate ~  pblk + punemp, data = zctanyc))
+```
+
+And just like that, gone. 
+
+<br>
+
+<p class="comment", style="font-style:normal">**Question 4**: In your own words, explain why the statistically significant relationship between percent unemployment and COVID-19 rates disappeared when we included percent black.</p>
+
+<br>
+
+This example illustrates the importance of accounting for potential confounding in your model.  This includes confounding introduced by spatial dependency or autocorrelation, which we will discuss in the next guide.  
+
+
+
+<div style="margin-bottom:25px;">
+</div>
+### **Standardized coefficients**
+\
+
+Including more variables mitigates confounding.  We also might be substantively interested in understanding the relationship between COVID-19 rates and other variables besides percent black.  Let's beef up our regression model by including percent Hispanic, percent 65 year old and over, median household income, and total population as independent variables.  
+
+```{r}
+lm2 <- lm(covidrate ~  pblk + phisp +  medincome +totp + p65old, data = zctanyc)
+```
+
+And summarize 
+
+```{r}
+summary(lm2)
+```
+
+
+
+<br>
+
+<p class="comment", style="font-style:normal">**Question 5**: What is the interpretation of the intercept? </p>
+
+
+<br>
+
+<p class="comment", style="font-style:normal">**Question 6**: What is the interpretation of the  coefficient value for the *pblk* variable? Include in your interpretation a statement regarding the statistical significance of the coefficient. </p>
+
+<br>
+
+You might be tempted to say that *p65old* has the most dramatic effect on COVID-19 rates because the absolute value of its coefficient is the largest and it is statistically significant at the 0.001 level (i.e. the magnitude of the effect is the largest and the probability that this effect is due to chance is very small).  But, the variable scales are not the same. For example, *p65old* is in percent whereas *medincome* is in dollars.   As outlined in BBR page 505, you can obtain standardized regression coefficients to make comparisons regarding effect sizes.   One way to do this is to use the function `standardize()`, which is a part of the **standardize** package.  
+
+Insert the same exact regression formula and data argument used to create *lm2* inside the `standardize()` function. Make sure to save it to an object.
+
+```{r}
+zctanycstd <- standardize(covidrate ~  pblk + phisp +  medincome +totp + p65old, data = zctanyc)
+```
+
+You get an object of class *standardized*.  This object contains the standardized values for all of the variables in your model.
+
+```{r}
+class(zctanycstd)
+```
+
+Plug the object's data *zctanycstd$data* into the `lm()` function
+
+```{r}
+lm3 <- lm(covidrate ~  pblk + phisp +  medincome +totp + p65old, data = zctanycstd$data)
+```
+
+And summarize 
+
+```{r}
+summary(lm3)
+```
+
+<br>
+
+<p class="comment", style="font-style:normal">**Question 7**: What is the interpretation of the  coefficient value for *p65old*? </p>
+
+<br>
+
+You can also use the non standardized model coefficient values from *lm2* and plug them into BBR equation 13-6 on page 505
+
+```{r}
+b <- summary(lm2)$coef[2:6, 1]
+sy <- apply(lm2$model[1], 2, sd)
+sx <- apply(lm2$model[2:6], 2, sd)
+betas <- b * (sx/sy)
+betas
+```
+
+
+
+<div style="margin-bottom:25px;">
+</div>
+## **Multicollinearity**
+\
+
+It might seem that if confounding is such a big problem (and it is when trying to make causal inferences)  you should aim to try to control for *everything.*  Including the kitchen sink.  The downside of this strategy is that including too many variables will likely introduce multicollinearity in your model.  Multicollinearity is defined to be high, but not perfect, correlation between two independent variables in a regression.
+
+What are the effects of multicollinearity? Mainly you will get blown up standard errors for the coefficient on one of your correlated variables.  In other words, you will not detect a relationship even if one does exist because the standard error on the coefficient is artificially inflated.
+
+What to do? First, run a correlation matrix for all your proposed independent variables.  We did that with `ggpairs()`, but another way of doing it is to use the `cor()` function as such.  This function doesn't work with **sf** objects, so we convert *zctanyc* to a regular data frame using the **st_drop_geometry()** function.  We use the function `select()` to keep the variables we need from *zctanyc*. We use the `round()` function to round up the correlation values to two significant digits after the decimal point.
+
+```{r}
+round(cor(dplyr::select(st_drop_geometry(zctanyc), pblk, phisp, medincome, totp, p65old)),2)
+```
+
+Any correlation that is high is worth flagging.  In this case, we see a few pairwise correlations greater than 0.5 that might be worth keeping in mind.
+
+You can also run your regression and then detect multicollinearity in your results.  Signs of multicollinearity include
+
+* Large changes in the estimated regression coefficients when a predictor variable is added or deleted
+* Lack of statistical significance despite high $R^2$
+* Estimated regression coefficients have an opposite sign from predicted
+
+A formal and likely the most common indicator of multicollinearity is the Variance Inflation Factor (VIF). Use the function `vif()` in the **car** package to get the VIFs for each variable.  Let's check the VIFs for the *lm2* model 
+
+```{r}
+vif(lm2)
+```
+
+A large VIF indicates a troublesome variable. What is a large VIF? There are [many rules of thumbs](https://link.springer.com/article/10.1007/s11135-006-9018-6) out there in terms of what counts for an alarmingly high VIF.  The most common is greater than 5. If a VIF is greater than 5, flag it. So, what should you do next?
+
+1. If possible, get more data.  Multicollinearity is often a small sample size problem.
+2. Combine variables into an index
+3. Use a variable selection procedure like stepwise selection or ridge regression to select the best subset of variables.  We will cover these methods later in the course.
+4. Drop one of the highly correlated variables
+5. Maybe linear regression is not the right tool.  
+
+
+You're done! [Woohoo!](https://www.youtube.com/watch?v=-kFUSgR7ujI)
+
+
+
+
+
+***
+
+
+Website created and maintained by [Noli Brazil](https://nbrazil.faculty.ucdavis.edu/)

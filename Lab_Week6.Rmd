@@ -1,0 +1,44 @@
+---
+title: "Lab Lecture 6"
+author: "Kenji Tomari"
+output: 
+  html_document:
+    theme: readable
+    toc: true
+    toc_depth: 3
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Linear Regression II
+
+## Question 1
+
+Note: the Q-Q Plot is also known as a normal probability plot. See BBR p 490. On page 491 of BBR, Figure 12-13 shows what a Normal Probability Plot that is near linear might look like. How does it compare?
+
+## Question 2
+
+For sample code, see below Question 2; there, you'll see a residual vs fitted plot for `badreg`. Use that code with the appropriate adjustments.
+
+## Question 3
+
+For the omitted variables plot, simply use the same plot function from Question 2, but replace the x-value with your variable of interest, eg, `zctanyc$medincome`. Be sure to rename the x-axis and the title of the plot! Read more about omitted variables on the bottom of BBR 492.
+
+## Question 4
+
+The bottom paragraph of BBR 503 and the section beginning at the bottom of BBR 508 might be useful.
+
+## Question 5
+
+Again, the bottom of BBR 503 should help.
+
+## Question 6
+
+Remember, the value under `Estimate` is the coefficient of your independent variable, resulting in values of your response variable.
+
+## Question 7
+
+Pay attention to the magnitude.
