@@ -709,7 +709,7 @@ Based on the exploratory mapping, Moran scatter plot, and the Moran’s I, there
 ## weights: nycw  
 ## number of simulations + 1: 1000 
 ## 
-## statistic = 0.023944, observed rank = 736, p-value = 0.264
+## statistic = 0.023944, observed rank = 730, p-value = 0.27
 ## alternative hypothesis: greater</code></pre>
 <p>A summary of results</p>
 <pre class="r"><code>summary(fit.lag)</code></pre>
@@ -750,7 +750,9 @@ Based on the exploratory mapping, Moran scatter plot, and the Moran’s I, there
 <strong>Question 1</strong>: In your own words, interpret the meaning of the spatial lag coefficient Rho value 0.70864.
 </p>
 <p class="comment" , style="font-style:normal">
-<strong>Question 2</strong>: What are the differences between the slope coefficient results produced by the SLM and OLS? Focus on differences in statistical significance and effect sizes. What may be some reasons explaining these differences?
+<strong>Question 2</strong>: Interpret the differences in the coefficient for <em>pblk</em> between the OLS and Spatial Lag models.
+</p>
+What are the differences between the slope coefficient results produced by the SLM and OLS? Focus on differences in statistical significance and effect sizes. What may be some reasons explaining these differences?
 </p>
 <div style="margin-bottom:25px;">
 
@@ -771,7 +773,7 @@ The spatial error model (SEM) incorporates spatial dependence in the errors. If 
 ## weights: nycw  
 ## number of simulations + 1: 1000 
 ## 
-## statistic = -0.04723, observed rank = 224, p-value = 0.776
+## statistic = -0.04723, observed rank = 203, p-value = 0.797
 ## alternative hypothesis: greater</code></pre>
 <p>A summary of the model</p>
 <pre class="r"><code>summary(fit.err)</code></pre>
@@ -811,7 +813,7 @@ The spatial error model (SEM) incorporates spatial dependence in the errors. If 
 <strong>Question 3</strong>: In your own words, interpret the meaning of the spatial error lag coefficient Lambda value 0.78837.
 </p>
 <p class="comment" , style="font-style:normal">
-<strong>Question 4</strong>: Interpret the coefficient <em>pblk</em> for each of the three models, OLS, SLM and SEM.
+<strong>Question 4</strong>: Interpret the differences in the coefficient for <em>medincome</em> between the OLS and Spatial Error models.
 </p>
 <div style="margin-bottom:25px;">
 

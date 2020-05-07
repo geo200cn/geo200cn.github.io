@@ -294,7 +294,9 @@ The results are formatted in a similar way as the OLS results. The major differe
 
 <p class="comment", style="font-style:normal">**Question 1**: In your own words, interpret the meaning of the spatial lag coefficient Rho value 0.70864.  </p>
 
-<p class="comment", style="font-style:normal">**Question 2**: What are the differences between the slope coefficient results produced by the SLM and OLS? Focus on differences in statistical significance and effect sizes. What may be some reasons explaining these differences? </p>
+<p class="comment", style="font-style:normal">**Question 2**: Interpret the differences in the coefficient for *pblk* between the OLS and Spatial Lag models. </p>
+
+What are the differences between the slope coefficient results produced by the SLM and OLS? Focus on differences in statistical significance and effect sizes. What may be some reasons explaining these differences? </p>
 
 
 <div style="margin-bottom:25px;">
@@ -325,7 +327,7 @@ summary(fit.err)
 
 <p class="comment", style="font-style:normal">**Question 3**: In your own words, interpret the meaning of the spatial error lag coefficient Lambda value 0.78837. </p>
 
-<p class="comment", style="font-style:normal">**Question 4**: Interpret the coefficient *pblk* for each of the three models, OLS, SLM and SEM. </p>
+<p class="comment", style="font-style:normal">**Question 4**: Interpret the differences in the coefficient for *medincome* between the OLS and Spatial Error models.  </p>
 
 <div style="margin-bottom:25px;">
 </div>
