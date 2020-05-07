@@ -57,7 +57,7 @@ knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message = FALSE)
 ```
 
 
-In this lab guide, we formally incorporate spatial relationships between units of observations in a regression framework.  We will be closely following Chi & Zhu Chapter 4. The objectives of this lab are as follows
+In this lab guide, we formally incorporate spatial relationships between units of observations in a regression framework.  We will be closely following Chi & Zhu Chapter 3. The objectives of this lab are as follows
 
 1. Learn how to run and interpret a spatial lag model
 2. Learn how to run and interpret a spatial error model

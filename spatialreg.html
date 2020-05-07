@@ -503,7 +503,7 @@ h2.title {
 </style>
 <p><br />
 </p>
-<p>In this lab guide, we formally incorporate spatial relationships between units of observations in a regression framework. We will be closely following Chi &amp; Zhu Chapter 4. The objectives of this lab are as follows</p>
+<p>In this lab guide, we formally incorporate spatial relationships between units of observations in a regression framework. We will be closely following Chi &amp; Zhu Chapter 3. The objectives of this lab are as follows</p>
 <ol style="list-style-type: decimal">
 <li>Learn how to run and interpret a spatial lag model</li>
 <li>Learn how to run and interpret a spatial error model</li>
@@ -709,7 +709,7 @@ Based on the exploratory mapping, Moran scatter plot, and the Moran’s I, there
 ## weights: nycw  
 ## number of simulations + 1: 1000 
 ## 
-## statistic = 0.023944, observed rank = 713, p-value = 0.287
+## statistic = 0.023944, observed rank = 732, p-value = 0.268
 ## alternative hypothesis: greater</code></pre>
 <p>A summary of results</p>
 <pre class="r"><code>summary(fit.lag)</code></pre>
@@ -773,7 +773,7 @@ The spatial error model (SEM) incorporates spatial dependence in the errors. If 
 ## weights: nycw  
 ## number of simulations + 1: 1000 
 ## 
-## statistic = -0.04723, observed rank = 217, p-value = 0.783
+## statistic = -0.04723, observed rank = 207, p-value = 0.793
 ## alternative hypothesis: greater</code></pre>
 <p>A summary of the model</p>
 <pre class="r"><code>summary(fit.err)</code></pre>
