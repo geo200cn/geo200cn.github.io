@@ -42,3 +42,27 @@ Remember, the value under `Estimate` is the coefficient of your independent vari
 ## Question 7
 
 Pay attention to the magnitude.
+
+# Spatial Regression
+
+## Question 1
+
+Rho, or ρ, is defined in Chi & Zhu p 65-66 (looks like a lowercase p). From looking at equation 3.2 in CZ p65, you might get the sense that rho is a scalar like the Beta (coefficient) for your independent variable X. If that's the case it should affect the WY, much like Beta affects X, right?
+
+Chi & Zhu give an example of SLM on page 69 and show a table of results (table 3.2). The rho value in the table is indicated as the "Spatial lag," which they interpret on page 72 in the second paragraph. You can use that paragraph to model your answer for this question. Note, they use a different neighborhood matrix than ours (we use Queen contiguity, they use 4-nearest neighbors).
+
+## Question 2
+
+While you should heed the "Cautionary note 3" on Chi & Zhu p. 69, you can still consider why these differences exist even if direct comparisons should not be made. Hint: if the COVID case rate of neighbors affects your region's COVID case rate (which is what SLM is suggesting happens), then what might you expect of the effect of other explanatory variables (say income or race) on your region's COVID case rate?
+
+## Question 3
+
+In Chi & Zhu chapter 3 (p 76), they use rho instead of lambda in laying out the equation for SEM. The results for the example they use to illustrate SEM is shown in Table 3.4 on p. 81, and the lambda value is indicated as "Spatial error." That example's spatial error coefficient is interpreted on p. 82. 
+
+## Question 4
+
+In Chi & Zhu chapter 3, in various parts of the chapter, they have three sections called "Data Example," there they take the tables for OLS, SLM, and SEM to describe what each coefficient suggests is happening. For OLS they break it down on p 62. For SEM they break it down on p. 80 in the last paragraph. You might also consider the implications of the description of SEM in 3.3.1 on p. 76.
+
+## Question 5
+
+Follow the 5 step instructions/algorithm in this section.
