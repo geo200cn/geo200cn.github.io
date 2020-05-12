@@ -12,7 +12,7 @@
 <meta name="author" content="Kenji Tomari" />
 
 
-<title>Lab Week 3</title>
+<title>Lab Lecture 7</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -454,73 +454,36 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Lab Week 3</h1>
-<h3 class="subtitle">Spring 2020</h3>
+<h1 class="title toc-ignore">Lab Lecture 7</h1>
 <h4 class="author">Kenji Tomari</h4>
 
 </div>
 
 
-<div id="notes-on-the-hypothesis-test-assignment" class="section level1">
-<h1>Notes on the Hypothesis Test Assignment</h1>
-<p>The one sample hypothesis test actually covers material in the chapter on two sample hypothesis test (Chapter 9). The reason for this is when you’re comparing pairs of observations, you’re not asking what the difference between two populations are, you’re asking if within the same population there is a change happening. If the number of populations is 1, then you use a one-sample hypothesis test</p>
-<hr />
-<div class="figure">
-<img src="ttest_output.png" alt="Figure. t.test() output." />
-<p class="caption">Figure. t.test() output.</p>
+<div id="spatial-heterogeneity" class="section level1">
+<h1>Spatial Heterogeneity</h1>
+<div id="question-1" class="section level2">
+<h2>Question 1</h2>
+<p>To answer this question, it’s useful to look at Chi &amp; Zhu’s example of interaction variables starting on page 118 with the first full paragraph. In Chi &amp; Zhu’s example, the regions are designated as rural, urban, or suburban and the model uses rural as the reference group (see Table 5.2); the variable with which those regions are interacting is land developability (as opposed to <code>medage</code> for us). While the reference group can be changed, by default it looks like our model’s reference group is the East Bay region (note its conspicuous absence in the <code>summary</code> results).</p>
+<p>If you’re new to the concept of the interaction effect, you should take note that this is a more general concept in linear regression, not limited to this geographic use-case. If you’re interested in learning more broadly about interaction effects, you can read this <a href="https://statisticsbyjim.com/regression/interaction-effects/">article</a> by StatisticsByJim, or read ISLR’s explanation of interaction effects on p 87, titled, “Removing the Additive Assumption.”</p>
 </div>
-<hr />
-<p>The code for your F-Test should look something like this, but with the correct columns replacing the words “FAKE”</p>
-<pre class="r"><code>var.test(
-  x = HDB_in_sqft$FAKE,
-  y = HDB_out_sqft$FAKE,
-  alternative = &quot;two.sided&quot;
-)</code></pre>
-<p>The last <code>t.test</code> should look something like this:</p>
-<pre class="r"><code>t.test(
-  x = HDB_in_sqft$FAKE,
-  y = HDB_out_sqft$FAKE,
-  paired = F,
-  alternative = &quot;two.sided&quot;,
-  var.equal = TRUEORFALSE
-)</code></pre>
-<p>Just replace TRUEORFALSE with the correct <code>TRUE</code> or <code>FALSE</code> value.</p>
-<hr />
-<p>One last note, when reading the output of prob-values, the following are the same:</p>
-<ul>
-<li><p>1.32e-04</p></li>
-<li><p>1.32×10−4</p></li>
-<li><p>0.000132</p></li>
-</ul>
+<div id="question-2" class="section level2">
+<h2>Question 2</h2>
+<p>Chi &amp; Zhu’s example of stratified models begins on p. 120 in the first full paragraph; stratified models are described in more depth on p. 116, check it out!</p>
 </div>
-<div id="shape-files" class="section level1">
-<h1>Shape Files</h1>
-<p>A note about Shape files: they are always more than one actual file. You’ll find a <code>.shp</code> file, but also <code>.shx</code> and others. The “galap” data for the assignment is actually composed of 4 files. Each file includes important information necessary to use the spatial data, so make sure they’re all together in the same directory when you load a shape file. Shape files are the industry standard, largely as a legacy of the monopoly ArcGIS/ESRI have on GIS. However, there is an increasing push to use open source spatial data files known as “geopackage” with the extension <code>.gpkg</code>. (For the nerds, geopackages are actually just a form of an SQL database.) Unlike Shape files, geopackage files are designed to store multiple different datasets. In both Shapefiles and geopackages, they only store vector data.</p>
+<div id="question-3" class="section level2">
+<h2>Question 3</h2>
+<p>When you’re comparing the differences and similarities of these coefficients, consider some of the issues with both interaction and partition/stratified models. Those issues are discussed in section 5.2.1 on p 122 of Chi &amp; Zhu in the first three paragraphs. In the last full paragraph on p 124, Chi &amp; Zhu describe where the spatial regime models are the same as the interaction and partition/stratified models. In answering this question, you should present your analysis as Chi &amp; Zhu do on p. 126, in section 5.2.3, in paragraph 3, but reporting and comparing the values for our three linear models.</p>
+<p>By the way, you should note that the coefficient “medage:regionSouth Bay” in the interacted model is written that way because we specified the <code>lm</code> function with <code>medage*region</code>, but you get the same values if you do <code>region*medage</code> and then the coefficient label reads “regionSouth Bay:medage”. So, don’t get tripped up about the label itself being in a different order in the <code>summary</code> output.</p>
+<p>Finally, this section in Chi &amp; Zhu talks about testing for “structural stability” in the model, but this term isn’t well defined in the textbook. See the below description by Dr. Shalabh. Much as autoregressive models (like SEM/SLM) were developed to look at time lags (and not spatial lags), read the below description of structual stability replacing space for time.</p>
+<p>What is <em>Structural Stability</em>?</p>
+<blockquote>
+<p>“A fundamental assumption in regression modeling is that the pattern of data on dependent and independent variables remains the same throughout the period over which the data is collected. Under such an assumption, a single linear regression model is fitted over the entire data set. The regression model is estimated and used for prediction assuming that the parameters remain same over the entire time period of estimation and prediction. When it is suspected that there exists a change in the pattern of data, then the fitting of single linear regression model may not be appropriate, and more than one regression models may be required to be fitted. Before taking such a decision to fit a single or more than one regression models, a question arises how to test and decide if there is a change in the structure or pattern of data. Such changes can be characterized by the change in the parameters of the model and are termed as structural change.” (<a href="http://home.iitk.ac.in/~shalab/econometrics/Chapter12-Econometrics-TestsforStructuralChangeandStability.pdf">Shalabh</a>, more resources <a href="http://home.iitk.ac.in/~shalab/course3.htm">here</a>)</p>
+</blockquote>
 </div>
-<div id="supplemental-notes-on-rspatial-readings" class="section level1">
-<h1>Supplemental Notes on rspatial Readings</h1>
-<div id="chapter-3-sp-objects" class="section level2">
-<h2>Chapter 3: <code>{sp}</code> objects</h2>
-<p>In <a href="https://rspatial.org/raster/spatial/3-vectordata.html">chapter 3</a>, Professor Hijmans goes into some detail about “classes” in R. This is really an advanced topic. Don’t worry if you don’t completely understand it. What’s important is that <code>{sp}</code> data is often stored in these complicated R Objects that behave a lot like <code>list</code> objects. These <code>list</code>-like objects sometimes have a data.frame attached, which would include non-spatial data like rainfall.</p>
-<p>Professor Hijmans also creates spatial data objects from scratch. Will you ever actually have to do this? Maybe. For this course? Not a ton. Particularly when it comes to creating your own <code>SpatialLines</code> and <code>SpatialPolygons</code>, you can skim it. This material will always be available if you ever need to come back to it after all. What is important, is that conceptually these lines and polygons are fundamentally made from connecting a series of points (i.e. coordinates).</p>
-</div>
-<div id="chapter-5-readingwriting-vector-files." class="section level2">
-<h2>Chapter 5: Reading/Writing Vector Files.</h2>
-<p>In <a href="https://rspatial.org/raster/spatial/5-files.html">chapter 5</a>, Professor Hijmans suggests using a function from the <code>{raster}</code> package to read <code>.shp</code> files into R. However, I recommend <code>readOGR</code> from <code>{rgdal}</code>. Mainly because you don’t need to use any functions from <code>{raster}</code> if you’re just working with “vector” data (including, points, lines and polygons, but not satellite photos). For instance, the code <code>rgdal::readOGR(&quot;galap.shp&quot;)</code> will load your spatial data into R for Assignment 3. (Similarly, to write <code>{sp}</code> files, I recommend <code>writeOGR</code>.)</p>
-<p>Remember to skip the stuff on Raster for now.</p>
-</div>
-<div id="chapter-6-coordinate-reference-systems" class="section level2">
-<h2>Chapter 6: Coordinate Reference Systems</h2>
-<p>The reading in <a href="https://rspatial.org/raster/spatial/6-crs.html">rspatial</a> may be a little opaque in its description of the CRS. For the sake of this course, all we expect for you to know is that the CRS information attached (or omitted) from each piece of spatial data contains instructions for your GIS (whether its R, ArcGIS, QGIS, etc) to correctly place the spatial geometries. In order to do this, your GIS takes the instructions in the CRS information attached to your spatial data file, and then calculates both the 3D model of the planet, and how that 3D image should be presented on your 2D computer screen or printed map. A lot of math is involved in constructing a CRS (both in terms of <a href="https://en.wikipedia.org/wiki/Geodesy">Geodesy</a> and <a href="https://en.wikipedia.org/wiki/Map_projection">Cartography</a>).</p>
-<p>It’s rare that you’ll actually need to mess around with a CRS. Sometimes people will send you spatial data with a missing or incomplete CRS. Often if it is entirely missing, the presumed CRS is some standard mercator coordinate system. (For instance, EPSG 3857. When you go to Google maps, right click somewhere, and click on “What’s here?,” the coordinates that it presents are in EPSG 3857.) It is not uncommon to have two different spatial data sets that you need to use together (say the borders of a state and spatial data you collected), but have a different CRS. It’s pretty trivial now to “transform” one to match the other in R or any other GIS.</p>
-<p><em>Supplemental</em></p>
-<ul>
-<li>A thorough guide on CRS from <a href="https://docs.qgis.org/3.10/en/docs/gentle_gis_introduction/coordinate_reference_systems.html">QGIS</a></li>
-</ul>
-</div>
-<div id="chapter-7-vector-data-manipulation" class="section level2">
-<h2>Chapter 7: Vector Data Manipulation</h2>
-<p>Just a reminder, a variable in Data Science is different from a variable in programming. In this chapter, when Professor Hijmans writes about variables, he is talking about variables in the former sense (i.e. columns in a table).</p>
+<div id="question-4" class="section level2">
+<h2>Question 4</h2>
+<p>Use the code directly above Question 4, beginning AFTER you get the <code>dfree</code> to make your map. Just take note that you need to replace relevant variable names (i.e. anything that says “parks”) with “medage”. You don’t need to re-assign/re-create the <code>breaks</code> since they are just general alpha/significance levels. So, by the end, you should have a new column in <code>bayarea</code> for <code>medage.t</code> and <code>medage.t.p</code>, and you should have changed the <code>col</code> argument in <code>tm_polygon</code> and the main title of the map. At the end, you should have a map depicting the statistical signifiance of the spatially heterogenous effect of median age on median housing values in the <a href="https://en.wikipedia.org/wiki/My_Ghetto_Report_Card#Track_listing">Yay</a>. You can model your answer after Chi &amp; Zhu’s second full paragraph on p. 134, where they discuss the statistical signifance of GWR on their Wisconsin dataset.</p>
 </div>
 </div>
 

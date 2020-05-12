@@ -1,0 +1,526 @@
+---
+title: "Spatial Heterogeneity"
+subtitle: <h4 style="font-style:normal">GEO 200CN - Quantitative Geography</h4>
+author: <h4 style="font-style:normal">Professor Noli Brazil</h4>
+output: 
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    theme: yeti
+    code_folding: show
+    mathjax: local   
+    self_contained: false
+---
+
+
+<style>
+p.comment {
+background-color: #DBDBDB;
+padding: 10px;
+border: 1px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: italic;
+}
+
+.figure {
+   margin-top: 20px;
+   margin-bottom: 20px;
+}
+
+h1.title {
+  font-weight: bold;
+  font-family: Arial;  
+}
+
+h2.title {
+  font-family: Arial;  
+}
+
+</style>
+
+
+<style type="text/css">
+#TOC {
+  font-size: 13px;
+  font-family: Arial;
+}
+</style>
+
+
+\
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message = FALSE)
+```
+
+What separates Geographers from everyone else (other than a wonderful sense of humor) is that when they encounter  a phenomenon or process - physical, social, economic or otherwise -  their gut reaction is to ask whether this process varies from place to place. Geographers often use global models like the ones we've covered in the linear regression labs for convenience, but deep in their hearts they know that the relationships they estimate in these regressions likely vary across space.  This, my friends, is the concept of Spatial Heterogeneity, which is the topic we will cover in this lab guide.
+
+We will be closely following Chi and Zhu Chapter 5. The objectives of this lab guide are as follows
+
+1. Learn how to run "aspatial" spatial heterogeneity models
+2. Learn how to run a Spatial Regime model
+3. Learn how to run Geographically Weighted Regression model
+
+To help us accomplish these learning objectives, we will examine the association between neighborhood characteristics and housing values in the Bay Area, which has some of the highest home prices in the United States.  
+
+<div style="margin-bottom:25px;">
+</div>
+## **Installing and loading packages**
+\
+
+We'll be using one new package in this lab.  First, install it
+.
+```{r eval = FALSE}
+if (!require("spgwr")) install.packages("spgwr")
+```
+
+Second, load this package and the others we will need for executing the commands in this lab.
+
+```{r warning=FALSE, message=FALSE}
+library(sf)
+library(tidyverse)
+library(tmap)
+library(spgwr)
+library(spdep)
+library(spatialreg)
+```
+
+
+
+<div style="margin-bottom:25px;">
+</div>
+## **Why examine spatial heterogneity**
+\
+
+You should
+
+1. Not expect things to be the same everywhere
+2. Expect to find that phenomena cluster
+3. Be interested in how and where processes and relationships vary spatially
+
+In statistical terminology, you are interested in spatial non-stationarity or spatial heterogeneity in relationships. What this means is that instead of just one general relationship, the association  between two variables will be different in different places. 
+
+Put differently, the motivation behind running models that incorporate spatial heterogeneity is that we're interested in examining differences in the effects of variables on an outcome across space.  For example, you might be interested in examining whether the positive relationship between percent black and COVID-19 rates that we found in our [last lab guide](https://geo200cn.github.io/linearregression2.html) varies across neighborhoods in New York City.  Perhaps this relationship is true only in certain types of residential neighborhoods.  In another example, [this study](https://www.biorxiv.org/content/10.1101/384115v3) found that places with low humidity – dry air – and high temperature were particularly good indicators of fire risk.  However, the conditions that affected fires varied greatly from one “ecoregion” to another in terms of terrain and vegetation.
+
+To be clear, we're not interested in spatial variation in individual variables.  We've already covered this topic when we went through [Spatial Autocorrelation](https://geo200cn.github.io/spatialautocorrelation.html).  We're also not interested in controlling for differences across geography and space so that we can examine the average effect of a variable on an outcome.  This is basically what we've been doing throughout all of our regression modelling thus far.  Instead, we are interested in examining how the relationship between two variables vary across space.  Or, in the regression framework, we are interested in examining the spatial heterogeneity of the regression coefficients.
+
+Our research questions in this lab guide are: What socioeconomic and built environment characteristics are associated with housing values in the Bay Area? Do these relationships vary across Bay Area region? 
+
+
+<div style="margin-bottom:25px;">
+</div>
+## **Bringing in the data**
+\
+
+I zipped up a Bay Area tract shapefile and uploaded it onto GitHub.  Download it onto your local folder.  The file is also located on Canvas in the Lab and Assignments Week 7 folder.
+
+
+```{r eval = FALSE}
+#insert the pathway to the folder you want your data stored into
+setwd("insert your pathway here")
+#downloads file into your working directory 
+download.file(url = "https://raw.githubusercontent.com/geo200cn/data/master/bayareatracts.zip", destfile = "bayareatracts.zip")
+#unzips the zipped file
+unzip(zipfile = "bayareatracts.zip")
+```
+
+```{r echo = FALSE}
+#downloads file into your working directory 
+download.file(url = "https://raw.githubusercontent.com/geo200cn/data/master/bayareatracts.zip", destfile = "bayareatracts.zip")
+#unzips the zipped file
+unzip(zipfile = "bayareatracts.zip")
+```
+
+Read in the shapefile using the `st_read()` function.
+
+```{r warning=FALSE, message=FALSE, results = "hide"}
+bayarea <- st_read("bayareatracts.shp", stringsAsFactors = FALSE)
+```
+
+And plot it to see what we got
+
+```{r warning=FALSE, message=FALSE}
+tm_shape(bayarea) + tm_polygons()
+```
+
+
+The Bay Area is composed of the following nine counties: Alameda, Contra Costa, Marin, Napa, San Francisco, San Mateo, Santa Clara, Solano, and Sonoma.  You can categorize these counties according to where in the Bay Area they are located: East Bay (Alameda and Contra Costa), North Bay (Marin, Napa, Solano and Sonoma),  South Bay (Santa Clara), Peninsula (San Mateo) and San Francisco.  
+
+
+The data were downloaded from the 2013-2017 American Community Survey. A record layout of the data can be found [here](https://raw.githubusercontent.com/geo200cn/data/master/bayareatractsRL.txt).
+
+We'll need to reproject the file into a [Coordinate Reference System](https://geo200cn.github.io/Lab_Week3.html#chapter_6:_coordinate_reference_systems) that uses meters as the units of distance. Let's use UTM Zone 10.
+
+
+```{r message = FALSE, warning = FALSE}
+bayarea <-st_transform(bayarea, crs = "+proj=utm +zone=10 +datum=NAD83 +ellps=GRS80") 
+```
+
+
+<div style="margin-bottom:25px;">
+</div>
+## **Multiple linear regression**
+\
+
+Let's first run a basic multiple linear regression model, regressing *lmedhval*  on log total population *ltotp*, median household income *lmedinc*, median age of housing *medage*, median number of rooms *medrooms*, the median number of years current residents have been residing in their houses *meddur*, the number of parks within a 10 minute walk *parks*, and the percent of 4th graders attending the nearest school who scored proficient and above on the California's English Language Arts standardized test *edppl13*.  Use the `lm()` function to run this model using Ordinary Least Squares (OLS) regression.
+
+```{r}
+fit.ols <- lm(lmedhval ~ ltotp + lmedinc + medage + medrooms + meddur + parks + edppl3, data = bayarea)
+```
+
+Here is a summary of results
+
+```{r}
+#eliminate scientific notation
+options(scipen=999)
+
+summary(fit.ols)
+```
+
+
+<div style="margin-bottom:25px;">
+</div>
+## **Aspatial regression models**
+\
+
+The linear model is a global model in the sense that it estimates an average effect and assumes that this effect applies to all places.  We now turn to the three sets of methods covered by Chi and Zhu in Chapter 5 that deal with spatial heterogeneity in the regression coefficients: Dummy variables model, interaction model and stratified model.
+
+<div style="margin-bottom:25px;">
+</div>
+### **Dummy variables model**
+\
+
+The first aspatial method that Chi and Zhu go through is one that adds dummy variables for the geography we believe explains spatial heterogeneity. We went through the use of geographic dummy variables in regression models and the interpretation of their coefficients when we covered differences in COVID-19 case rates across [New York City boroughs](https://geo200cn.github.io/linearregression.html#qualitative_independent_variable).  Let's add dummy variables for region (South Bay, North Bay, etc.) to the multiple linear regression model we ran above.  We do this by including the variable *region* in the model.
+
+```{r, warning = FALSE, message = FALSE}
+fit.fe <- lm(lmedhval ~ ltotp + lmedinc + medage + medrooms + meddur + parks + edppl3 + region, data = bayarea)
+```
+
+```{r, warning = FALSE, message = FALSE}
+summary(fit.fe)
+```
+
+Remember that R will automatically take one of the regions and make it the reference (Region = 0).  Here, it is the East Bay, because it is first in alphabetical order. We find that the North Bay's housing values do not differ from the reference, which is the East Bay, but the Peninsula, San Francisco and the South Bay have higher housing values. As Chi and Zhu mention on page 115, this approach is not so interesting as it only tells us the spatial heterogeneity in the mean of log housing values and nothing about how the relationship between log housing values and *parks*, for example, might vary across Bay Area region.
+
+
+<div style="margin-bottom:25px;">
+</div>
+### **Interaction models**
+\
+
+
+The second aspatial method Chi and Zhu describe is the interaction regression model.  Here, we interact the variable *region* with one or more of the independent variables.  To get the interaction between *medage* and *region*, we multiply them in `lm()` using the operator `*`
+
+
+```{r, warning = FALSE, message = FALSE}
+fit.int <- lm(lmedhval ~ ltotp + lmedinc + medage*region + medrooms + meddur + parks + edppl3, data = bayarea)
+```
+
+Summarize the results
+
+```{r, warning = FALSE, message = FALSE}
+summary(fit.int)
+```
+
+You will notice that the reference region East Bay is excluded in the interaction because it is the reference group.
+
+The interaction results in the R output are shown in the form of *variable:region*.  For example, *medage:regionNorth Bay* is the interaction between *medage* and the North Bay.  Looking at page 119 in Chi and Zhu, *medage* is like *Developability* and *regionNorth Bay* is like *Urban*. 
+
+<br>
+
+<p class="comment", style="font-style:normal">**Question 1**:  What is the interpretation of the coefficient for the variable *medage:regionSouth Bay*?  </p>
+
+
+<br>
+
+
+<div style="margin-bottom:25px;">
+</div>
+### **Stratified models**
+\
+
+The third aspatial method that Chi and Zhu describe partitions or stratifies data by region and fits regression models separately for each region.  We have 5 Bay Area regions
+
+```{r}
+tm_shape(bayarea) + tm_polygons("region", style ="cat", border.alpha = 0)
+```
+
+so we run 5 separate regressions with the same variables.  We can subset the file *bayarea* to each region and run `lm()` five times.  The `lm()` function has the argument `subset` which allows us to subset the data (like `filter()` in tidy). First, the South Bay
+
+```{r}
+fit.olsSB <- lm(lmedhval ~ ltotp + lmedinc + medage + medrooms + meddur + parks + edppl3, data = bayarea, subset = region =="South Bay")
+summary(fit.olsSB)
+```
+
+<br>
+
+<p class="comment", style="font-style:normal">**Question 2**:  What is the interpretation the coefficient for the variable *medage*? </p>
+
+<br>
+
+We run the model for the other four regions. You can run the `summary()` function to see the differences.
+
+```{r}
+fit.olsEB <- lm(lmedhval ~ ltotp + lmedinc + medage + medrooms + meddur + parks + edppl3, data = bayarea, subset = region =="East Bay")
+fit.olsPEN <- lm(lmedhval ~ ltotp + lmedinc + medage + medrooms + meddur + parks + edppl3, data = bayarea, subset = region =="Peninsula")
+fit.olsSF <- lm(lmedhval ~ ltotp + lmedinc + medage + medrooms + meddur + parks + edppl3, data = bayarea, subset = region =="San Francisco")
+fit.olsNB <- lm(lmedhval ~ ltotp + lmedinc + medage + medrooms + meddur + parks + edppl3, data = bayarea, subset = region =="North Bay")
+```
+
+
+<div style="margin-bottom:25px;">
+</div>
+## **Spatial regime regression**
+\
+
+Spatial regime models allow the regression coefficients to vary between discrete spatial subsets of the data. As Chi and Zhu discuss starting on page 122, a spatial regime model combines aspatial methods 2 and 3. A spatial regime model fits to the entire data set, which the 2nd aspatial method does but not the 3rd method, and at the same time can estimate different sets of coefficients for subsets of the data, which the 3rd aspatial method does but not the 2nd method.  The goal is to determine whether the regression coefficients vary across geographic space, in our case across region.
+
+
+We can fit a spatial regime model by using `lm()` but wrapping `region/` around the independent variables. Also note the inclusion of `0` in the equation.  This will allow for the intercept to also vary by region.  
+
+
+```{r, warning = FALSE, message = FALSE}
+fit.regime <- lm(lmedhval ~ 0 + region/(ltotp + lmedinc + medage + medrooms + meddur + parks + edppl3), data = bayarea)
+```
+
+```{r results = "hide"}
+summary(fit.regime)
+```
+
+In the R output, any coefficient with *regionEast Bay* is for tracts in the East Bay. The first coefficient *regionEast Bay* is the intercept. The coefficient *regionEast Bay:ltotp* is the association between *ltotp* and housing values in the East Bay. The coefficient *regionEast Bay:lmedinc* is the association between *lmedinc* and housing values in the East Bay. And so on. Chi and Zhu in their 5.2.3 Data Example provide greater description of how to interpret results from a spatial regime model.
+
+<br>
+
+<p class="comment", style="font-style:normal">**Question 3**:  Explain the differences and similarities between the coefficient on *regionSouth Bay:medage* in the spatial regime model, the coefficient *medage:regionSouth Bay* in the interacted model, and the coefficient *medage* in the stratified regression model for the South Bay.</p>
+
+<br>
+
+Is the spatial regime a better model than the non-interacted OLS? We can run the spatial chow test described on page 123 in Chi and Zhu to determine whether there is evidence that the relationships between the independent variables and housing values differ across region. There is no canned R command that allows us to run a chow test. Luckily, Anselin (2007) wrote a function for us
+
+```{r}
+chow.test <- function(rest,unrest) {
+  #extracts residuals from the regime and regular regression models
+  er <- residuals(rest)
+  eu <- residuals(unrest)
+  #sum of squared errors
+  er2 <- sum(er^2)
+  eu2 <- sum(eu^2)
+  #calculates degrees of freedom 
+  k <- rest$rank
+  n2k <- rest$df.residual - k
+  #calculates chow statistic
+  c <- ((er2 - eu2)/k) / (eu2 / n2k)
+  #pvalue from F distribution
+  pc <- pf(c,k,n2k,lower.tail=FALSE)
+  #returns chow stat, pvalue, rank (number of estimated parameters) and degrees of freedom
+  list(c,pc,k,n2k)
+}
+```
+
+This spatial chow test examines whether fit as defined by the sum of squared errors improves significantly using the unrestrained (spatial regime) model. The null is the basic OLS and the alternative is the spatial regime. Use this function in R to compare the standard OLS model and the spatial regime model.
+
+```{r}
+chow.test( fit.ols, fit.regime)
+```
+
+The 2nd value in the list gives the p-value. Using a cutoff of 0.05, we can reject the null of the restrained model (non spatial regime OLS).
+
+An advantage of the spatial regime method over the three aspatial approaches is that you can incorporate a spatial lag or error in the model (discussed on page 123 in Chi and Zhu).  To do this, you first need to turn *bayarea* into an **sp** object because spatial regression models only use **sp** objects.
+
+```{r}
+bayarea.sp <- as(bayarea, "Spatial")
+```
+
+Then create the neighbor *nb* and spatial weights matrix *listw* objects. We use Queen contiguity and row-standardized weights.
+
+```{r}
+bayareab<-poly2nb(bayarea.sp, queen=T)
+bayareaw<-nb2listw(bayareab, style="W", zero.policy = TRUE)
+```
+
+Run the regime model but now incorporating a spatial lag on the dependent variable.   Use our new pal `lagsarlm()`.
+
+```{r}
+fit.regime.lag <- lagsarlm(lmedhval ~ region/( ltotp + lmedinc + medrooms + medage + meddur + parks + edppl3), data = bayarea.sp, listw = bayareaw, method = "MC")
+```
+
+What do the results say?
+
+```{r results = "hide"}
+summary(fit.regime.lag)
+```
+
+
+<div style="margin-bottom:25px;">
+</div>
+## **Geographically weighted regression**
+\
+
+All the spatial heterogeneity models we've run so far treat geography as something that is split up into regions with hard boundaries, like region or county. In contrast, geographically weighted regression (GWR) attempts to treat your study area like a continuous surface.  
+
+GWR runs a local regression for each observation in your study area.  GWR uses the coordinates of each tract centroid as the target point. GWR runs a regression using the target tract and its neighbors.  The neighbors are weighted based on how close they are to the target tract. There are two major decisions to make when running a GWR: (1) the kernel density function assigning weights $w_{ij}$ for neighbor $j$ and target point $i$; and (2) the bandwidth $h$ of the function, which determines the subset of observations to include in the local regression. 
+
+<div style="margin-bottom:25px;">
+</div>
+### **Kernel density function and bandwidth h**
+\
+
+The kernel density function determines the weight assigned to neighboring units.   Usually, the weight depends on the distance of the point $j$ from the target point $i$. That is, we want to weight tracts that are closer to the target tract more heavily in the regression than tracts that are farther out.  A common density function is a Gaussian weighting function
+
+
+\[
+w_{ij} = exp(-\frac{d_{ij}^2}{h^2})
+\]
+
+
+where $d_{ij}$ is the distance between location $i$ and $j$ and $h$ is the bandwidth. This is the default kernel function in R.
+
+Another common density function is the bi-square function, which is described on page 131 in Chi and Zhu.
+
+$$w_{ij} = (1-(\frac{d_{ij}^2}{h^2}))^2$$
+
+Choosing a weighting function also involves choosing a bandwidth *h*.  The bandwidth is the distance band or number of neighbors used for each local regression equation and is a very important parameter, as it controls the degree of smoothing in the model.
+
+There are several ways to choose an *h*. First, you might already have a bandwidth in mind. This can be the case, for example, if prior studies have already established an appropriate bandwidth.  Second, you can derive an optimal bandwidth using a data-driven approach. R offers two methods to select *h*.  The first uses a cross-validation (CV) method to choose the optimal kernel bandwidth. The method finds the optimal bandwidth *h* that minimizes the sum of squared errors at all locations $i$.  The other method chooses a bandwidth that minimizes the Akaike Information Criterion (AIC).
+
+In order to calculate an optimal bandwidth in R, use the command `gwr.sel()`. This function has a similar format to all the `lm()` type of functions we've used in this class so far. The function only likes **sp** objects.   The default method is cross-validation
+
+```{r warning = FALSE, message = FALSE, results = "hide"}
+gwr.b1<-gwr.sel(lmedhval ~ ltotp + lmedinc + medrooms + medage + meddur + parks + edppl3, bayarea.sp)
+```
+
+Let's see what the the estimated optimal bandwidth is.
+
+```{r}
+gwr.b1
+```
+
+This is the distance (in meters, because our data are projected in a system measured in meters), which the weighting function will search, and include all tracts whose centroids are within this radius. 
+
+Plug the cross validation based bandwidth into the function `gwr()`, which runs the GWR model, using the argument `bandwidth`
+
+```{r warning = FALSE, message = FALSE, results = "hide"}
+#this might take some time to run as GWR is running weighted regressions on all 1,576 tracts 
+gwr.fit1<-gwr(lmedhval ~ ltotp + lmedinc + medrooms + medage + meddur + parks + edppl3, data = bayarea.sp, bandwidth = gwr.b1, se.fit=T, hatmatrix=T)
+```
+
+Don't use `summary()` to get the results.  Instead, just type the model object name and you will get back the relevant summary information of the model.
+
+```{r}
+gwr.fit1
+```
+
+
+Remember that the GWR estimates regressions for all 1,576 tracts, which means we have 1,576 intercepts and coefficients for *ltotp*, *lmedinc* and all independent variables. The R output above shows that the minimum coefficient value for the variable *ltotp* is -1.32 and the maximum value is 0.30. The values under Global are the coefficients using a regular multiple linear regression (should match the values from *fit.ols*). At the bottom of the output are various fit statistics (AIC, $R^2$). You can compare the AIC with the OLS AIC to see which has a better fit. 
+
+The GWR models we ran above yielded  a fixed distance to search for neighbors to include in the local regression. But there are places in our data where tracts are more densely occurring  (such as in San Francisco).  This means that in some areas, specifically in downtown areas, you'll include a larger number of neighboring tracts in the local regression compared to other areas, such as large tracts in more rural areas. In this case, an adaptive kernel is suitable. 
+
+In order to use an adaptive kernel, specify `adapt = TRUE` when finding the optimal bandwidth using `gwr.sel()`. Then plug the bandwidth into the function `gwr()` using the argument `adapt =`
+
+<div style="margin-bottom:25px;">
+</div>
+### **Presenting GWR results**
+\
+
+In addition to a summary table showing the distribution of GWR coefficient values, you should also map the coefficients to know where high and low coefficients are located.  This is what Chi and Zhu do on page 133. We need to extract the coefficients from the object *gwr.fit1*, which is a `gwr` object.  The object contains a number of other objects.  For example, typing in `gwr.fit1$results` gives you overall model results such as the AIC.  Typing in `gwr.fit1$bandwidth` gives you the bandwidth values for each of the 1,576 tracts in the data set.  
+
+An important object within the `gwr` object is called `SDF` and this is the spatial polygons data frame containing the regression model estimates.  Get the names of the objects within SDF
+
+```{r}
+names(gwr.fit1$SDF)
+```
+
+The variables *X.Intercept.* to *edppl3* give the regression coefficients. *X.Intercept.se* to *edppl3_se* give the coefficient standard errors.  Let's extract the *parks*, *edppl3*, *lmedinc* and *medage* coefficients and save them as variables in *bayarea* using `mutate()`
+
+```{r}
+bayarea <- mutate(bayarea, parks.b = gwr.fit1$SDF$parks, edppl3.b = gwr.fit1$SDF$edppl3, medincome.b = gwr.fit1$SDF$lmedinc, medage.b = gwr.fit1$SDF$medage)
+```
+
+You can then map the effects of parks 
+
+
+```{r}
+tm_shape(bayarea, unit = "mi") +
+  tm_polygons(col = "parks.b",palette = "Reds", style = "quantile",
+              border.alpha = 0, title = "") +
+  tm_layout(main.title = "Parks Coefficient",  main.title.size = 0.95, frame = FALSE, legend.outside = TRUE)
+```
+
+What about the impact of student performance?
+
+```{r}
+tm_shape(bayarea, unit = "mi") +
+  tm_polygons(col = "edppl3.b",palette = "Reds", style = "quantile",
+              border.alpha = 0, title = "") +
+  tm_layout(main.title = "Student Peformance Coefficient",  main.title.size = 0.95, frame = FALSE, legend.outside = TRUE)
+```
+
+And log median income
+
+```{r}
+tm_shape(bayarea, unit = "mi") +
+  tm_polygons(col = "medincome.b",palette = "Reds", style = "quantile",
+              border.alpha = 0, title = "") +
+  tm_layout(main.title = "Income Coefficient",  main.title.size = 0.95, frame = FALSE, legend.outside = TRUE)
+```
+
+Finally, the median age of the housing unit
+
+```{r}
+tm_shape(bayarea, unit = "mi") +
+  tm_polygons(col = "medage.b",palette = "Reds", style = "quantile",
+              border.alpha = 0, title = "") +
+  tm_layout(main.title = "Housing Age Coefficient",  main.title.size = 0.95, frame = FALSE, legend.outside = TRUE)
+```
+
+
+In addition to mapping coefficient sizes, you should also map whether these coefficients are statistically significant.  Unfortunately, R doesn't have that information neatly compiled for you.  But, you can use the coefficient size and standard error to get a *t*-statistic, which you can then map onto a *t* distribution to find the pvalue.  The null hypothesis is the coefficient is 0 and the alternative is that it is not 0.
+
+Under the null hypothesis, the $t$ statistic follows a $t$ distribution, and hence one can calculate the appropriate p-value.  To do this in R, first get the degrees of freedom from the gwr results object.  You will need this to get the p-value from the *t* distribution.
+
+```{r warning = FALSE, message = FALSE}
+dfree<-gwr.fit1$results$edf
+```
+
+Next, calculate the *t* statistic, which is the estimated coefficient minus 0 divided by the estimated standard error.  Save this in your spatial data frame.  Let's do this for the variable *parks* 
+
+```{r warning = FALSE, message = FALSE}
+bayarea <- mutate(bayarea, parks.t = gwr.fit1$SDF$parks/gwr.fit1$SDF$parks_se)
+```
+
+Next, calculate the pvalue using the `pt()` command.  The command looks up the p-value associated with your *t* statistic from a *t* distribution table. You'll have to multiply the value by 2 to get a two-tail *t* test
+
+```{r warning = FALSE, message = FALSE}
+bayarea <- mutate(bayarea, parks.t.p = 2*pt(-abs(bayarea$parks.t), dfree))
+```
+
+You can map the pvalue according to different levels of statistical significance (0.10, 0.05 and 0.01).
+
+```{r warning = FALSE, message = FALSE}
+#break up into the standard p-value thresholds 0.01, 0.05 and 0.1
+breaks <- c(0,0.01,0.05,0.1,1)
+
+tm_shape(bayarea, unit = "mi") +
+  tm_polygons(col = "parks.t.p",palette = "Reds", breaks = breaks,
+              border.alpha = 0, title = "") +
+  tm_layout(main.title = "Parks p-value",  main.title.size = 0.95, frame = FALSE, legend.outside = TRUE)
+```
+
+
+<br>
+
+<p class="comment", style="font-style:normal">**Question 4**: Create a p-value map for the *medage* variable. Using the *medage* coefficient and p-value maps, summarize the spatial heterogeneity in the relationship between housing values and the median age of housing in the Bay Area. </p>
+
+
+
+
+
+
+
+***
+
+
+Website created and maintained by [Noli Brazil](https://nbrazil.faculty.ucdavis.edu/)

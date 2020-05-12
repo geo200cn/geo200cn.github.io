@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Spatial Heterogeneity</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/yeti.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 45px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h2 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h3 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h4 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h5 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h6 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">GEO 200CN: Winter 2020</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="syllabus.html">Syllabus</a>
+</li>
+<li>
+  <a href="hw_guidelines.html">Assignment Guidelines</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Labs
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="getting_started.html">Getting Started</a>
+    </li>
+    <li>
+      <a href="tidyr.html">Intro to tidyverse</a>
+    </li>
+    <li>
+      <a href="central.html">Sampling, CIs, CLT</a>
+    </li>
+    <li>
+      <a href="hypothesis.html">Hypothesis Testing</a>
+    </li>
+    <li>
+      <a href="spatialsf.html">Mapping in sf</a>
+    </li>
+    <li>
+      <a href="pointpatterns.html">Point Pattern Analysis</a>
+    </li>
+    <li>
+      <a href="spatialautocorrelation.html">Spatial Autocorrelation</a>
+    </li>
+    <li>
+      <a href="linearregression.html">Linear Regression I</a>
+    </li>
+    <li>
+      <a href="linearregression2.html">Linear Regression II</a>
+    </li>
+    <li>
+      <a href="spatialreg.html">Spatial Regression</a>
+    </li>
+    <li>
+      <a href="spatialheterogeneity.html">Spatial Heterogeneity</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Lab Lectures
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="Lab_Week1.html">Lab Lecture - 1</a>
+    </li>
+    <li>
+      <a href="Lab_Week2.html">Lab Lecture - 2</a>
+    </li>
+    <li>
+      <a href="Lab_Week3.html">Lab Lecture - 3</a>
+    </li>
+    <li>
+      <a href="Lab_Week4.html">Lab Lecture - 4</a>
+    </li>
+    <li>
+      <a href="Lab_Week5.html">Lab Lecture - 5</a>
+    </li>
+    <li>
+      <a href="Lab_Week6.html">Lab Lecture - 6</a>
+    </li>
+    <li>
+      <a href="Lab_Week7.html">Lab Lecture - 7</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Other
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a></a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Spatial Heterogeneity</h1>
+<h3 class="subtitle"><h4 style="font-style:normal">
+GEO 200CN - Quantitative Geography
+</h4></h3>
+<h4 class="author"><h4 style="font-style:normal">
+Professor Noli Brazil
+</h4></h4>
+
+</div>
+
+
+<style>
+p.comment {
+background-color: #DBDBDB;
+padding: 10px;
+border: 1px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: italic;
+}
+
+.figure {
+   margin-top: 20px;
+   margin-bottom: 20px;
+}
+
+h1.title {
+  font-weight: bold;
+  font-family: Arial;  
+}
+
+h2.title {
+  font-family: Arial;  
+}
+
+</style>
+<style type="text/css">
+#TOC {
+  font-size: 13px;
+  font-family: Arial;
+}
+</style>
+<p><br />
+</p>
+<p>What separates Geographers from everyone else (other than a wonderful sense of humor) is that when they encounter a phenomenon or process - physical, social, economic or otherwise - their gut reaction is to ask whether this process varies from place to place. Geographers often use global models like the ones we’ve covered in the linear regression labs for convenience, but deep in their hearts they know that the relationships they estimate in these regressions likely vary across space. This, my friends, is the concept of Spatial Heterogeneity, which is the topic we will cover in this lab guide.</p>
+<p>We will be closely following Chi and Zhu Chapter 5. The objectives of this lab guide are as follows</p>
+<ol style="list-style-type: decimal">
+<li>Learn how to run “aspatial” spatial heterogeneity models</li>
+<li>Learn how to run a Spatial Regime model</li>
+<li>Learn how to run Geographically Weighted Regression model</li>
+</ol>
+<p>To help us accomplish these learning objectives, we will examine the association between neighborhood characteristics and housing values in the Bay Area, which has some of the highest home prices in the United States.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+<div id="installing-and-loading-packages" class="section level2">
+<h2><strong>Installing and loading packages</strong></h2>
+<p><br />
+We’ll be using one new package in this lab. First, install it .</p>
+<pre class="r"><code>if (!require(&quot;spgwr&quot;)) install.packages(&quot;spgwr&quot;)</code></pre>
+<p>Second, load this package and the others we will need for executing the commands in this lab.</p>
+<pre class="r"><code>library(sf)
+library(tidyverse)
+library(tmap)
+library(spgwr)
+library(spdep)
+library(spatialreg)</code></pre>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="why-examine-spatial-heterogneity" class="section level2">
+<h2><strong>Why examine spatial heterogneity</strong></h2>
+<p><br />
+You should</p>
+<ol style="list-style-type: decimal">
+<li>Not expect things to be the same everywhere</li>
+<li>Expect to find that phenomena cluster</li>
+<li>Be interested in how and where processes and relationships vary spatially</li>
+</ol>
+<p>In statistical terminology, you are interested in spatial non-stationarity or spatial heterogeneity in relationships. What this means is that instead of just one general relationship, the association between two variables will be different in different places.</p>
+<p>Put differently, the motivation behind running models that incorporate spatial heterogeneity is that we’re interested in examining differences in the effects of variables on an outcome across space. For example, you might be interested in examining whether the positive relationship between percent black and COVID-19 rates that we found in our <a href="https://geo200cn.github.io/linearregression2.html">last lab guide</a> varies across neighborhoods in New York City. Perhaps this relationship is true only in certain types of residential neighborhoods. In another example, <a href="https://www.biorxiv.org/content/10.1101/384115v3">this study</a> found that places with low humidity – dry air – and high temperature were particularly good indicators of fire risk. However, the conditions that affected fires varied greatly from one “ecoregion” to another in terms of terrain and vegetation.</p>
+<p>To be clear, we’re not interested in spatial variation in individual variables. We’ve already covered this topic when we went through <a href="https://geo200cn.github.io/spatialautocorrelation.html">Spatial Autocorrelation</a>. We’re also not interested in controlling for differences across geography and space so that we can examine the average effect of a variable on an outcome. This is basically what we’ve been doing throughout all of our regression modelling thus far. Instead, we are interested in examining how the relationship between two variables vary across space. Or, in the regression framework, we are interested in examining the spatial heterogeneity of the regression coefficients.</p>
+<p>Our research questions in this lab guide are: What socioeconomic and built environment characteristics are associated with housing values in the Bay Area? Do these relationships vary across Bay Area region?</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="bringing-in-the-data" class="section level2">
+<h2><strong>Bringing in the data</strong></h2>
+<p><br />
+I zipped up a Bay Area tract shapefile and uploaded it onto GitHub. Download it onto your local folder. The file is also located on Canvas in the Lab and Assignments Week 7 folder.</p>
+<pre class="r"><code>#insert the pathway to the folder you want your data stored into
+setwd(&quot;insert your pathway here&quot;)
+#downloads file into your working directory 
+download.file(url = &quot;https://raw.githubusercontent.com/geo200cn/data/master/bayareatracts.zip&quot;, destfile = &quot;bayareatracts.zip&quot;)
+#unzips the zipped file
+unzip(zipfile = &quot;bayareatracts.zip&quot;)</code></pre>
+<p>Read in the shapefile using the <code>st_read()</code> function.</p>
+<pre class="r"><code>bayarea &lt;- st_read(&quot;bayareatracts.shp&quot;, stringsAsFactors = FALSE)</code></pre>
+<p>And plot it to see what we got</p>
+<pre class="r"><code>tm_shape(bayarea) + tm_polygons()</code></pre>
+<p><img src="spatialheterogeneity_files/figure-html/unnamed-chunk-6-1.png" /><!-- --></p>
+<p>The Bay Area is composed of the following nine counties: Alameda, Contra Costa, Marin, Napa, San Francisco, San Mateo, Santa Clara, Solano, and Sonoma. You can categorize these counties according to where in the Bay Area they are located: East Bay (Alameda and Contra Costa), North Bay (Marin, Napa, Solano and Sonoma), South Bay (Santa Clara), Peninsula (San Mateo) and San Francisco.</p>
+<p>The data were downloaded from the 2013-2017 American Community Survey. A record layout of the data can be found <a href="https://raw.githubusercontent.com/geo200cn/data/master/bayareatractsRL.txt">here</a>.</p>
+<p>We’ll need to reproject the file into a <a href="https://geo200cn.github.io/Lab_Week3.html#chapter_6:_coordinate_reference_systems">Coordinate Reference System</a> that uses meters as the units of distance. Let’s use UTM Zone 10.</p>
+<pre class="r"><code>bayarea &lt;-st_transform(bayarea, crs = &quot;+proj=utm +zone=10 +datum=NAD83 +ellps=GRS80&quot;) </code></pre>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="multiple-linear-regression" class="section level2">
+<h2><strong>Multiple linear regression</strong></h2>
+<p><br />
+Let’s first run a basic multiple linear regression model, regressing <em>lmedhval</em> on log total population <em>ltotp</em>, median household income <em>lmedinc</em>, median age of housing <em>medage</em>, median number of rooms <em>medrooms</em>, the median number of years current residents have been residing in their houses <em>meddur</em>, the number of parks within a 10 minute walk <em>parks</em>, and the percent of 4th graders attending the nearest school who scored proficient and above on the California’s English Language Arts standardized test <em>edppl13</em>. Use the <code>lm()</code> function to run this model using Ordinary Least Squares (OLS) regression.</p>
+<pre class="r"><code>fit.ols &lt;- lm(lmedhval ~ ltotp + lmedinc + medage + medrooms + meddur + parks + edppl3, data = bayarea)</code></pre>
+<p>Here is a summary of results</p>
+<pre class="r"><code>#eliminate scientific notation
+options(scipen=999)
+
+summary(fit.ols)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = lmedhval ~ ltotp + lmedinc + medage + medrooms + 
+##     meddur + parks + edppl3, data = bayarea)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -1.84833 -0.18460 -0.01965  0.16931  1.44107 
+## 
+## Coefficients:
+##               Estimate Std. Error t value             Pr(&gt;|t|)    
+## (Intercept)  4.1986398  0.3034919  13.834 &lt; 0.0000000000000002 ***
+## ltotp       -0.0382342  0.0176646  -2.164               0.0306 *  
+## lmedinc      0.7675167  0.0263889  29.085 &lt; 0.0000000000000002 ***
+## medage       0.0061966  0.0005512  11.241 &lt; 0.0000000000000002 ***
+## medrooms    -0.0856691  0.0095095  -9.009 &lt; 0.0000000000000002 ***
+## meddur       0.0117370  0.0023333   5.030          0.000000546 ***
+## parks        0.0102368  0.0012140   8.432 &lt; 0.0000000000000002 ***
+## edppl3       0.8972933  0.0647460  13.859 &lt; 0.0000000000000002 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.3129 on 1568 degrees of freedom
+## Multiple R-squared:  0.6422, Adjusted R-squared:  0.6406 
+## F-statistic:   402 on 7 and 1568 DF,  p-value: &lt; 0.00000000000000022</code></pre>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="aspatial-regression-models" class="section level2">
+<h2><strong>Aspatial regression models</strong></h2>
+<p><br />
+The linear model is a global model in the sense that it estimates an average effect and assumes that this effect applies to all places. We now turn to the three sets of methods covered by Chi and Zhu in Chapter 5 that deal with spatial heterogeneity in the regression coefficients: Dummy variables model, interaction model and stratified model.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+<div id="dummy-variables-model" class="section level3">
+<h3><strong>Dummy variables model</strong></h3>
+<p><br />
+The first aspatial method that Chi and Zhu go through is one that adds dummy variables for the geography we believe explains spatial heterogeneity. We went through the use of geographic dummy variables in regression models and the interpretation of their coefficients when we covered differences in COVID-19 case rates across <a href="https://geo200cn.github.io/linearregression.html#qualitative_independent_variable">New York City boroughs</a>. Let’s add dummy variables for region (South Bay, North Bay, etc.) to the multiple linear regression model we ran above. We do this by including the variable <em>region</em> in the model.</p>
+<pre class="r"><code>fit.fe &lt;- lm(lmedhval ~ ltotp + lmedinc + medage + medrooms + meddur + parks + edppl3 + region, data = bayarea)</code></pre>
+<pre class="r"><code>summary(fit.fe)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = lmedhval ~ ltotp + lmedinc + medage + medrooms + 
+##     meddur + parks + edppl3 + region, data = bayarea)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -1.90208 -0.16106 -0.01321  0.14906  1.30286 
+## 
+## Coefficients:
+##                       Estimate Std. Error t value             Pr(&gt;|t|)    
+## (Intercept)          6.0507103  0.3097572  19.534 &lt; 0.0000000000000002 ***
+## ltotp               -0.0631781  0.0165474  -3.818             0.000140 ***
+## lmedinc              0.5994928  0.0269848  22.216 &lt; 0.0000000000000002 ***
+## medage               0.0052010  0.0005595   9.296 &lt; 0.0000000000000002 ***
+## medrooms            -0.0325409  0.0094905  -3.429             0.000622 ***
+## meddur               0.0063963  0.0022242   2.876             0.004085 ** 
+## parks                0.0055487  0.0013332   4.162            0.0000333 ***
+## edppl3               0.9892161  0.0607172  16.292 &lt; 0.0000000000000002 ***
+## regionNorth Bay     -0.0264613  0.0218802  -1.209             0.226703    
+## regionPeninsula      0.2781711  0.0278480   9.989 &lt; 0.0000000000000002 ***
+## regionSan Francisco  0.3323966  0.0327688  10.144 &lt; 0.0000000000000002 ***
+## regionSouth Bay      0.2256078  0.0203952  11.062 &lt; 0.0000000000000002 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.291 on 1564 degrees of freedom
+## Multiple R-squared:  0.6913, Adjusted R-squared:  0.6891 
+## F-statistic: 318.4 on 11 and 1564 DF,  p-value: &lt; 0.00000000000000022</code></pre>
+<p>Remember that R will automatically take one of the regions and make it the reference (Region = 0). Here, it is the East Bay, because it is first in alphabetical order. We find that the North Bay’s housing values do not differ from the reference, which is the East Bay, but the Peninsula, San Francisco and the South Bay have higher housing values. As Chi and Zhu mention on page 115, this approach is not so interesting as it only tells us the spatial heterogeneity in the mean of log housing values and nothing about how the relationship between log housing values and <em>parks</em>, for example, might vary across Bay Area region.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="interaction-models" class="section level3">
+<h3><strong>Interaction models</strong></h3>
+<p><br />
+</p>
+<p>The second aspatial method Chi and Zhu describe is the interaction regression model. Here, we interact the variable <em>region</em> with one or more of the independent variables. To get the interaction between <em>medage</em> and <em>region</em>, we multiply them in <code>lm()</code> using the operator <code>*</code></p>
+<pre class="r"><code>fit.int &lt;- lm(lmedhval ~ ltotp + lmedinc + medage*region + medrooms + meddur + parks + edppl3, data = bayarea)</code></pre>
+<p>Summarize the results</p>
+<pre class="r"><code>summary(fit.int)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = lmedhval ~ ltotp + lmedinc + medage * region + medrooms + 
+##     meddur + parks + edppl3, data = bayarea)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -1.83400 -0.16412 -0.00931  0.15247  1.27117 
+## 
+## Coefficients:
+##                              Estimate Std. Error t value             Pr(&gt;|t|)
+## (Intercept)                 6.1506997  0.3125779  19.677 &lt; 0.0000000000000002
+## ltotp                      -0.0614002  0.0165147  -3.718             0.000208
+## lmedinc                     0.5957876  0.0267336  22.286 &lt; 0.0000000000000002
+## medage                      0.0040160  0.0007772   5.167          0.000000269
+## regionNorth Bay            -0.0676059  0.0688656  -0.982             0.326396
+## regionPeninsula            -0.2307712  0.1273507  -1.812             0.070164
+## regionSan Francisco         0.5371517  0.1104769   4.862          0.000001278
+## regionSouth Bay            -0.0315589  0.0690407  -0.457             0.647659
+## medrooms                   -0.0379107  0.0095196  -3.982          0.000071368
+## meddur                      0.0064221  0.0022256   2.885             0.003962
+## parks                       0.0058858  0.0013373   4.401          0.000011492
+## edppl3                      1.0073740  0.0604405  16.667 &lt; 0.0000000000000002
+## medage:regionNorth Bay      0.0007567  0.0014485   0.522             0.601484
+## medage:regionPeninsula      0.0095904  0.0023297   4.117          0.000040476
+## medage:regionSan Francisco -0.0027678  0.0015792  -1.753             0.079847
+## medage:regionSouth Bay      0.0056334  0.0014471   3.893             0.000103
+##                               
+## (Intercept)                ***
+## ltotp                      ***
+## lmedinc                    ***
+## medage                     ***
+## regionNorth Bay               
+## regionPeninsula            .  
+## regionSan Francisco        ***
+## regionSouth Bay               
+## medrooms                   ***
+## meddur                     ** 
+## parks                      ***
+## edppl3                     ***
+## medage:regionNorth Bay        
+## medage:regionPeninsula     ***
+## medage:regionSan Francisco .  
+## medage:regionSouth Bay     ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.2878 on 1560 degrees of freedom
+## Multiple R-squared:  0.6988, Adjusted R-squared:  0.6959 
+## F-statistic: 241.3 on 15 and 1560 DF,  p-value: &lt; 0.00000000000000022</code></pre>
+<p>You will notice that the reference region East Bay is excluded in the interaction because it is the reference group.</p>
+<p>The interaction results in the R output are shown in the form of <em>variable:region</em>. For example, <em>medage:regionNorth Bay</em> is the interaction between <em>medage</em> and the North Bay. Looking at page 119 in Chi and Zhu, <em>medage</em> is like <em>Developability</em> and <em>regionNorth Bay</em> is like <em>Urban</em>.</p>
+<p><br></p>
+<p class="comment" , style="font-style:normal">
+<strong>Question 1</strong>: What is the interpretation of the coefficient for the variable <em>medage:regionSouth Bay</em>?
+</p>
+<p><br></p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="stratified-models" class="section level3">
+<h3><strong>Stratified models</strong></h3>
+<p><br />
+The third aspatial method that Chi and Zhu describe partitions or stratifies data by region and fits regression models separately for each region. We have 5 Bay Area regions</p>
+<pre class="r"><code>tm_shape(bayarea) + tm_polygons(&quot;region&quot;, style =&quot;cat&quot;, border.alpha = 0)</code></pre>
+<p><img src="spatialheterogeneity_files/figure-html/unnamed-chunk-14-1.png" /><!-- --></p>
+<p>so we run 5 separate regressions with the same variables. We can subset the file <em>bayarea</em> to each region and run <code>lm()</code> five times. The <code>lm()</code> function has the argument <code>subset</code> which allows us to subset the data (like <code>filter()</code> in tidy). First, the South Bay</p>
+<pre class="r"><code>fit.olsSB &lt;- lm(lmedhval ~ ltotp + lmedinc + medage + medrooms + meddur + parks + edppl3, data = bayarea, subset = region ==&quot;South Bay&quot;)
+summary(fit.olsSB)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = lmedhval ~ ltotp + lmedinc + medage + medrooms + 
+##     meddur + parks + edppl3, data = bayarea, subset = region == 
+##     &quot;South Bay&quot;)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -1.84101 -0.15034  0.00893  0.16786  0.88445 
+## 
+## Coefficients:
+##              Estimate Std. Error t value             Pr(&gt;|t|)    
+## (Intercept)  6.080576   0.668705   9.093 &lt; 0.0000000000000002 ***
+## ltotp       -0.070409   0.039637  -1.776              0.07651 .  
+## lmedinc      0.591643   0.060995   9.700 &lt; 0.0000000000000002 ***
+## medage       0.008557   0.001494   5.729         0.0000000212 ***
+## medrooms    -0.055558   0.018619  -2.984              0.00304 ** 
+## meddur       0.011573   0.005930   1.952              0.05175 .  
+## parks        0.003732   0.002973   1.255              0.21011    
+## edppl3       1.344884   0.150797   8.918 &lt; 0.0000000000000002 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.295 on 364 degrees of freedom
+## Multiple R-squared:  0.6519, Adjusted R-squared:  0.6452 
+## F-statistic: 97.37 on 7 and 364 DF,  p-value: &lt; 0.00000000000000022</code></pre>
+<p><br></p>
+<p class="comment" , style="font-style:normal">
+<strong>Question 2</strong>: What is the interpretation the coefficient for the variable <em>medage</em>?
+</p>
+<p><br></p>
+<p>We run the model for the other four regions. You can run the <code>summary()</code> function to see the differences.</p>
+<pre class="r"><code>fit.olsEB &lt;- lm(lmedhval ~ ltotp + lmedinc + medage + medrooms + meddur + parks + edppl3, data = bayarea, subset = region ==&quot;East Bay&quot;)
+fit.olsPEN &lt;- lm(lmedhval ~ ltotp + lmedinc + medage + medrooms + meddur + parks + edppl3, data = bayarea, subset = region ==&quot;Peninsula&quot;)
+fit.olsSF &lt;- lm(lmedhval ~ ltotp + lmedinc + medage + medrooms + meddur + parks + edppl3, data = bayarea, subset = region ==&quot;San Francisco&quot;)
+fit.olsNB &lt;- lm(lmedhval ~ ltotp + lmedinc + medage + medrooms + meddur + parks + edppl3, data = bayarea, subset = region ==&quot;North Bay&quot;)</code></pre>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+</div>
+<div id="spatial-regime-regression" class="section level2">
+<h2><strong>Spatial regime regression</strong></h2>
+<p><br />
+Spatial regime models allow the regression coefficients to vary between discrete spatial subsets of the data. As Chi and Zhu discuss starting on page 122, a spatial regime model combines aspatial methods 2 and 3. A spatial regime model fits to the entire data set, which the 2nd aspatial method does but not the 3rd method, and at the same time can estimate different sets of coefficients for subsets of the data, which the 3rd aspatial method does but not the 2nd method. The goal is to determine whether the regression coefficients vary across geographic space, in our case across region.</p>
+<p>We can fit a spatial regime model by using <code>lm()</code> but wrapping <code>region/</code> around the independent variables. Also note the inclusion of <code>0</code> in the equation. This will allow for the intercept to also vary by region.</p>
+<pre class="r"><code>fit.regime &lt;- lm(lmedhval ~ 0 + region/(ltotp + lmedinc + medage + medrooms + meddur + parks + edppl3), data = bayarea)</code></pre>
+<pre class="r"><code>summary(fit.regime)</code></pre>
+<p>In the R output, any coefficient with <em>regionEast Bay</em> is for tracts in the East Bay. The first coefficient <em>regionEast Bay</em> is the intercept. The coefficient <em>regionEast Bay:ltotp</em> is the association between <em>ltotp</em> and housing values in the East Bay. The coefficient <em>regionEast Bay:lmedinc</em> is the association between <em>lmedinc</em> and housing values in the East Bay. And so on. Chi and Zhu in their 5.2.3 Data Example provide greater description of how to interpret results from a spatial regime model.</p>
+<p><br></p>
+<p class="comment" , style="font-style:normal">
+<strong>Question 3</strong>: Explain the differences and similarities between the coefficient on <em>regionSouth Bay:medage</em> in the spatial regime model, the coefficient <em>medage:regionSouth Bay</em> in the interacted model, and the coefficient <em>medage</em> in the stratified regression model for the South Bay.
+</p>
+<p><br></p>
+<p>Is the spatial regime a better model than the non-interacted OLS? We can run the spatial chow test described on page 123 in Chi and Zhu to determine whether there is evidence that the relationships between the independent variables and housing values differ across region. There is no canned R command that allows us to run a chow test. Luckily, Anselin (2007) wrote a function for us</p>
+<pre class="r"><code>chow.test &lt;- function(rest,unrest) {
+  #extracts residuals from the regime and regular regression models
+  er &lt;- residuals(rest)
+  eu &lt;- residuals(unrest)
+  #sum of squared errors
+  er2 &lt;- sum(er^2)
+  eu2 &lt;- sum(eu^2)
+  #calculates degrees of freedom 
+  k &lt;- rest$rank
+  n2k &lt;- rest$df.residual - k
+  #calculates chow statistic
+  c &lt;- ((er2 - eu2)/k) / (eu2 / n2k)
+  #pvalue from F distribution
+  pc &lt;- pf(c,k,n2k,lower.tail=FALSE)
+  #returns chow stat, pvalue, rank (number of estimated parameters) and degrees of freedom
+  list(c,pc,k,n2k)
+}</code></pre>
+<p>This spatial chow test examines whether fit as defined by the sum of squared errors improves significantly using the unrestrained (spatial regime) model. The null is the basic OLS and the alternative is the spatial regime. Use this function in R to compare the standard OLS model and the spatial regime model.</p>
+<pre class="r"><code>chow.test( fit.ols, fit.regime)</code></pre>
+<pre><code>## [[1]]
+## [1] 78.49631
+## 
+## [[2]]
+## [1] 0.0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004832431
+## 
+## [[3]]
+## [1] 8
+## 
+## [[4]]
+## [1] 1560</code></pre>
+<p>The 2nd value in the list gives the p-value. Using a cutoff of 0.05, we can reject the null of the restrained model (non spatial regime OLS).</p>
+<p>An advantage of the spatial regime method over the three aspatial approaches is that you can incorporate a spatial lag or error in the model (discussed on page 123 in Chi and Zhu). To do this, you first need to turn <em>bayarea</em> into an <strong>sp</strong> object because spatial regression models only use <strong>sp</strong> objects.</p>
+<pre class="r"><code>bayarea.sp &lt;- as(bayarea, &quot;Spatial&quot;)</code></pre>
+<p>Then create the neighbor <em>nb</em> and spatial weights matrix <em>listw</em> objects. We use Queen contiguity and row-standardized weights.</p>
+<pre class="r"><code>bayareab&lt;-poly2nb(bayarea.sp, queen=T)
+bayareaw&lt;-nb2listw(bayareab, style=&quot;W&quot;, zero.policy = TRUE)</code></pre>
+<p>Run the regime model but now incorporating a spatial lag on the dependent variable. Use our new pal <code>lagsarlm()</code>.</p>
+<pre class="r"><code>fit.regime.lag &lt;- lagsarlm(lmedhval ~ region/( ltotp + lmedinc + medrooms + medage + meddur + parks + edppl3), data = bayarea.sp, listw = bayareaw, method = &quot;MC&quot;)</code></pre>
+<p>What do the results say?</p>
+<pre class="r"><code>summary(fit.regime.lag)</code></pre>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="geographically-weighted-regression" class="section level2">
+<h2><strong>Geographically weighted regression</strong></h2>
+<p><br />
+All the spatial heterogeneity models we’ve run so far treat geography as something that is split up into regions with hard boundaries, like region or county. In contrast, geographically weighted regression (GWR) attempts to treat your study area like a continuous surface.</p>
+<p>GWR runs a local regression for each observation in your study area. GWR uses the coordinates of each tract centroid as the target point. GWR runs a regression using the target tract and its neighbors. The neighbors are weighted based on how close they are to the target tract. There are two major decisions to make when running a GWR: (1) the kernel density function assigning weights <span class="math inline">\(w_{ij}\)</span> for neighbor <span class="math inline">\(j\)</span> and target point <span class="math inline">\(i\)</span>; and (2) the bandwidth <span class="math inline">\(h\)</span> of the function, which determines the subset of observations to include in the local regression.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+<div id="kernel-density-function-and-bandwidth-h" class="section level3">
+<h3><strong>Kernel density function and bandwidth h</strong></h3>
+<p><br />
+The kernel density function determines the weight assigned to neighboring units. Usually, the weight depends on the distance of the point <span class="math inline">\(j\)</span> from the target point <span class="math inline">\(i\)</span>. That is, we want to weight tracts that are closer to the target tract more heavily in the regression than tracts that are farther out. A common density function is a Gaussian weighting function</p>
+<p><span class="math display">\[
+w_{ij} = exp(-\frac{d_{ij}^2}{h^2})
+\]</span></p>
+<p>where <span class="math inline">\(d_{ij}\)</span> is the distance between location <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span> and <span class="math inline">\(h\)</span> is the bandwidth. This is the default kernel function in R.</p>
+<p>Another common density function is the bi-square function, which is described on page 131 in Chi and Zhu.</p>
+<p><span class="math display">\[w_{ij} = (1-(\frac{d_{ij}^2}{h^2}))^2\]</span></p>
+<p>Choosing a weighting function also involves choosing a bandwidth <em>h</em>. The bandwidth is the distance band or number of neighbors used for each local regression equation and is a very important parameter, as it controls the degree of smoothing in the model.</p>
+<p>There are several ways to choose an <em>h</em>. First, you might already have a bandwidth in mind. This can be the case, for example, if prior studies have already established an appropriate bandwidth. Second, you can derive an optimal bandwidth using a data-driven approach. R offers two methods to select <em>h</em>. The first uses a cross-validation (CV) method to choose the optimal kernel bandwidth. The method finds the optimal bandwidth <em>h</em> that minimizes the sum of squared errors at all locations <span class="math inline">\(i\)</span>. The other method chooses a bandwidth that minimizes the Akaike Information Criterion (AIC).</p>
+<p>In order to calculate an optimal bandwidth in R, use the command <code>gwr.sel()</code>. This function has a similar format to all the <code>lm()</code> type of functions we’ve used in this class so far. The function only likes <strong>sp</strong> objects. The default method is cross-validation</p>
+<pre class="r"><code>gwr.b1&lt;-gwr.sel(lmedhval ~ ltotp + lmedinc + medrooms + medage + meddur + parks + edppl3, bayarea.sp)</code></pre>
+<p>Let’s see what the the estimated optimal bandwidth is.</p>
+<pre class="r"><code>gwr.b1</code></pre>
+<pre><code>## [1] 7040.377</code></pre>
+<p>This is the distance (in meters, because our data are projected in a system measured in meters), which the weighting function will search, and include all tracts whose centroids are within this radius.</p>
+<p>Plug the cross validation based bandwidth into the function <code>gwr()</code>, which runs the GWR model, using the argument <code>bandwidth</code></p>
+<pre class="r"><code>#this might take some time to run as GWR is running weighted regressions on all 1,576 tracts 
+gwr.fit1&lt;-gwr(lmedhval ~ ltotp + lmedinc + medrooms + medage + meddur + parks + edppl3, data = bayarea.sp, bandwidth = gwr.b1, se.fit=T, hatmatrix=T)</code></pre>
+<p>Don’t use <code>summary()</code> to get the results. Instead, just type the model object name and you will get back the relevant summary information of the model.</p>
+<pre class="r"><code>gwr.fit1</code></pre>
+<pre><code>## Call:
+## gwr(formula = lmedhval ~ ltotp + lmedinc + medrooms + medage + 
+##     meddur + parks + edppl3, data = bayarea.sp, bandwidth = gwr.b1, 
+##     hatmatrix = T, se.fit = T)
+## Kernel function: gwr.Gauss 
+## Fixed bandwidth: 7040.377 
+## Summary of GWR coefficient estimates at data points:
+##                     Min.     1st Qu.      Median     3rd Qu.        Max.
+## X.Intercept. -14.8367768   4.7192789   6.4927353   9.0014006  37.9782737
+## ltotp         -1.3257556  -0.0812652  -0.0249426   0.0083518   0.3033374
+## lmedinc       -2.6077790   0.3291706   0.5705322   0.7039981   2.6226951
+## medrooms      -0.8227822  -0.0525912  -0.0224669   0.0188203   1.7695621
+## medage        -0.0351063   0.0027374   0.0051062   0.0069553   0.0493152
+## meddur        -0.0664802   0.0012466   0.0056096   0.0124948   0.2522683
+## parks         -0.0414050   0.0022049   0.0067550   0.0108894   0.0717151
+## edppl3        -3.0989630   0.6059132   0.7902467   1.0476815   2.6368919
+##               Global
+## X.Intercept.  4.1986
+## ltotp        -0.0382
+## lmedinc       0.7675
+## medrooms     -0.0857
+## medage        0.0062
+## meddur        0.0117
+## parks         0.0102
+## edppl3        0.8973
+## Number of data points: 1576 
+## Effective number of parameters (residual: 2traceS - traceS&#39;S): 284.4857 
+## Effective degrees of freedom (residual: 2traceS - traceS&#39;S): 1291.514 
+## Sigma (residual: 2traceS - traceS&#39;S): 0.2262557 
+## Effective number of parameters (model: traceS): 219.4385 
+## Effective degrees of freedom (model: traceS): 1356.561 
+## Sigma (model: traceS): 0.2207646 
+## Sigma (ML): 0.2048194 
+## AICc (GWR p. 61, eq 2.33; p. 96, eq. 4.21): -12.45143 
+## AIC (GWR p. 96, eq. 4.22): -305.9629 
+## Residual sum of squares: 66.11474 
+## Quasi-global R2: 0.8458944</code></pre>
+<p>Remember that the GWR estimates regressions for all 1,576 tracts, which means we have 1,576 intercepts and coefficients for <em>ltotp</em>, <em>lmedinc</em> and all independent variables. The R output above shows that the minimum coefficient value for the variable <em>ltotp</em> is -1.32 and the maximum value is 0.30. The values under Global are the coefficients using a regular multiple linear regression (should match the values from <em>fit.ols</em>). At the bottom of the output are various fit statistics (AIC, <span class="math inline">\(R^2\)</span>). You can compare the AIC with the OLS AIC to see which has a better fit.</p>
+<p>The GWR models we ran above yielded a fixed distance to search for neighbors to include in the local regression. But there are places in our data where tracts are more densely occurring (such as in San Francisco). This means that in some areas, specifically in downtown areas, you’ll include a larger number of neighboring tracts in the local regression compared to other areas, such as large tracts in more rural areas. In this case, an adaptive kernel is suitable.</p>
+<p>In order to use an adaptive kernel, specify <code>adapt = TRUE</code> when finding the optimal bandwidth using <code>gwr.sel()</code>. Then plug the bandwidth into the function <code>gwr()</code> using the argument <code>adapt =</code></p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="presenting-gwr-results" class="section level3">
+<h3><strong>Presenting GWR results</strong></h3>
+<p><br />
+In addition to a summary table showing the distribution of GWR coefficient values, you should also map the coefficients to know where high and low coefficients are located. This is what Chi and Zhu do on page 133. We need to extract the coefficients from the object <em>gwr.fit1</em>, which is a <code>gwr</code> object. The object contains a number of other objects. For example, typing in <code>gwr.fit1$results</code> gives you overall model results such as the AIC. Typing in <code>gwr.fit1$bandwidth</code> gives you the bandwidth values for each of the 1,576 tracts in the data set.</p>
+<p>An important object within the <code>gwr</code> object is called <code>SDF</code> and this is the spatial polygons data frame containing the regression model estimates. Get the names of the objects within SDF</p>
+<pre class="r"><code>names(gwr.fit1$SDF)</code></pre>
+<pre><code>##  [1] &quot;sum.w&quot;               &quot;X.Intercept.&quot;        &quot;ltotp&quot;              
+##  [4] &quot;lmedinc&quot;             &quot;medrooms&quot;            &quot;medage&quot;             
+##  [7] &quot;meddur&quot;              &quot;parks&quot;               &quot;edppl3&quot;             
+## [10] &quot;X.Intercept._se&quot;     &quot;ltotp_se&quot;            &quot;lmedinc_se&quot;         
+## [13] &quot;medrooms_se&quot;         &quot;medage_se&quot;           &quot;meddur_se&quot;          
+## [16] &quot;parks_se&quot;            &quot;edppl3_se&quot;           &quot;gwr.e&quot;              
+## [19] &quot;pred&quot;                &quot;pred.se&quot;             &quot;localR2&quot;            
+## [22] &quot;X.Intercept._se_EDF&quot; &quot;ltotp_se_EDF&quot;        &quot;lmedinc_se_EDF&quot;     
+## [25] &quot;medrooms_se_EDF&quot;     &quot;medage_se_EDF&quot;       &quot;meddur_se_EDF&quot;      
+## [28] &quot;parks_se_EDF&quot;        &quot;edppl3_se_EDF&quot;       &quot;pred.se.1&quot;</code></pre>
+<p>The variables <em>X.Intercept.</em> to <em>edppl3</em> give the regression coefficients. <em>X.Intercept.se</em> to <em>edppl3_se</em> give the coefficient standard errors. Let’s extract the <em>parks</em>, <em>edppl3</em>, <em>lmedinc</em> and <em>medage</em> coefficients and save them as variables in <em>bayarea</em> using <code>mutate()</code></p>
+<pre class="r"><code>bayarea &lt;- mutate(bayarea, parks.b = gwr.fit1$SDF$parks, edppl3.b = gwr.fit1$SDF$edppl3, medincome.b = gwr.fit1$SDF$lmedinc, medage.b = gwr.fit1$SDF$medage)</code></pre>
+<p>You can then map the effects of parks</p>
+<pre class="r"><code>tm_shape(bayarea, unit = &quot;mi&quot;) +
+  tm_polygons(col = &quot;parks.b&quot;,palette = &quot;Reds&quot;, style = &quot;quantile&quot;,
+              border.alpha = 0, title = &quot;&quot;) +
+  tm_layout(main.title = &quot;Parks Coefficient&quot;,  main.title.size = 0.95, frame = FALSE, legend.outside = TRUE)</code></pre>
+<p><img src="spatialheterogeneity_files/figure-html/unnamed-chunk-31-1.png" /><!-- --></p>
+<p>What about the impact of student performance?</p>
+<pre class="r"><code>tm_shape(bayarea, unit = &quot;mi&quot;) +
+  tm_polygons(col = &quot;edppl3.b&quot;,palette = &quot;Reds&quot;, style = &quot;quantile&quot;,
+              border.alpha = 0, title = &quot;&quot;) +
+  tm_layout(main.title = &quot;Student Peformance Coefficient&quot;,  main.title.size = 0.95, frame = FALSE, legend.outside = TRUE)</code></pre>
+<p><img src="spatialheterogeneity_files/figure-html/unnamed-chunk-32-1.png" /><!-- --></p>
+<p>And log median income</p>
+<pre class="r"><code>tm_shape(bayarea, unit = &quot;mi&quot;) +
+  tm_polygons(col = &quot;medincome.b&quot;,palette = &quot;Reds&quot;, style = &quot;quantile&quot;,
+              border.alpha = 0, title = &quot;&quot;) +
+  tm_layout(main.title = &quot;Income Coefficient&quot;,  main.title.size = 0.95, frame = FALSE, legend.outside = TRUE)</code></pre>
+<p><img src="spatialheterogeneity_files/figure-html/unnamed-chunk-33-1.png" /><!-- --></p>
+<p>Finally, the median age of the housing unit</p>
+<pre class="r"><code>tm_shape(bayarea, unit = &quot;mi&quot;) +
+  tm_polygons(col = &quot;medage.b&quot;,palette = &quot;Reds&quot;, style = &quot;quantile&quot;,
+              border.alpha = 0, title = &quot;&quot;) +
+  tm_layout(main.title = &quot;Housing Age Coefficient&quot;,  main.title.size = 0.95, frame = FALSE, legend.outside = TRUE)</code></pre>
+<p><img src="spatialheterogeneity_files/figure-html/unnamed-chunk-34-1.png" /><!-- --></p>
+<p>In addition to mapping coefficient sizes, you should also map whether these coefficients are statistically significant. Unfortunately, R doesn’t have that information neatly compiled for you. But, you can use the coefficient size and standard error to get a <em>t</em>-statistic, which you can then map onto a <em>t</em> distribution to find the pvalue. The null hypothesis is the coefficient is 0 and the alternative is that it is not 0.</p>
+<p>Under the null hypothesis, the <span class="math inline">\(t\)</span> statistic follows a <span class="math inline">\(t\)</span> distribution, and hence one can calculate the appropriate p-value. To do this in R, first get the degrees of freedom from the gwr results object. You will need this to get the p-value from the <em>t</em> distribution.</p>
+<pre class="r"><code>dfree&lt;-gwr.fit1$results$edf</code></pre>
+<p>Next, calculate the <em>t</em> statistic, which is the estimated coefficient minus 0 divided by the estimated standard error. Save this in your spatial data frame. Let’s do this for the variable <em>parks</em></p>
+<pre class="r"><code>bayarea &lt;- mutate(bayarea, parks.t = gwr.fit1$SDF$parks/gwr.fit1$SDF$parks_se)</code></pre>
+<p>Next, calculate the pvalue using the <code>pt()</code> command. The command looks up the p-value associated with your <em>t</em> statistic from a <em>t</em> distribution table. You’ll have to multiply the value by 2 to get a two-tail <em>t</em> test</p>
+<pre class="r"><code>bayarea &lt;- mutate(bayarea, parks.t.p = 2*pt(-abs(bayarea$parks.t), dfree))</code></pre>
+<p>You can map the pvalue according to different levels of statistical significance (0.10, 0.05 and 0.01).</p>
+<pre class="r"><code>#break up into the standard p-value thresholds 0.01, 0.05 and 0.1
+breaks &lt;- c(0,0.01,0.05,0.1,1)
+
+tm_shape(bayarea, unit = &quot;mi&quot;) +
+  tm_polygons(col = &quot;parks.t.p&quot;,palette = &quot;Reds&quot;, breaks = breaks,
+              border.alpha = 0, title = &quot;&quot;) +
+  tm_layout(main.title = &quot;Parks p-value&quot;,  main.title.size = 0.95, frame = FALSE, legend.outside = TRUE)</code></pre>
+<p><img src="spatialheterogeneity_files/figure-html/unnamed-chunk-38-1.png" /><!-- --></p>
+<p><br></p>
+<p class="comment" , style="font-style:normal">
+<strong>Question 4</strong>: Create a p-value map for the <em>medage</em> variable. Using the <em>medage</em> coefficient and p-value maps, summarize the spatial heterogeneity in the relationship between housing values and the median age of housing in the Bay Area.
+</p>
+<hr />
+<p>Website created and maintained by <a href="https://nbrazil.faculty.ucdavis.edu/">Noli Brazil</a></p>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("show" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "site_libs/mathjax-local/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

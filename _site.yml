@@ -31,6 +31,8 @@ navbar:
           href: linearregression2.html
         - text: "Spatial Regression"
           href: spatialreg.html
+        - text: "Spatial Heterogeneity"
+          href: spatialheterogeneity.html
     - text: "Lab Lectures"
       menu:
         - text: "Lab Lecture - 1"
@@ -45,6 +47,8 @@ navbar:
           href: Lab_Week5.html
         - text: "Lab Lecture - 6"
           href: Lab_Week6.html
+        - text: "Lab Lecture - 7"
+          href: Lab_Week7.html
     - text: "Other"
       menu:
         - text:
