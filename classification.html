@@ -754,7 +754,7 @@ summary(logit2.fit)</code></pre>
 <div id="classification" class="section level3">
 <h3><strong>Classification</strong></h3>
 <p><br />
-As we discussed in lecture, we’re now entering the phase of the class where we go from using models and methods to <em>describe</em> and <em>infer</em> to those that <em>predict</em>. In the case of logistic regression, or any model that has a non-numeric response variable, prediction is about classification, which you read about in ISRL Ch. 4. In the classification (or prediction) world, we’re primarily concerned about the quality of our predictions rather than trying to describe a relationship or infer causality. In other words, we create a model to predict a phenomena and then test whether our model does a good job of predicting that phenomena.</p>
+As we discussed in lecture, we’re now entering the phase of the class where we go from using models and methods to <em>describe</em> and <em>infer</em> to those that <em>predict</em>. In the case of logistic regression, or any model that has a non-numeric response variable, prediction is about classification, which you read about in ISLR Ch. 4. In the classification (or prediction) world, we’re primarily concerned about the quality of our predictions rather than trying to describe a relationship or infer causality. In other words, we create a model to predict a phenomena and then test whether our model does a good job of predicting that phenomena.</p>
 <p>A simple approach to assessing the prediction quality of a model is to examine a confusion matrix (see page 145 in ISRL). In practice, a binary classifier can make two types of errors: it can incorrectly assign an individual who is in bad health, or it can incorrectly assign an individual who is not in bad health. A confusion matrix is a convenient way of displaying this information.</p>
 <p>First, let’s predict the probability of reporting bad health for the 367,873 observations in our original data.</p>
 <pre class="r"><code>pfit3 &lt;- predict(logit2.fit, type = &quot;response&quot;)</code></pre>
@@ -963,7 +963,7 @@ knn.test&lt;- dplyr::select(test.ca, temperature, precipitation)</code></pre>
                 .$whr</code></pre>
 <p>We set a random seed before we apply <code>knn()</code> because if several observations are tied as nearest neighbors, then R will randomly break the tie. Therefore, a seed must be set in order to ensure reproducibility of results. The default <span class="math inline"><em>K</em></span> is 1, but let’s follow the example in the ISLR textbook and use <span class="math inline"><em>K</em></span> = 3.</p>
 <pre class="r"><code>set.seed(1234)
-knn.pred&lt;-knn(knn.train, knn.test, train.class, k =31)</code></pre>
+knn.pred&lt;-knn(knn.train, knn.test, train.class, k =3)</code></pre>
 <p><em>knn.pred</em> holds the predicted classes of the test observations.</p>
 <p><br></p>
 <p class="comment" , style="font-style:normal">

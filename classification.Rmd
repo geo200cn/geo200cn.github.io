@@ -256,7 +256,7 @@ ols.fit2 <- glm(badhealth ~ bmi + race_eth + agec + male + smoke + educ + inc + 
 ### **Classification**
 \
 
-As we discussed in lecture, we're now entering the phase of the class where we go from using models and methods to *describe* and *infer* to those that *predict*.  In  the case of logistic regression, or any model that has a non-numeric response variable, prediction is about classification, which you read about in ISRL Ch. 4. In the classification (or prediction) world, we're primarily concerned about the quality of our predictions rather than trying to describe a relationship or infer causality. In other words, we create a model to predict a phenomena and then test whether our model does a good job of predicting that phenomena.
+As we discussed in lecture, we're now entering the phase of the class where we go from using models and methods to *describe* and *infer* to those that *predict*.  In  the case of logistic regression, or any model that has a non-numeric response variable, prediction is about classification, which you read about in ISLR Ch. 4. In the classification (or prediction) world, we're primarily concerned about the quality of our predictions rather than trying to describe a relationship or infer causality. In other words, we create a model to predict a phenomena and then test whether our model does a good job of predicting that phenomena.
 
 A simple approach to assessing the prediction quality of a model is to examine a confusion matrix (see page 145 in ISRL).  In practice, a binary classifier can make two types of errors: it can incorrectly assign an individual who is in bad health, or it can incorrectly assign an individual who is not in bad health.  A confusion matrix is a convenient way of displaying this information.
 
@@ -478,7 +478,7 @@ We set a random seed before we apply `knn()` because if several observations are
 
 ```{r}
 set.seed(1234)
-knn.pred<-knn(knn.train, knn.test, train.class, k =31)
+knn.pred<-knn(knn.train, knn.test, train.class, k =3)
 ```
 
 

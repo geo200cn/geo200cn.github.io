@@ -1,0 +1,170 @@
+---
+title: "Lab Week 8"
+author: "Kenji Tomari"
+output: 
+  html_document:
+    theme: readable
+    toc: true
+    toc_depth: 3
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Classification
+
+## Question 1
+
+To create the confusion matrix, just use the code above the question, with the proper replacements, eg:
+
+```{r eval=F}
+pfit4 <- predict(ols.fit2, type = "response")
+brfss16 <- mutate(brfss16, 
+                  pprob_ols = pfit4, 
+                  pclass_ols = ifelse(pprob_ols > 0.5, 1, 0))
+table(brfss16$pclass_ols, 
+      brfss16$badhealth)
+```
+
+```{r eval=F}
+# Calculating the Percent Correctly Predicted for OLS Model
+
+# NOTE
+# I just take correctly predicted divided by total observations. 
+# Then I multiply it by 100 to get a percentage.
+
+# Predicted False and is Actually False
+(length(which(brfss16$pclass_ols == 0 & 
+                brfss16$badhealth == 0)) +
+   
+   # Predicted True and is Actually True
+   length(which(brfss16$pclass_ols == 1 & 
+                  brfss16$badhealth == 1))) /
+  
+  # Total Observations
+  nrow(brfss16) *
+  
+  100 # percent
+```
+
+Confusion matrices are discussed on page 147 of ISLR. (Look for the label "confusion matrix" on the right hand margin in grey font.)
+
+Note that in answering this question you want to differentiate what "better prediction" means given various error rates. Overall error rate? Type I Error rate? Type II Error rate?
+
+What about the overall error rate of OLS?
+
+```{r eval=F}
+# Error Rate
+
+# Predicted True when its Actually False
+(length(which(brfss16$pclass_ols == 1 & 
+                brfss16$badhealth == 0)) +
+   
+   # Predicted FALSE when its Actually True
+   length(which(brfss16$pclass_ols == 0 & 
+                  brfss16$badhealth == 1))) /
+  
+  # Total Observations
+  nrow(brfss16) *
+  
+  100 # percent
+```
+
+
+## Question 2
+
+```{r eval=F}
+# DATA
+brfss17 <- read_csv("classification/brfss17.csv")
+
+# Using 2016 Model on 2017 Data
+pfit2017 <- predict(logit4.fit, newdata = brfss17, type = "response")
+
+brfss17 <- mutate(brfss17, 
+                  pprob = pfit2017, 
+                  pclass = ifelse(pprob > 0.5, 1, 0))
+```
+
+Now just use the above code from Question 1 to get the error rate (replacing `brfss16` with `brfss17`; and `pclass_ols` with `pclass`).
+
+## Question 3
+
+Use `table` and error rate code from Question 1, but replacing the appropriate arguments (i.e. `test$pclasslda` and `test$badhealth`)
+
+## Question 4
+
+```{r eval=F}
+lda.pred_lc <- predict(lda.fit, newdata = test.ca)
+test.ca <- mutate(test.ca, pclasslda = lda.pred_lc$class)
+```
+
+```{r eval=F}
+# Which ones were correclty predicted?
+test.ca <- test.ca %>%
+  mutate(err_lda = case_when(
+    pclasslda == whr ~ "correctly_predicted",
+    T ~ "incorrectly_predicted"
+  ))
+
+# Test Error Rate with future data.
+nrow(test.ca[test.ca$err_lda == "incorrectly_predicted",]) /
+  
+  # Total Observations
+  nrow(test.ca) *
+  
+  100 # percent
+```
+
+## Question 5
+
+```{r eval=F}
+# Table of Error Rates by Class
+test.ca %>%
+  mutate(err_lda = case_when(
+    pclasslda == whr ~ 0,
+    T ~ 1
+  )) %>%
+  group_by(whr) %>%
+  summarize(total = n(),
+            errors = sum(err_lda),
+            error_rate = errors/total)
+```
+
+## Question 6
+
+```{r eval=F}
+# add knn predictions of classes to test.ca
+test.ca <- mutate(test.ca, pclassknn = knn.pred)
+```
+
+```{r eval=F}
+# which are correctly predicted?
+test.ca <- test.ca %>%
+  mutate(err_knn = case_when(
+    pclassknn == whr ~ "correctly_predicted",
+    T ~ "incorrectly_predicted"
+  ))
+
+# Test Error Rate
+nrow(test.ca[test.ca$err_knn == "incorrectly_predicted",]) /
+  
+  # Total Observations
+  nrow(test.ca) *
+  
+  100 # percent
+```
+
+```{r eval=F}
+# Table of Error Rates by Class
+test.ca %>%
+  mutate(err_knn = case_when(
+    pclassknn == whr ~ 0,
+    T ~ 1
+  )) %>%
+  group_by(whr) %>%
+  summarize(total = n(),
+            errors = sum(err_knn),
+            error_rate = errors/total)
+```
