@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Classification</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/yeti.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 45px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h2 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h3 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h4 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h5 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h6 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">GEO 200CN: Winter 2020</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="syllabus.html">Syllabus</a>
+</li>
+<li>
+  <a href="hw_guidelines.html">Assignment Guidelines</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Labs
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="getting_started.html">Getting Started</a>
+    </li>
+    <li>
+      <a href="tidyr.html">Intro to tidyverse</a>
+    </li>
+    <li>
+      <a href="central.html">Sampling, CIs, CLT</a>
+    </li>
+    <li>
+      <a href="hypothesis.html">Hypothesis Testing</a>
+    </li>
+    <li>
+      <a href="spatialsf.html">Mapping in sf</a>
+    </li>
+    <li>
+      <a href="pointpatterns.html">Point Pattern Analysis</a>
+    </li>
+    <li>
+      <a href="spatialautocorrelation.html">Spatial Autocorrelation</a>
+    </li>
+    <li>
+      <a href="linearregression.html">Linear Regression I</a>
+    </li>
+    <li>
+      <a href="linearregression2.html">Linear Regression II</a>
+    </li>
+    <li>
+      <a href="spatialreg.html">Spatial Regression</a>
+    </li>
+    <li>
+      <a href="spatialheterogeneity.html">Spatial Heterogeneity</a>
+    </li>
+    <li>
+      <a href="classification.html">Classification</a>
+    </li>
+    <li>
+      <a href="resampling.html">Resampling and Selection</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Lab Lectures
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="Lab_Week1.html">Lab Lecture - 1</a>
+    </li>
+    <li>
+      <a href="Lab_Week2.html">Lab Lecture - 2</a>
+    </li>
+    <li>
+      <a href="Lab_Week3.html">Lab Lecture - 3</a>
+    </li>
+    <li>
+      <a href="Lab_Week4.html">Lab Lecture - 4</a>
+    </li>
+    <li>
+      <a href="Lab_Week5.html">Lab Lecture - 5</a>
+    </li>
+    <li>
+      <a href="Lab_Week6.html">Lab Lecture - 6</a>
+    </li>
+    <li>
+      <a href="Lab_Week7.html">Lab Lecture - 7</a>
+    </li>
+    <li>
+      <a href="Lab_Week8.html">Lab Lecture - 8</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Other
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a></a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Classification</h1>
+<h3 class="subtitle"><h4 style="font-style:normal">
+GEO 200CN - Quantitative Geography
+</h4></h3>
+<h4 class="author"><h4 style="font-style:normal">
+Professor Noli Brazil
+</h4></h4>
+<h4 class="date"><h4 style="font-style:normal">
+Spring 2020
+</h4></h4>
+
+</div>
+
+
+<style>
+p.comment {
+background-color: #DBDBDB;
+padding: 10px;
+border: 1px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: italic;
+}
+
+.figure {
+   margin-top: 20px;
+   margin-bottom: 20px;
+}
+
+h1.title {
+  font-weight: bold;
+  font-family: Arial;  
+}
+
+h2.title {
+  font-family: Arial;  
+}
+
+</style>
+<style type="text/css">
+#TOC {
+  font-size: 13px;
+  font-family: Arial;
+}
+</style>
+<p><br />
+</p>
+<p>In this lab guide you will learn how to run methods that predict a binary or categorical variable. Predicting a qualitative response for an observation can be referred to as classifying that observation, since it involves assigning the observation to a category, or class. The objectives of this lab are as follows</p>
+<ol style="list-style-type: decimal">
+<li>Learn how to run a logistic regression</li>
+<li>Learn how to use logistic regression in a prediction framework</li>
+<li>Learn about testing and training your data</li>
+<li>Learn how to run a linear discriminant analysis</li>
+<li>Learn how to run k-nearest neighbor</li>
+</ol>
+<p>To help us accomplish these learning objectives, we will examine two cases. The first is to predict individual health status using a set of demographic and socioeconomic characteristics from the <a href="https://www.cdc.gov/brfss/index.html">Behavioral Risk Factor Surveillance System</a> (BRFSS), an annual survey conducted by the Centers for Disease Control and Prevention that collects state data about U.S. residents regarding their health-related risk behaviors, chronic health conditions, and use of preventive services. The second is to predict land cover (i.e. Desert, Conifer, Hardwood, Herbaceous, and Shrub, ) in California. This guide follows closely ISLR Chapter 4.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+<div id="installing-and-loading-packages" class="section level2">
+<h2><strong>Installing and loading packages</strong></h2>
+<p><br />
+We will not be introducing any new packages in this lab. We need to load the following packages.</p>
+<pre class="r"><code>library(sf)
+library(tidyverse)
+library(raster)
+library(MASS)
+library(broom)
+library(class)</code></pre>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="why-classification" class="section level2">
+<h2><strong>Why classification</strong></h2>
+<p><br />
+</p>
+<p>First, let’s start with why logistic regression. The reasons why you run a logistic regression are the same as the reasons for <a href="https://geo200cn.github.io/linearregression.html#why_linear_regression">running a regular linear regression</a>. However, there is one additional important motivation: we want to model the relationship between a set of independent variables and a binary outcome.</p>
+<p>In many situations in your work as a Geographer, your outcome will be of a qualitative nature. When we speak of qualitative outcomes, we generally are concerned with the observation of:</p>
+<ul>
+<li>A particular classification
+<ul>
+<li>Invasive species or not; urban or not</li>
+</ul></li>
+<li>A particular behavior
+<ul>
+<li>Migrated or not; fire ignition</li>
+</ul></li>
+<li>A transition
+<ul>
+<li>Riverbank erosion; employed to unemployed;</li>
+</ul></li>
+<li>A threshold characteristic
+<ul>
+<li>Income below poverty level; concentrations exceeding a particular anthropogenic pollution threshold</li>
+</ul></li>
+</ul>
+<p>In general, each of these outcomes would be coded as a binary variable (1 or 0). You can use a linear regression to model a binary outcome, but you’ll typically break the assumption of homescedastic residuals and you may get predictions outside of 1 or 0. That’s why you’ll need to turn to logistic regression to model the relationship.</p>
+<p>Now, why k-nearest neighbors (KNN) and linear discriminant analysis (LDA)? For the same reasons why you run logistic regression, except the response variable is multicategorical and not binary. For example, did not migrate, migrated within a country, migrated outside the country. Furthermore, whereas logistic regression is often used in descriptive and inferential modelling, KNN and LDA are strictly prediction methods.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="logistic-regression" class="section level2">
+<h2><strong>Logistic Regression</strong></h2>
+<p><br />
+We will use the BRFSS data set to learn how to run logistic regressions in R. Our research question is: What individual characteristics predict self-reported bad health among U.S. adults? We are classifying people into bad health (Y = 1) and not bad health (Y = 0) categories.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+<div id="bring-in-the-data" class="section level3">
+<h3><strong>Bring in the data</strong></h3>
+<p><br />
+</p>
+<p>Download the zipped file <em>classification.zip</em> from Canvas. It contains all the files that will be used in this guide. The data are also located on Canvas in the Lab and Assignments Week 8 folder. Bring in the file <em>brfss16.csv</em></p>
+<pre class="r"><code>brfss16 &lt;- read_csv(&quot;brfss16.csv&quot;)</code></pre>
+<p>The data contain individuals as units of observations. The main goal of the analysis is to examine characteristics that are associated with self-reported bad health, where bad health is an indicator of whether the respondent reported “yes” to the question: “In general, would you say that in general your health is Fair/Poor?” Our dependent variable is <em>badhealth</em> and our independent variables are age <em>agec</em>, gender <em>male</em>, educational attainment <em>educ</em>, race/ethnicity <em>race_eth</em>, whether the individual indicates they <em>smoke</em>, employment status <em>employ</em>, marital status <em>marst</em>, body mass index <em>bmi</em> and income <em>inc</em>. A record layout of the data can be found <a href="https://raw.githubusercontent.com/geo200cn/data/master/brfss16RL.txt">here</a></p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="simple-logistic-regression" class="section level3">
+<h3><strong>Simple Logistic Regression</strong></h3>
+<p><br />
+</p>
+<p>We first examine the distribution of our binary dependent variable <em>badhealth</em>. We create a bar chart showing the distribution of the poor health indicator.</p>
+<pre class="r"><code>brfss16 %&gt;%
+  group_by(badhealth) %&gt;%
+  summarize (n = n()) %&gt;%
+  mutate(freq = n / sum(n))  %&gt;%
+  ggplot() +
+    geom_bar(mapping=aes(x=badhealth, y=freq),stat=&quot;identity&quot;) +
+    xlab(&quot;reported fair/poor heath&quot;)</code></pre>
+<p><img src="classification_files/figure-html/unnamed-chunk-3-1.png" /><!-- --></p>
+<p>Let’s now run a logistic regression model. We’ll start simple, regressing <em>badhealth</em> on BMI. Instead of using the function <code>lm()</code> to run a logistic regression model as we did when running linear regression models, we will use the function <code>glm()</code>, which stands for Generalized Linear Models. <code>glm()</code> is similar to <code>lm()</code>, but gives us the option of a variety of families to use in fitting the model (the shape that we hypothesis represents the shape of <em>f</em> that defines the relationship between Y and X).</p>
+<p>We specify a family by using the argument <code>family =</code>. If we wanted a standard linear regression, which assumes a normal distribution, <code>family</code> will equal <code>gaussian</code> (fancy word for normal). For a list of <code>glm</code> families, check the help documentation <code>? glm</code>. We use <code>family = binomial</code> for a logistic regression.</p>
+<pre class="r"><code>logit1.fit &lt;- glm(badhealth ~ bmi, family = binomial, data = brfss16)</code></pre>
+<p>We can summarize the modelling results using <code>summary()</code>. The resulting output is very similar to the output from <code>lm()</code>.</p>
+<pre class="r"><code>summary(logit1.fit)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = badhealth ~ bmi, family = binomial, data = brfss16)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -2.3613  -0.6505  -0.5836  -0.5129   2.2744  
+## 
+## Coefficients:
+##               Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept) -3.2376333  0.0194056 -166.84   &lt;2e-16 ***
+## bmi          0.0606889  0.0006407   94.72   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 352201  on 367872  degrees of freedom
+## Residual deviance: 343284  on 367871  degrees of freedom
+## AIC: 343288
+## 
+## Number of Fisher Scoring iterations: 4</code></pre>
+<p>Let’s compare our results to those from an OLS regression model. An OLS for a binary response variable is known as a linear probability model. We use <code>glm()</code> again, but this time use the (default) Gaussian distribution.</p>
+<pre class="r"><code>ols.fit1 &lt;-glm(badhealth ~ bmi, family = gaussian, data = brfss16)</code></pre>
+<p>and a summary</p>
+<pre class="r"><code>summary(ols.fit1)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = badhealth ~ bmi, family = gaussian, data = brfss16)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -0.8942  -0.1984  -0.1586  -0.1122   0.9789  
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) -0.1006501  0.0029346  -34.30   &lt;2e-16 ***
+## bmi          0.0101271  0.0001016   99.63   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for gaussian family taken to be 0.1467352)
+## 
+##     Null deviance: 55436  on 367872  degrees of freedom
+## Residual deviance: 53980  on 367871  degrees of freedom
+## AIC: 337988
+## 
+## Number of Fisher Scoring iterations: 2</code></pre>
+<p>You can create a plot like the one showed in ISLR Figure 4.2 (right hand plot) by predicting the probability of reporting bad health for given values of BMI. The minimum and maximum BMI for our data set are 12.09 and 85.82, so let’s predict bad health for BMI between 10 to 90 using the <code>predict()</code> function.</p>
+<pre class="r"><code>pfit1 &lt;- predict(logit1.fit, bmi = c(10:90))</code></pre>
+<p>In predicting using a regression model, you can either predict health status for the 367,873 individuals in the original data set or predict for a new set of individuals. In the code above, we are predicting for a new set of observations - individuals with BMIs between 10 and 90 - i.e. 10, 11, 12, 13 … 88, 89, and 90.</p>
+<p>Let’s get a summary of our predicted values</p>
+<pre class="r"><code>summary(pfit1)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##  -2.508  -1.782  -1.583  -1.527  -1.342   2.807</code></pre>
+<p>We get values ranging from -2.5 to 2.8. But, these are not probabilities. Remember, the response variable is modelled as a logit, so R will give us logits in return. To convert the logit to a probability, use the argument <code>type = &quot;response&quot;</code> inside <code>predict()</code></p>
+<pre class="r"><code>pfit1 &lt;- predict(logit1.fit, data.frame(bmi = c(10:90)), type = &quot;response&quot;)
+summary(pfit1)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+## 0.06719 0.19514 0.44938 0.46522 0.73314 0.90242</code></pre>
+<p>The predicted probability of bad health ranges from 6.7% to 90.2%. Let’s plot the result and add the observations</p>
+<pre class="r"><code>plot(c(10:90), pfit1, type=&#39;l&#39;, lwd=2, ylab=&#39;Probability of bad health&#39;, xlab=&#39;Body Mass Index&#39;, col=&quot;blue&quot;, ylim = c(0,1))
+points(brfss16$bmi, brfss16$badhealth, col=&#39;red&#39;, pch=20)</code></pre>
+<p><img src="classification_files/figure-html/unnamed-chunk-11-1.png" /><!-- --></p>
+<p>This gives us a S-curve like the one shown on Figure 4.2 (right plot) in ISLR. The observed cases are either 0 or 1, but the probability of reporting bad health can be any value in between 0 and 1. Later in this lab, we’ll go through how to convert predictions into 0, 1 status.</p>
+<p>Let’s compare our results from those using an OLS regression. Get the predictions.</p>
+<pre class="r"><code>pfit2 &lt;- predict(ols.fit1, data.frame(bmi = c(10:90)))
+summary(pfit2)</code></pre>
+<pre><code>##      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+## 0.0006207 0.2031624 0.4057041 0.4057041 0.6082458 0.8107875</code></pre>
+<p>You’ll notice we don’t get values below 0, which is great, but can happen in an OLS, which is why we typically will run a logistic model when dealing with a binary response. Let’s plot and compare to the logistic regression predictions.</p>
+<pre class="r"><code>plot(c(10:90), pfit2, type=&#39;l&#39;, lwd=2, ylab=&#39;Probability of bad health&#39;, xlab=&#39;Body Mass Index&#39;, col=&quot;dark green&quot;, ylim = c(0,1))
+lines(c(10:90), pfit1, type=&#39;l&#39;, lwd=1, col=&#39;blue&#39;)</code></pre>
+<p><img src="classification_files/figure-html/unnamed-chunk-13-1.png" /><!-- --></p>
+<p>So, predictions with OLS are not that different in this case, but they need to be ‘fixed’ to avoid impossible probabilities (and the notion of OLS is simply less consistent with the data).</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="multiple-logistic-regression" class="section level3">
+<h3><strong>Multiple Logistic Regression</strong></h3>
+<p><br />
+We now move to the multiple regression framework by adding more than one independent variable.</p>
+<pre class="r"><code>logit2.fit &lt;- glm(badhealth ~ bmi + race_eth + agec + male + smoke + educ + inc + employ + marst , family = binomial, data = brfss16)
+summary(logit2.fit)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = badhealth ~ bmi + race_eth + agec + male + smoke + 
+##     educ + inc + employ + marst, family = binomial, data = brfss16)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -2.8349  -0.5762  -0.3993  -0.2630   3.0324  
+## 
+## Coefficients:
+##                        Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)          -1.8010100  0.0541548 -33.257  &lt; 2e-16 ***
+## bmi                   0.0543752  0.0007469  72.803  &lt; 2e-16 ***
+## race_ethnh black     -0.3876041  0.0229362 -16.899  &lt; 2e-16 ***
+## race_ethnh multirace -0.1077166  0.0353970  -3.043 0.002342 ** 
+## race_ethnh other     -0.2146632  0.0283361  -7.576 3.57e-14 ***
+## race_ethnhwhite      -0.4762336  0.0177416 -26.843  &lt; 2e-16 ***
+## agec(24,39]           0.3269027  0.0343055   9.529  &lt; 2e-16 ***
+## agec(39,59]           0.7822065  0.0334021  23.418  &lt; 2e-16 ***
+## agec(59,79]           0.9265007  0.0345235  26.837  &lt; 2e-16 ***
+## agec(79,99]           1.2753285  0.0382207  33.368  &lt; 2e-16 ***
+## maleMale              0.0900517  0.0102216   8.810  &lt; 2e-16 ***
+## smokeFormer          -0.3054767  0.0143742 -21.252  &lt; 2e-16 ***
+## smokeNeverSmoked     -0.6204758  0.0137012 -45.286  &lt; 2e-16 ***
+## educ1somehs          -0.2881217  0.0314044  -9.175  &lt; 2e-16 ***
+## educ2hsgrad          -0.6060178  0.0276591 -21.910  &lt; 2e-16 ***
+## educ3somecol         -0.7376407  0.0281473 -26.206  &lt; 2e-16 ***
+## educ4colgrad         -1.0347930  0.0289085 -35.795  &lt; 2e-16 ***
+## inc                  -0.2841911  0.0041210 -68.962  &lt; 2e-16 ***
+## employnilf            0.5243874  0.0165812  31.625  &lt; 2e-16 ***
+## employretired         0.6106996  0.0148012  41.260  &lt; 2e-16 ***
+## employunable          2.1122045  0.0171316 123.293  &lt; 2e-16 ***
+## marstdivorced        -0.0413071  0.0310349  -1.331 0.183193    
+## marstmarried         -0.0880994  0.0296390  -2.972 0.002955 ** 
+## marstnm              -0.1453255  0.0312468  -4.651 3.31e-06 ***
+## marstseparated        0.1467940  0.0403901   3.634 0.000279 ***
+## marstwidowed         -0.1404715  0.0322379  -4.357 1.32e-05 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 352201  on 367872  degrees of freedom
+## Residual deviance: 279929  on 367847  degrees of freedom
+## AIC: 279981
+## 
+## Number of Fisher Scoring iterations: 5</code></pre>
+<p>Let’s also run a multiple OLS regression model. We’ll need this for later.</p>
+<pre class="r"><code>ols.fit2 &lt;- glm(badhealth ~ bmi + race_eth + agec + male + smoke + educ + inc + employ + marst , family = gaussian, data = brfss16)</code></pre>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="classification" class="section level3">
+<h3><strong>Classification</strong></h3>
+<p><br />
+As we discussed in lecture, we’re now entering the phase of the class where we go from using models and methods to <em>describe</em> and <em>infer</em> to those that <em>predict</em>. In the case of logistic regression, or any model that has a non-numeric response variable, prediction is about classification, which you read about in ISRL Ch. 4. In the classification (or prediction) world, we’re primarily concerned about the quality of our predictions rather than trying to describe a relationship or infer causality. In other words, we create a model to predict a phenomena and then test whether our model does a good job of predicting that phenomena.</p>
+<p>A simple approach to assessing the prediction quality of a model is to examine a confusion matrix (see page 145 in ISRL). In practice, a binary classifier can make two types of errors: it can incorrectly assign an individual who is in bad health, or it can incorrectly assign an individual who is not in bad health. A confusion matrix is a convenient way of displaying this information.</p>
+<p>First, let’s predict the probability of reporting bad health for the 367,873 observations in our original data.</p>
+<pre class="r"><code>pfit3 &lt;- predict(logit2.fit, type = &quot;response&quot;)</code></pre>
+<p>We used the <code>predict()</code> function before when we predicted bad health using BMIs between 10 and 90. Here, we are not predicting for a new set of observations, but rather for our original 367,873 observations. In other words, <em>pfit3</em> contains the fitted values based on the model <em>logit2.fit</em>.</p>
+<p>Remember that our original variable is a 0, 1 variable - “not bad health”, “bad health.” So, we now need to convert the probabilities into one of these categories. What is typically done is if the predicted probability is greater than 0.5, designate it a 1 (“bad health”). We do so in the following code using the <code>ifelse()</code> command. We save the classification back into the data set using <code>mutate()</code>.</p>
+<pre class="r"><code>brfss16 &lt;- mutate(brfss16, pprob = pfit3, pclass = ifelse(pprob &gt; 0.5, 1, 0))</code></pre>
+<p>The first argument in the <code>mutate</code> command saves the vector of predicted probabilities. The second argument creates a variable that transforms to 1 all of the probabilities that are greater than 0.5. We then use the <code>table()</code> function to produce a confusion matrix</p>
+<pre class="r"><code>table(brfss16$pclass, brfss16$badhealth)</code></pre>
+<pre><code>##    
+##          0      1
+##   0 290051  48782
+##   1   9813  19227</code></pre>
+<p>The diagonal elements of the confusion matrix indicate correct predictions, while the off-diagonals represent incorrect predictions. Hence our model correctly predicted non bad health status for 290,051 persons and bad health status for 19,227 persons, for a total of 309,278 correct predictions. In this case, logistic regression correctly predicted the health status of 84.1% individuals.</p>
+<p class="comment" , style="font-style:normal">
+<strong>Question 1</strong>: Create the confusion matrix for the OLS model <em>ols.fit2</em>. Does the OLS model do a better job predicting health status than the logistic regression model?
+</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+</div>
+<div id="training-and-testing" class="section level2">
+<h2><strong>Training and Testing</strong></h2>
+<p><br />
+It looks like our model does a good job predicting bad health status. However, the results are misleading because we trained and tested the model on the same set of 367,873 observations. In other words, 100 - 84.1 = 15.9 is the training error rate. The training error rate is typically overly optimistic - it tends to underestimate the test error rate</p>
+<p>In order to better assess the accuracy of the logistic regression model, we can fit the model using new data. We can do this two ways. First, we can use (or train) part of the original data to create our model, and then examine how well it predicts the held out (test) data. This will yield a more realistic error rate, in the sense that in practice we will be interested in our model’s performance not on the data that we used to fit the model.</p>
+<p>We’ll first need to get a sample of the original data to train on. How much to sample? The literature is not clear. Let’s set aside 25% of the data to test, and train the rest. We use the the tidy friendly <code>sample_frac()</code> to sample 75% of the data to train. We use <code>seed.set()</code> to give us a pseudorandom set of numbers to replicate the results.</p>
+<pre class="r"><code>set.seed(1234)
+brfss16$id &lt;- 1:nrow(brfss16)
+#75% of data are used to train the model
+train &lt;- brfss16 %&gt;% dplyr::sample_frac(.75)
+#25% of data are used to test the model predictions
+test  &lt;- anti_join(brfss16, train, by = &#39;id&#39;)</code></pre>
+<p>Now run the model on the training data set</p>
+<pre class="r"><code>logit4.fit &lt;- glm(badhealth ~ bmi + race_eth + agec + male + smoke + educ + inc + employ + marst , family = binomial, data = train)</code></pre>
+<p>Take a looksie at the results</p>
+<pre class="r"><code>summary(logit4.fit)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = badhealth ~ bmi + race_eth + agec + male + smoke + 
+##     educ + inc + employ + marst, family = binomial, data = train)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -2.8366  -0.5776  -0.3996  -0.2626   3.0449  
+## 
+## Coefficients:
+##                       Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)          -1.878760   0.062852 -29.892  &lt; 2e-16 ***
+## bmi                   0.054633   0.000863  63.304  &lt; 2e-16 ***
+## race_ethnh black     -0.414729   0.026493 -15.654  &lt; 2e-16 ***
+## race_ethnh multirace -0.104400   0.040498  -2.578 0.009940 ** 
+## race_ethnh other     -0.247123   0.032811  -7.532 5.01e-14 ***
+## race_ethnhwhite      -0.485699   0.020462 -23.736  &lt; 2e-16 ***
+## agec(24,39]           0.366907   0.040023   9.167  &lt; 2e-16 ***
+## agec(39,59]           0.823166   0.038986  21.114  &lt; 2e-16 ***
+## agec(59,79]           0.959662   0.040258  23.838  &lt; 2e-16 ***
+## agec(79,99]           1.312480   0.044473  29.512  &lt; 2e-16 ***
+## maleMale              0.092994   0.011796   7.883 3.19e-15 ***
+## smokeFormer          -0.308237   0.016591 -18.579  &lt; 2e-16 ***
+## smokeNeverSmoked     -0.609946   0.015802 -38.599  &lt; 2e-16 ***
+## educ1somehs          -0.267665   0.036181  -7.398 1.38e-13 ***
+## educ2hsgrad          -0.598346   0.031903 -18.755  &lt; 2e-16 ***
+## educ3somecol         -0.720753   0.032464 -22.202  &lt; 2e-16 ***
+## educ4colgrad         -1.028077   0.033348 -30.829  &lt; 2e-16 ***
+## inc                  -0.279518   0.004751 -58.831  &lt; 2e-16 ***
+## employnilf            0.539075   0.019129  28.182  &lt; 2e-16 ***
+## employretired         0.629023   0.017071  36.847  &lt; 2e-16 ***
+## employunable          2.127378   0.019817 107.353  &lt; 2e-16 ***
+## marstdivorced        -0.025365   0.035883  -0.707 0.479631    
+## marstmarried         -0.086159   0.034296  -2.512 0.011998 *  
+## marstnm              -0.141429   0.036171  -3.910 9.23e-05 ***
+## marstseparated        0.143162   0.046700   3.066 0.002172 ** 
+## marstwidowed         -0.134139   0.037267  -3.599 0.000319 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 264392  on 275904  degrees of freedom
+## Residual deviance: 210224  on 275879  degrees of freedom
+## AIC: 210276
+## 
+## Number of Fisher Scoring iterations: 5</code></pre>
+<p>Then predict probabilities using the <em>test</em> data set by using the argument <code>newdata =</code></p>
+<pre class="r"><code>pfit4 &lt;- predict(logit4.fit, newdata = test, type = &quot;response&quot;)</code></pre>
+<p>Confusion matrix time.</p>
+<pre class="r"><code>test &lt;- mutate(test, pprob = pfit4, pclass = ifelse(pprob &gt; 0.5, 1, 0))</code></pre>
+<pre class="r"><code>table(test$pclass, test$badhealth)</code></pre>
+<pre><code>##    
+##         0     1
+##   0 72579 12068
+##   1  2468  4853</code></pre>
+<p>The test error rate is 15.8, not far from the 15.9 training error rate calculated above.</p>
+<p>The second way to test the predictive quality of your model is to model past data to predict future data. The file <em>brfss17.csv</em> contains individual data from the the 2017 version of the BRFSS. The data file contains the same exact variables as the 2016 file you have been using in this lab.</p>
+<p><br></p>
+<p class="comment" , style="font-style:normal">
+<strong>Question 2</strong>: Calculate the test error rate using the 2017 BRFSS data.
+</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="linear-discriminant-analysis" class="section level2">
+<h2><strong>Linear Discriminant Analysis</strong></h2>
+<p><br />
+Another popular classification method is Linear Discriminant Analysis (LDA). ISLR on page 138 outlines three reasons why we might use LDA over logistic regression.</p>
+<p>We fit an LDA model on the training data using the <code>lda()</code> function, which is a part of the <strong>MASS</strong> package. The function arguments are the same as <code>lm()</code>.</p>
+<pre class="r"><code>lda.fit1 &lt;- lda(badhealth ~ bmi + race_eth + agec + male + smoke + educ + inc + employ + marst , data = train)</code></pre>
+<p>You can get the predictions using the <code>predict()</code> function as before, but without the <code>type = &quot;response&quot;</code> argument.</p>
+<pre class="r"><code>lda.pred &lt;- predict(lda.fit1, newdata = test)
+names(lda.pred)</code></pre>
+<pre><code>## [1] &quot;class&quot;     &quot;posterior&quot; &quot;x&quot;</code></pre>
+<p>The <code>predict()</code> function returns a list with three elements. The first element, <em>class</em>, contains LDA’s predictions. Unlike with logistic regression, we don’t need to convert probabilities into 0 or 1. We can save these predictions back into <em>test</em> like we did with the logistic regression predictions.</p>
+<pre class="r"><code>test &lt;- mutate(test, pclasslda = lda.pred$class)</code></pre>
+<p><br></p>
+<p class="comment" , style="font-style:normal">
+<strong>Question 3</strong>: Create the confusion matrix for the LDA predictions. What is the test error rate? Which of the methods - Logistic or LDA - appears to provide the best results using the test data?
+</p>
+<p><br></p>
+<div style="margin-bottom:25px;">
+
+</div>
+<div id="more-than-two-classes" class="section level3">
+<h3><strong>More than two classes</strong></h3>
+<p><br />
+Logistic regression is a popular classification method. However, it is primarily used when the response variable represents two classes. When dealing with a classification problem when the number of classes is <span class="math inline">&gt;</span> 2, we can use LDA. To demonstrate this, we’ll use another data set that contains a response variable with multiple categories.</p>
+<p>Bring in the data set <em>landuse.csv</em>, which contains sampled land cover in California. The research purpose is to predict land cover everywhere in the state.</p>
+<pre class="r"><code>s &lt;- read_csv(&quot;landuse.csv&quot;)</code></pre>
+<p>What land cover do we have?</p>
+<pre class="r"><code>#basic table
+table(s$whr)</code></pre>
+<pre><code>## 
+## Barren/Other      Conifer       Desert     Hardwood   Herbaceous        Shrub 
+##           43          335          357          110          166          218</code></pre>
+<p>Bar chart it using our bud <code>ggplot()</code>. Use the <code>reorder()</code> function to sort descending.</p>
+<pre class="r"><code>s %&gt;%
+  group_by(whr) %&gt;%
+  summarize (n = n()) %&gt;%
+  mutate(freq = n / sum(n))  %&gt;%
+  ggplot() +
+    geom_bar(mapping=aes(x=reorder(whr, -freq), y=freq),stat=&quot;identity&quot;) +
+    xlab(&quot;Land cover type&quot;)</code></pre>
+<p><img src="classification_files/figure-html/unnamed-chunk-30-1.png" /><!-- --></p>
+<p>We removed the human dominated land cover (urban and agriculture), and also water and wetland because you would need additional predictors to adequately model these. In our case, we only have two variables to predict land cover, temperature and precipitation.</p>
+<p>Let’s bring in a California boundary shapefile and plot the points just to see where we’ve sampled. We’ll use the function <code>shapefile()</code> from the <strong>raster</strong> package</p>
+<pre class="r"><code>ca &lt;- shapefile(&quot;caboundary.shp&quot;)</code></pre>
+<pre class="r"><code>plot(ca)
+points(s)</code></pre>
+<p><img src="classification_files/figure-html/unnamed-chunk-32-1.png" /><!-- --></p>
+<p>Let’s now run an LDA to classify land cover. First, let’s set aside 20% of the data to test the model.</p>
+<pre class="r"><code>set.seed(1234)
+s$id &lt;- 1:nrow(s)
+test.ca &lt;- s %&gt;% dplyr::sample_frac(.20)
+train.ca  &lt;- anti_join(s, test, by = &#39;id&#39;)</code></pre>
+<p>Run the LDA model using the variables <em>temperature</em> and <em>precipitation</em> to predict land cover <em>whr</em>.</p>
+<pre class="r"><code>lda.fit &lt;- lda(whr ~ temperature + precipitation, data=train.ca)
+lda.fit</code></pre>
+<pre><code>## Call:
+## lda(whr ~ temperature + precipitation, data = train.ca)
+## 
+## Prior probabilities of groups:
+## Barren/Other      Conifer       Desert     Hardwood   Herbaceous        Shrub 
+##   0.03296703   0.26153846   0.28901099   0.08681319   0.14395604   0.18571429 
+## 
+## Group means:
+##              temperature precipitation
+## Barren/Other    7.693228      625.5228
+## Conifer         8.564588      957.0210
+## Desert         18.204348      146.4718
+## Hardwood       13.317387      871.3709
+## Herbaceous     15.034421      498.1135
+## Shrub          10.763365      556.5721
+## 
+## Coefficients of linear discriminants:
+##                        LD1          LD2
+## temperature    0.206009122 -0.211716179
+## precipitation -0.002272605 -0.002651902
+## 
+## Proportion of trace:
+##    LD1    LD2 
+## 0.9342 0.0658</code></pre>
+<p><br></p>
+<p class="comment" , style="font-style:normal">
+<strong>Question 4</strong>: What is the test error rate of the LDA model?
+</p>
+<p class="comment" , style="font-style:normal">
+<strong>Question 5</strong>: Which class (Desert, Hardwood, etc.) does the model seem to predict well, and which class not?
+</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+</div>
+<div id="k-nearest-neighbor" class="section level2">
+<h2><strong>K-Nearest Neighbor</strong></h2>
+<p><br />
+Another popular classification method is K-Nearest Neighbors (KNN). We can use KNN to predict two or more classes. ISLR discusses the KNN method on page 39.</p>
+<p>To run KNN in R, use the function <code>knn()</code>, which is a part of the <strong>class</strong> package. This function works rather differently from <code>lm()</code> and <code>glm()</code>. Rather than a two-step approach in which we first fit the model and then we use the model to make predictions, <code>knn()</code> forms predictions using a single command.</p>
+<p>The function requires four inputs. First, the predictor variables from the training data. Then the predictor variables from the test data. Third, the dependent variable Y from the training data. Finally, the value of <em>K</em>, the number of nearest neighbors to be used by the classifier. Note that <code>knn()</code> only takes numeric variables, which means if you use categorical predictors, you will need to convert them into a set of dummy variables.</p>
+<p>Let’s first create the training and test data containing just the predictor variables.</p>
+<pre class="r"><code>knn.train&lt;- dplyr::select(train.ca, temperature, precipitation)
+knn.test&lt;- dplyr::select(test.ca, temperature, precipitation)</code></pre>
+<p>Next, we pull the dependent variable from the training data set. The <code>knn()</code> function expects us to provide the class labels as a vector rather than a data frame, which we can specify by adding <code>.$whr</code> to the end of our <strong>dplyr</strong> chain:</p>
+<pre class="r"><code>train.class &lt;- dplyr::select(train.ca, whr) %&gt;%
+                .$whr</code></pre>
+<p>We set a random seed before we apply <code>knn()</code> because if several observations are tied as nearest neighbors, then R will randomly break the tie. Therefore, a seed must be set in order to ensure reproducibility of results. The default <span class="math inline"><em>K</em></span> is 1, but let’s follow the example in the ISLR textbook and use <span class="math inline"><em>K</em></span> = 3.</p>
+<pre class="r"><code>set.seed(1234)
+knn.pred&lt;-knn(knn.train, knn.test, train.class, k =31)</code></pre>
+<p><em>knn.pred</em> holds the predicted classes of the test observations.</p>
+<p><br></p>
+<p class="comment" , style="font-style:normal">
+<strong>Question 6</strong>: What is the overall test error rate for the K-nearest neighbor predictions? What are the test error rates by class?
+</p>
+<p class="comment" , style="font-style:normal">
+<strong>Bonus Question</strong>: Use a for loop that tests different values of <em>K</em> to find the value of <em>K</em> that produces the lowest overall test error rate. Make a graph that plots the overall test error rate on the y-axis and the <em>K</em> value on the x-axis.
+</p>
+<p><br></p>
+<hr />
+<p>Website created and maintained by <a href="https://nbrazil.faculty.ucdavis.edu/">Noli Brazil</a></p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("show" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+
+</body>
+</html>

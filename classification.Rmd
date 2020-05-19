@@ -1,0 +1,501 @@
+---
+title: "Classification"
+subtitle: <h4 style="font-style:normal">GEO 200CN - Quantitative Geography</h4>
+author: <h4 style="font-style:normal">Professor Noli Brazil</h4>
+date: <h4 style="font-style:normal">Spring 2020</h4>
+output: 
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    theme: yeti
+    code_folding: show
+---
+
+
+<style>
+p.comment {
+background-color: #DBDBDB;
+padding: 10px;
+border: 1px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: italic;
+}
+
+.figure {
+   margin-top: 20px;
+   margin-bottom: 20px;
+}
+
+h1.title {
+  font-weight: bold;
+  font-family: Arial;  
+}
+
+h2.title {
+  font-family: Arial;  
+}
+
+</style>
+
+
+<style type="text/css">
+#TOC {
+  font-size: 13px;
+  font-family: Arial;
+}
+</style>
+
+
+\
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message = FALSE)
+```
+
+In this lab guide you will learn how to run methods that predict a binary or categorical variable. Predicting a qualitative response for an observation can be referred to as classifying that observation, since it involves assigning the observation to a category, or class. The objectives of this lab are as follows
+
+1. Learn how to run a logistic regression
+2. Learn how to use logistic regression in a prediction framework
+3. Learn about testing and training your data
+4. Learn how to run a linear discriminant analysis
+5. Learn how to run k-nearest neighbor
+
+To help us accomplish these learning objectives, we will examine two cases.  The first is to predict individual health status using a set of demographic and socioeconomic characteristics from the [Behavioral Risk Factor Surveillance System](https://www.cdc.gov/brfss/index.html) (BRFSS), an annual survey conducted by the Centers for Disease Control and Prevention that collects state data about U.S. residents regarding their health-related risk behaviors, chronic health conditions, and use of preventive services. The second is to predict land cover (i.e. Desert, Conifer, Hardwood, Herbaceous, and Shrub, ) in California. This guide follows closely ISLR Chapter 4.
+
+<div style="margin-bottom:25px;">
+</div>
+## **Installing and loading packages**
+\
+
+We will not be introducing any new packages in this lab.  We need to load the following packages.
+
+
+```{r warning=FALSE, message=FALSE}
+library(sf)
+library(tidyverse)
+library(raster)
+library(MASS)
+library(broom)
+library(class)
+```
+
+
+
+<div style="margin-bottom:25px;">
+</div>
+## **Why classification**
+\
+
+
+First, let's start with why logistic regression. The reasons why you run a logistic regression are the same as the reasons for [running a regular linear regression](https://geo200cn.github.io/linearregression.html#why_linear_regression).  However, there is one additional important motivation: we want to model the relationship between a set of independent variables and a binary outcome.
+
+In many situations in your work as a Geographer, your outcome will be of a qualitative nature. When we speak of qualitative outcomes, we generally are concerned with the observation of:
+
+* A particular classification
+    + Invasive species or not; urban or not
+* A particular behavior 
+    + Migrated or not; fire ignition
+* A transition 
+    + Riverbank erosion; employed to unemployed;
+* A threshold characteristic 
+    + Income below poverty level; concentrations exceeding a particular anthropogenic pollution threshold
+
+In general, each of these outcomes would be coded as a binary variable (1 or 0).   You can use a linear regression to model a binary outcome, but you'll typically break the assumption of homescedastic residuals and you may get predictions outside of 1 or 0. That's why you'll need to turn to logistic regression to model the relationship.
+
+Now, why k-nearest neighbors (KNN) and linear discriminant analysis (LDA)?  For the same reasons why you run logistic regression, except the response variable is multicategorical and not binary. For example, did not migrate, migrated within a country, migrated outside the country. Furthermore, whereas logistic regression is often used in descriptive and inferential modelling, KNN and LDA are strictly prediction methods.
+
+
+<div style="margin-bottom:25px;">
+</div>
+## **Logistic Regression**
+\
+
+We will use the BRFSS data set to learn how to run logistic regressions in R. Our research question is: What individual characteristics predict self-reported bad health among U.S. adults? We are classifying people into bad health (Y = 1) and not bad health (Y = 0) categories. 
+
+
+<div style="margin-bottom:25px;">
+</div>
+### **Bring in the data**
+\
+
+
+
+Download the zipped file *classification.zip* from Canvas.  It contains all the files that will be used in this guide. The data are also located on Canvas in the Lab and Assignments Week 8 folder.  Bring in the file *brfss16.csv*
+
+
+```{r warning = FALSE, message = FALSE}
+brfss16 <- read_csv("brfss16.csv")
+```
+
+The data contain individuals as units of observations.  The main goal of the analysis is to examine characteristics that are associated with self-reported bad health, where bad health is an indicator of whether the respondent reported "yes" to the question: "In general, would you say that in general your health is Fair/Poor?"  Our dependent variable is *badhealth* and our independent variables are age *agec*, gender *male*, educational attainment *educ*, race/ethnicity *race_eth*, whether the individual indicates they *smoke*, employment status *employ*, marital status *marst*, body mass index *bmi* and income *inc*.  A record layout of the data can be found [here](https://raw.githubusercontent.com/geo200cn/data/master/brfss16RL.txt)
+
+
+
+
+
+<div style="margin-bottom:25px;">
+</div>
+### **Simple Logistic Regression**
+\
+
+
+We first examine the distribution of our binary dependent variable *badhealth*.  We create a bar chart showing the distribution of the poor health indicator.
+
+
+```{r}
+brfss16 %>%
+  group_by(badhealth) %>%
+  summarize (n = n()) %>%
+  mutate(freq = n / sum(n))  %>%
+  ggplot() +
+    geom_bar(mapping=aes(x=badhealth, y=freq),stat="identity") +
+    xlab("reported fair/poor heath")
+  
+```
+
+
+Let's now run a logistic regression model.  We'll start simple, regressing *badhealth* on BMI. Instead of using the function `lm()` to run a logistic regression model as we did when running linear regression models, we will use the function `glm()`, which stands for Generalized Linear Models.  `glm()` is similar to `lm()`, but gives us the option of a variety of families to use in fitting the model (the shape that we hypothesis represents the shape of *f* that defines the relationship between Y and X).  
+
+We specify  a family by using the argument `family =`. If we wanted a standard linear regression, which assumes a normal distribution, `family` will equal `gaussian` (fancy word for normal).  For a list of `glm` families, check the help documentation `? glm`. We use `family = binomial` for a logistic regression.  
+
+```{r}
+logit1.fit <- glm(badhealth ~ bmi, family = binomial, data = brfss16)
+```
+
+
+
+We can summarize the modelling results using `summary()`.  The resulting output is very similar to the output from `lm()`.
+
+```{r}
+summary(logit1.fit)
+```
+
+
+Let’s compare our results to those from an OLS regression model.  An OLS for a binary response variable is known as a linear probability model. We use `glm()` again, but this time use the (default) Gaussian distribution.
+
+```{r}
+ols.fit1 <-glm(badhealth ~ bmi, family = gaussian, data = brfss16)
+```
+
+and a summary
+
+```{r}
+summary(ols.fit1)
+```
+
+
+You can create a plot like the one showed in ISLR Figure 4.2 (right hand plot) by predicting the probability of reporting bad health for given values of BMI.  The minimum and maximum BMI for our data set are 12.09 and 85.82, so let's predict bad health for BMI between 10 to 90 using the `predict()` function. 
+
+```{r}
+pfit1 <- predict(logit1.fit, bmi = c(10:90))
+```
+
+In predicting using a regression model, you can either predict health status for the 367,873 individuals in the original data set or predict for a new set of individuals.  In the code above, we are predicting for a new set of observations - individuals with BMIs between 10 and 90 - i.e. 10, 11, 12, 13 ... 88, 89, and 90.
+
+Let's get a summary of our predicted values
+
+```{r}
+summary(pfit1)
+```
+
+We get values ranging from -2.5 to 2.8.  But, these are not probabilities.  Remember, the response variable is modelled as a logit, so R will give us logits in return.  To convert the logit to a probability, use the argument `type = "response"` inside `predict()`
+
+```{r}
+pfit1 <- predict(logit1.fit, data.frame(bmi = c(10:90)), type = "response")
+summary(pfit1)
+```
+
+The predicted probability of bad health ranges from 6.7% to 90.2%. Let’s plot the result and add the observations
+
+```{r}
+plot(c(10:90), pfit1, type='l', lwd=2, ylab='Probability of bad health', xlab='Body Mass Index', col="blue", ylim = c(0,1))
+points(brfss16$bmi, brfss16$badhealth, col='red', pch=20)
+```
+
+This gives us a S-curve like the one shown on Figure 4.2 (right plot) in ISLR. The observed cases are either 0 or 1, but the probability of reporting bad health can be any value in between 0 and 1. Later in this lab, we'll go through how to convert predictions into 0, 1 status.
+
+Let’s compare our results from those using an OLS regression.  Get the predictions.
+
+```{r}
+pfit2 <- predict(ols.fit1, data.frame(bmi = c(10:90)))
+summary(pfit2)
+```
+
+You'll notice we don't get values below 0, which is great, but can happen in an OLS, which is why we typically will run a logistic model when dealing with a binary response.  Let's plot and compare to the logistic regression predictions.
+
+```{r}
+plot(c(10:90), pfit2, type='l', lwd=2, ylab='Probability of bad health', xlab='Body Mass Index', col="dark green", ylim = c(0,1))
+lines(c(10:90), pfit1, type='l', lwd=1, col='blue')
+```
+
+So, predictions with OLS are not that different in this case, but they need to be ‘fixed’ to avoid impossible probabilities (and the notion of OLS is simply less consistent with the data).  
+
+<div style="margin-bottom:25px;">
+</div>
+### **Multiple Logistic Regression**
+\
+
+We now move to the multiple regression framework by adding more than one independent variable.  
+
+```{r}
+logit2.fit <- glm(badhealth ~ bmi + race_eth + agec + male + smoke + educ + inc + employ + marst , family = binomial, data = brfss16)
+summary(logit2.fit)
+```
+
+Let's also run a multiple OLS regression model.  We'll need this for later.
+
+```{r}
+ols.fit2 <- glm(badhealth ~ bmi + race_eth + agec + male + smoke + educ + inc + employ + marst , family = gaussian, data = brfss16)
+```
+
+<div style="margin-bottom:25px;">
+</div>
+### **Classification**
+\
+
+As we discussed in lecture, we're now entering the phase of the class where we go from using models and methods to *describe* and *infer* to those that *predict*.  In  the case of logistic regression, or any model that has a non-numeric response variable, prediction is about classification, which you read about in ISRL Ch. 4. In the classification (or prediction) world, we're primarily concerned about the quality of our predictions rather than trying to describe a relationship or infer causality. In other words, we create a model to predict a phenomena and then test whether our model does a good job of predicting that phenomena.
+
+A simple approach to assessing the prediction quality of a model is to examine a confusion matrix (see page 145 in ISRL).  In practice, a binary classifier can make two types of errors: it can incorrectly assign an individual who is in bad health, or it can incorrectly assign an individual who is not in bad health.  A confusion matrix is a convenient way of displaying this information.
+
+First, let's predict the probability of reporting bad health for the 367,873 observations in our original data.  
+
+```{r}
+pfit3 <- predict(logit2.fit, type = "response")
+```
+
+We used the `predict()` function before when we predicted bad health using BMIs between 10 and 90.  Here, we are not predicting for a new set of observations, but rather for our original 367,873 observations. In other words, *pfit3* contains the fitted values based on the model *logit2.fit*.
+
+Remember that our original variable is a 0, 1 variable - "not bad health", "bad health."  So, we now need to convert the probabilities into one of these categories.  What is typically done is if the predicted probability is greater than 0.5, designate it a 1 ("bad health").  We do so in the following code using the `ifelse()` command.    We save the classification back into the data set using `mutate()`.
+
+```{r}
+brfss16 <- mutate(brfss16, pprob = pfit3, pclass = ifelse(pprob > 0.5, 1, 0))
+```
+
+The first argument in the `mutate` command saves the vector of predicted probabilities. The second argument creates a variable that transforms to 1 all of the probabilities that are greater than 0.5.  We then use the `table()` function to produce a confusion matrix
+
+```{r}
+table(brfss16$pclass, brfss16$badhealth)
+```
+
+The diagonal elements of the confusion matrix indicate correct predictions,
+while the off-diagonals represent incorrect predictions. Hence our model
+correctly predicted non bad health status for 290,051 persons and bad health status for 19,227 persons, for a total of 309,278 correct predictions.  In this case, logistic regression correctly predicted the health status of 84.1% individuals.
+
+<p class="comment", style="font-style:normal">**Question 1**: Create the confusion matrix for the OLS model *ols.fit2*.  Does the OLS model do a better job predicting health status than the logistic regression model?</p>
+
+
+<div style="margin-bottom:25px;">
+</div>
+## **Training and Testing**
+\
+
+It looks like our model does a good job predicting bad health status. However, the results are misleading because we trained and tested the model on the same set of 367,873 observations.  In other words, 100 - 84.1 = 15.9 is the training error rate.  The training error rate is typically overly optimistic - it tends to underestimate the test error rate  
+
+In order to better assess the accuracy of the logistic regression model, we can fit the model using new data. We can do this two ways.  First, we can use (or train) part of the original data to create our model, and then examine how well it predicts the held out (test) data.  This will yield a more realistic error rate, in the sense that in practice we will be interested in our model's performance not on the data that we used to fit the model. 
+
+We'll first need to get a sample of the original data to train on.  How much to sample? The literature is not clear.  Let's set aside 25% of the data to test, and train the rest.  We use the the tidy friendly `sample_frac()` to sample 75% of the data to train. We use `seed.set()` to give us a pseudorandom set of numbers to replicate the results.
+
+```{r}
+set.seed(1234)
+brfss16$id <- 1:nrow(brfss16)
+#75% of data are used to train the model
+train <- brfss16 %>% dplyr::sample_frac(.75)
+#25% of data are used to test the model predictions
+test  <- anti_join(brfss16, train, by = 'id')
+```
+
+Now run the model on the training data set
+
+```{r}
+logit4.fit <- glm(badhealth ~ bmi + race_eth + agec + male + smoke + educ + inc + employ + marst , family = binomial, data = train)
+```
+
+Take a looksie at the results
+
+```{r}
+summary(logit4.fit)
+```
+
+Then predict probabilities using the *test* data set by using the argument `newdata =`
+
+```{r}
+pfit4 <- predict(logit4.fit, newdata = test, type = "response")
+```
+
+Confusion matrix time.
+
+```{r}
+test <- mutate(test, pprob = pfit4, pclass = ifelse(pprob > 0.5, 1, 0))
+```
+
+```{r}
+table(test$pclass, test$badhealth)
+```
+
+The test error rate is 15.8, not far from the 15.9 training error rate calculated above.
+
+The second way to test the predictive quality of your model is to model past data to predict future data.   The file *brfss17.csv* contains individual data from the the 2017 version of the BRFSS.  The data file contains the same exact variables as the 2016 file you have been using in this lab.  
+
+<br>
+
+<p class="comment", style="font-style:normal">**Question 2**: Calculate the test error rate using the 2017 BRFSS data.  </p>
+
+
+<div style="margin-bottom:25px;">
+</div>
+## **Linear Discriminant Analysis**
+\
+
+Another popular classification method is Linear Discriminant Analysis (LDA). ISLR on page 138 outlines three reasons why we might use LDA over logistic regression.
+
+We fit an LDA model on the training data using the `lda()` function, which is a part of the **MASS** package. The function arguments are the same as `lm()`.
+
+```{r}
+lda.fit1 <- lda(badhealth ~ bmi + race_eth + agec + male + smoke + educ + inc + employ + marst , data = train)
+```
+
+You can get the predictions using the `predict()` function as before, but without the `type = "response"` argument.
+
+```{r}
+lda.pred <- predict(lda.fit1, newdata = test)
+names(lda.pred)
+```
+
+The `predict()` function returns a list with three elements.  The first element, *class*, contains LDA's predictions.  Unlike with logistic regression, we don't need to convert probabilities into 0 or 1. We can save these predictions back into *test* like we did with the logistic regression predictions.
+
+```{r}
+test <- mutate(test, pclasslda = lda.pred$class)
+```
+
+<br>
+
+<p class="comment", style="font-style:normal">**Question 3**: Create the confusion matrix for the LDA predictions. What is the test error rate? Which of the methods - Logistic or LDA - appears to provide the best results using the test data? </p>
+
+<br>
+
+<div style="margin-bottom:25px;">
+</div>
+### **More than two classes**
+\
+
+Logistic regression is a popular classification method. However, it is primarily used when the response variable represents two classes.  When dealing with a classification problem when the number of classes is $>$ 2, we can use LDA. To demonstrate this, we'll use another data set that contains a response variable with multiple categories. 
+
+Bring in the data set *landuse.csv*, which contains sampled land cover in California.  The research purpose is to predict land cover everywhere in the state.  
+
+```{r}
+s <- read_csv("landuse.csv")
+```
+
+What land cover do we have?
+
+```{r}
+#basic table
+table(s$whr)
+```
+
+Bar chart it using our bud `ggplot()`.  Use the `reorder()` function to sort descending.
+
+```{r}
+s %>%
+  group_by(whr) %>%
+  summarize (n = n()) %>%
+  mutate(freq = n / sum(n))  %>%
+  ggplot() +
+    geom_bar(mapping=aes(x=reorder(whr, -freq), y=freq),stat="identity") +
+    xlab("Land cover type")
+```
+
+
+
+We removed the human dominated land cover (urban and agriculture), and also water and wetland because you would need additional predictors to adequately model these.  In our case, we only have two variables to predict land cover, temperature and precipitation.
+
+Let's bring in a California boundary shapefile and plot the points just to see where we've sampled.  We'll use the function `shapefile()` from the **raster** package
+
+
+```{r}
+ca <- shapefile("caboundary.shp")
+```
+
+```{r}
+plot(ca)
+points(s)
+```
+
+
+Let's now run an LDA to classify land cover.  First, let's set aside 20% of the data to test the model.
+
+```{r}
+set.seed(1234)
+s$id <- 1:nrow(s)
+test.ca <- s %>% dplyr::sample_frac(.20)
+train.ca  <- anti_join(s, test, by = 'id')
+```
+
+Run the LDA model using the variables *temperature* and *precipitation* to predict land cover *whr*.
+
+```{r}
+lda.fit <- lda(whr ~ temperature + precipitation, data=train.ca)
+lda.fit
+```
+
+
+<br>
+
+<p class="comment", style="font-style:normal">**Question 4**: What is the test error rate of the LDA model? </p>
+
+<p class="comment", style="font-style:normal">**Question 5**: Which class (Desert, Hardwood, etc.) does the model seem to predict well, and which class not? </p>
+
+<div style="margin-bottom:25px;">
+</div>
+## **K-Nearest Neighbor**
+\
+
+Another popular classification method is K-Nearest Neighbors (KNN). We can use KNN to predict two or more classes. ISLR discusses the KNN method on page 39.
+
+To run KNN in R, use the function `knn()`, which is a part of the **class** package. 
+This function works rather differently from `lm()` and `glm()`. Rather than a two-step approach in which we first fit the model and then we use the model to make predictions, `knn()` forms predictions using a single command.
+
+The function requires four inputs. First, the predictor variables from the training data. Then the predictor variables from the test data. Third, the dependent variable Y from the training data.  Finally, the value of *K*, the number of nearest neighbors to be used by the classifier. Note that `knn()` only takes numeric variables, which means if you use categorical predictors, you will need to convert them into a set of dummy variables.
+
+Let's first create the training and test data containing just the predictor variables.
+
+```{r}
+knn.train<- dplyr::select(train.ca, temperature, precipitation)
+knn.test<- dplyr::select(test.ca, temperature, precipitation)
+```
+
+Next, we pull the dependent variable from the training data set. The `knn()` function expects us to provide the class labels as a vector rather than a data frame, which we can specify by adding `.$whr` to the end of our **dplyr** chain:
+
+```{r}
+train.class <- dplyr::select(train.ca, whr) %>%
+                .$whr
+```
+
+We set a random seed before we apply `knn()` because if several observations are tied as nearest neighbors, then R will randomly break the tie. Therefore, a seed must be set in order to ensure reproducibility of results.  The default $K$ is 1, but let's follow the example in the ISLR textbook and use $K$ = 3.
+
+```{r}
+set.seed(1234)
+knn.pred<-knn(knn.train, knn.test, train.class, k =31)
+```
+
+
+*knn.pred* holds the predicted classes of the test observations.
+
+<br>
+
+<p class="comment", style="font-style:normal">**Question 6**: What is the overall test error rate for the K-nearest neighbor predictions? What are the test error rates by class? </p>
+
+<p class="comment", style="font-style:normal">**Bonus Question**: Use a for loop that tests different values of *K* to find the value of *K* that produces the lowest overall test error rate. Make a graph that plots the overall test error rate on the y-axis and the *K* value on the x-axis.  </p>
+
+<br>
+
+
+
+
+***
+
+
+Website created and maintained by [Noli Brazil](https://nbrazil.faculty.ucdavis.edu/)

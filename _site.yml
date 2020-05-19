@@ -33,6 +33,10 @@ navbar:
           href: spatialreg.html
         - text: "Spatial Heterogeneity"
           href: spatialheterogeneity.html
+        - text: "Classification"
+          href: classification.html
+        - text: "Resampling and Selection"
+          href: resampling.html
     - text: "Lab Lectures"
       menu:
         - text: "Lab Lecture - 1"
@@ -49,6 +53,8 @@ navbar:
           href: Lab_Week6.html
         - text: "Lab Lecture - 7"
           href: Lab_Week7.html
+        - text: "Lab Lecture - 8"
+          href: Lab_Week8.html
     - text: "Other"
       menu:
         - text:
