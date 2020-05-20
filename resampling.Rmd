@@ -77,7 +77,7 @@ We'll be using several new packages in this lab.  First, install them if you hav
 ```{r eval = FALSE}
 if (!require("dismo")) install.packages("dismo")
 if (!require("leaps")) install.packages("leaps")
-if (!require("glmet")) install.packages("glmet")
+if (!require("glmnet")) install.packages("glmnet")
 ```
 
 Second, load all necessary packages.
