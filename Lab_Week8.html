@@ -595,6 +595,75 @@ test.ca %&gt;%
             error_rate = errors/total)</code></pre>
 </div>
 </div>
+<div id="resampling" class="section level1">
+<h1>Resampling</h1>
+<div id="question-1-1" class="section level2">
+<h2>Question 1</h2>
+<p>Note that the by running <code>st_crs()</code> on the <code>ca.temp.sf</code> dataset, we can find out that the map is in units of meters. So, in order to calculate the change in temperature, we need to multiply our coefficient by whatever 500 miles is in meters: approximately 804,672 meters.</p>
+<p>Hint, what does 1 meter change in the Y coordinate yield in terms of temperature? You just multiply that value by 804,672 meters.</p>
+</div>
+<div id="question-2-1" class="section level2">
+<h2>Question 2</h2>
+<blockquote>
+<p>“The cv.glm() function produces a list with several components. The two numbers in the delta vector contain the cross-validation results… The first is the standard k-fold CV estimate, as in (5.3). The second is a bias- corrected version.” (ISLR p192-194)</p>
+</blockquote>
+<p>Remember that LOOCV is a special case of k-fold Cross Validation (ISLR p181). (Hence the above quotation says k-fold CV estimate.) What is the delta vector/standard k-fold CV estimate then? In the case of LOOCV, its equation 5.1 on p. 179. You’ll note its the average Mean Squared Error (MSE). To get the Root Mean Squared Error (RMSE), one simply takes the squareroot the MSE. In this case, use the first delta value, the standard LOOCV estimate.</p>
+<pre class="r"><code># get the data you want to use to model temperature by coordinates.
+df2 &lt;- data.frame(st_coordinates(ca.temp.sf), temp = ca.temp.sf$temp)
+# simple (OLS) linear model of temperature by coordinates
+m2 &lt;- glm(temp ~ X+Y, data=df2)
+# Use cv.glms() to calculate the LOOCV estimate.
+# Note, we don&#39;t set the argument k:
+# &quot;The default is to set K equal to the number of observations in data
+# which gives the usual leave-one-out cross-validation.&quot;
+cv_m2 &lt;- boot::cv.glm(data = df2, glmfit = m2)
+# Standard k-fold CV estimate, or in this case, LOOCV estimate.
+# To get the bias-corrected version, use cv_m2$delta[2]
+cv_m2$delta[1]  # FYI, this is not the answer, there&#39;s one more step.</code></pre>
+</div>
+<div id="question-3-1" class="section level2">
+<h2>Question 3</h2>
+<p>ISLR discusses how to pick the best model in the section “6.1.3 Choosing the Optimal Model,” and discusses adjusted R^2 specifically on p212-3. Even if some of the math is above your head, the “intuition” paragraph should be helpful in answering this question. Also, here is some R code that might help you out.</p>
+<pre class="r"><code># Which number of variables has the lowest Adjusted R^2?
+which.min(regfit2.fwd.summary$adjr2)
+# Which number of variables has the highest Adjusted R^2?
+which.max(regfit2.fwd.summary$adjr2)
+# Which variables? Just plug the NUMBER you want into:
+# coef(regfit2.fwd, NUMBER)</code></pre>
+</div>
+<div id="question-4-1" class="section level2">
+<h2>Question 4</h2>
+<p>Use the below code to use Backward Stepwise Selection to get the best 33 variable models. Then use the same code you used for Question 3 to determine the best model based on adjusted R^2.</p>
+<pre class="r"><code>regfit2.backward &lt;- regsubsets(physhlth ~ bmi + 
+                                 race_eth + 
+                                 agec + 
+                                 male + 
+                                 smoke + 
+                                 educ + 
+                                 inc + 
+                                 employ + 
+                                 marst + 
+                                 ins + 
+                                 bphigh + 
+                                 toldhi + 
+                                 cvdinfr + 
+                                 cvdstrk + 
+                                 asthma + 
+                                 havarth + 
+                                 diabete, 
+                               data = brfss17, 
+                               method = &quot;backward&quot;, 
+                               nvmax = 33)</code></pre>
+</div>
+<div id="question-5-1" class="section level2">
+<h2>Question 5</h2>
+<p>If you look at p. 250 in ISLR, the authors demonstrate model selection using k-fold CV with their dataset. Where we found a 28-variable model, they found an 11-variable model was the best. Read the last paragraph on p. 250 carefully, and follow their example. You should, of course, replace the model specification (and other arguments for <code>regsubsets</code>) with the one we specify. Then run <code>coef</code> with 28 instead of 11 (as they do on the bottom of p. 250).</p>
+</div>
+<div id="question-6-1" class="section level2">
+<h2>Question 6</h2>
+<p>Do the above code starting with <code>set.seed(1234)</code> and replace the value for argument <code>alpha</code> with 1 for both <code>cv.glmnet</code> and <code>glmnet</code>.</p>
+</div>
+</div>
 
 
 

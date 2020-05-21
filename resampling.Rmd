@@ -376,7 +376,7 @@ plot(regfit2.fwd.summary$bic ,xlab =" Number of Variables ",ylab =" BIC ", type 
 <p class="comment", style="font-style:normal">**Question 3**: Which model does the adjusted $R^2$ indicate is the best? In your answer, identify the specific variables that are included in the best model.  </p>
 
 
-<p class="comment", style="font-style:normal">**Question 4**: Run backwards stepwise regression. Which model is identified as the best model based on adjusted $R^2$?  In your answer, identify the specific variables that are included in the best model. </p>
+<p class="comment", style="font-style:normal">**Question 4**: Run backwards stepwise selection. Which model is identified as the best model based on adjusted $R^2$?  In your answer, identify the specific variables that are included in the best model. </p>
 
 <br>
 
