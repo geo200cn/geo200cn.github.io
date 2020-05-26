@@ -37,6 +37,10 @@ navbar:
           href: classification.html
         - text: "Resampling and Selection"
           href: resampling.html
+        - text: "Interpolation"
+          href: interpolation.html
+        - text: "Kriging"
+          href: kriging.html
     - text: "Lab Lectures"
       menu:
         - text: "Lab Lecture - 1"
@@ -55,6 +59,8 @@ navbar:
           href: Lab_Week7.html
         - text: "Lab Lecture - 8"
           href: Lab_Week8.html
+        - text: "Lab Lecture - 9"
+          href: Lab_Week9.html
     - text: "Other"
       menu:
         - text:

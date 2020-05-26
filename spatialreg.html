@@ -407,6 +407,12 @@ div.tocify {
     <li>
       <a href="resampling.html">Resampling and Selection</a>
     </li>
+    <li>
+      <a href="interpolation.html">Interpolation</a>
+    </li>
+    <li>
+      <a href="kriging.html">Kriging</a>
+    </li>
   </ul>
 </li>
 <li class="dropdown">
@@ -439,6 +445,9 @@ div.tocify {
     </li>
     <li>
       <a href="Lab_Week8.html">Lab Lecture - 8</a>
+    </li>
+    <li>
+      <a href="Lab_Week9.html">Lab Lecture - 9</a>
     </li>
   </ul>
 </li>
@@ -724,7 +733,7 @@ Based on the exploratory mapping, Moran scatter plot, and the Moran’s I, there
 ## weights: nycw  
 ## number of simulations + 1: 1000 
 ## 
-## statistic = 0.023944, observed rank = 708, p-value = 0.292
+## statistic = 0.023944, observed rank = 724, p-value = 0.276
 ## alternative hypothesis: greater</code></pre>
 <p>A summary of results</p>
 <pre class="r"><code>summary(fit.lag)</code></pre>
@@ -788,7 +797,7 @@ The spatial error model (SEM) incorporates spatial dependence in the errors. If 
 ## weights: nycw  
 ## number of simulations + 1: 1000 
 ## 
-## statistic = -0.04723, observed rank = 225, p-value = 0.775
+## statistic = -0.04723, observed rank = 193, p-value = 0.807
 ## alternative hypothesis: greater</code></pre>
 <p>A summary of the model</p>
 <pre class="r"><code>summary(fit.err)</code></pre>
