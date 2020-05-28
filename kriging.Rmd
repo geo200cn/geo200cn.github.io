@@ -265,7 +265,7 @@ Let's go through each step.
 
 This step involves estimating the (semi) variogram. The variogram is the foundation of geostatistical analysis and is a measure of the variance as a function of distance. Basically, the variogram is our model of spatial autocorrelation. Let's estimate a variogram for *OZDLYAV*.  
 
-First, let's create a variogram cloud.  A variogram cloud characterizes the spatial autocorrelation across a surface that we have sampled at a set of control points.   The variogram cloud is obtained by plotting all possible squared differences of observation pairs against their separation distance. As any point in the variogram cloud refers to a pair of points in the data set, the variogram cloud is used to point us to areas with unusual high or low variability.  We use the `variogram()` function, which calculates the sample variogram 
+First, let's create a variogram cloud.  A variogram cloud characterizes the spatial autocorrelation across a surface that we have sampled at a set of control points.   The variogram cloud is obtained by plotting all possible squared differences of observation pairs against their separation distance. As any point in the variogram cloud refers to a pair of points in the data set, the variogram cloud is used to point us to areas with unusual high or low variability.  We use the `variogram()` function, which calculates the sample variogram.  Here, we set the lag *h* to be 20 km.
  
 ```{r}
 vcloud <- variogram(OZDLYAV~1, locations=aq, width=20, cloud = TRUE)
@@ -538,7 +538,7 @@ Now, you're ready to interpolate.
 
 <p class="comment", style="font-style:normal">**Question 3**:   Run a quadratic polynomial trend surface model. </p>
 
-<p class="comment", style="font-style:normal">**Question 4**:   Run universal kriging. Hint: Don't just copy and paste the code from the California case. Texas is different from California, so the parameters will be different. In particular, play around with the `cutoff =` and `width =` values  when you create the sample variogram. The cutoff represents the maximal spatial distance taken into account between two observations. The width is the distance interval over which the semi-variance is calculated. You want to make sure you can see enough of the variogram top to bottom and left to right to estimate the sill, range and nugget. </p>
+<p class="comment", style="font-style:normal">**Question 4**:   Run universal kriging. Hint: Don't just copy and paste the code from the California case. Texas is different from California, so the parameters will be different. In particular, play around with the `cutoff =` and `width =` values  when you create the sample variogram. The cutoff represents the maximal spatial distance taken into account between two observations. The width is the lag or distance interval over which the semi-variance is calculated. You want to make sure you can see enough of the variogram top to bottom and left to right to estimate the sill, range and nugget. </p>
 
 <p class="comment", style="font-style:normal">**Question 5**:   Use 5-fold cross-validation to determine which of the four methods is the best based on RMSE. </p>
 
