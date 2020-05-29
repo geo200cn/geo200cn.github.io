@@ -1,6 +1,7 @@
 ---
-title: "Lab Lecture 9"
+title: "Lab Week 9"
 author: "Kenji Tomari"
+subtitle: "Spring 2020"
 output: 
   html_document:
     theme: readable
@@ -8,7 +9,6 @@ output:
     toc_depth: 3
     toc_float: true
 ---
-
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -41,7 +41,7 @@ Sidebar: Did you know Proximity Polygons are also known by the name **Nearest Ne
 
 ## Question 3
 
-> See OSU p. 254.
+See OSU p. 254.
 
 ## Question 4
 
@@ -54,3 +54,167 @@ In answering this question you might pay attention to the very first map we made
 Hint: Look in the documentation on {gstat} to understand the arguments we haven't come across yet, like `nmax`. You can use this code to read the documentation: `?gstat::gstat`. Understanding `set` is a bit more complicated from the documentation, and its less relevant for answering this question[^1]. So, if `nmax = 1`, how many control points are each predicted point relying upon? You should compare the map produced here with the previous maps we've produced to ascertain the proper name of this model.
 
 [^1]: Here, you have to read the [gstat standalone guide](http://www.gstat.org/gstat.pdf). On p. 40 it begins to describe what the `set` argument takes in as its' values. In short, `idp` is the power function *k* of equation 9.9 in OSU p. 260. (FYI, The funky symbol in 9.9 that looks like an truncated infinity symbol is read as "proportional to".) By default, the idp is set to 2 (as indicated with most computer programs in OSU p260). Again, however, `set` in this question is less important than `nmax`.
+
+# Kriging
+
+
+Do this first if you haven't already:
+
+```{r eval=F}
+r <- raster(TX)
+res(r) <- 10
+g <- as(r, 'SpatialGrid')
+coordnames(g) <- c("X", "Y")
+```
+
+And make sure you created the function `RMSE`.
+
+
+## Question 3
+
+Fill in the relevant model specification (`formula`) & your data set (`data`).
+
+```{r eval=F}
+# Quadratic Polynomial
+quadratic_TX <- lm(formula = ENTER_MODEL_SPECIFICATION_HERE ~ 
+                  X + 
+                  Y + 
+                  I(X*X) + 
+                  I(Y*Y) + 
+                  I(Y*X), 
+                data=P)
+
+# Use the regression model output to interpolate the surface
+sgdf <- SpatialGridDataFrame(g, 
+                                data.frame(var1.pred = 
+                                             predict(quadratic_TX, newdata=g))) 
+
+# Clip the interpolated raster to CA
+r2   <- raster(sgdf)
+r.m2 <- mask(r2, TX)
+
+```
+
+```{r eval=F}
+# Quadratic Cross Validation
+set.seed(5132015)
+
+kf <- kfold(nrow(P))
+
+rmseq <- rep(NA, 5)
+
+for (k in 1:5) {
+ 
+  test <- P[kf == k, ]
+  train <- P[kf != k, ]
+  
+  quad_train <- lm(Precip_in ~ 
+                     X + 
+                     Y + 
+                     I(X*X) + 
+                     I(Y*Y) + 
+                     I(Y*X), 
+                   data=train)
+  
+  # save the predictions with the spatial grid g as a SpatialGridDataFrame
+  sgdf <- SpatialGridDataFrame(g, 
+                               data.frame(var1.pred = 
+                                            predict(quad_train, 
+                                                    newdata=g))) 
+  
+  # Clip the interpolated raster to CA
+  r2   <- raster(sgdf)
+  r.m2 <- mask(r2, TX)
+  
+  # Predict for test points.
+  p <- extract(r.m2, test)
+  
+  rmseq[k] <- RMSE(test$Precip_in, 
+                      p)
+}
+
+rmseq
+
+mean(rmseq)
+```
+
+## Question 4
+
+**Create Variogram**
+
+```{r eval=F}
+plot(variogram(Precip_in~1, locations=P, cutoff=2000, width=90, cloud = TRUE))
+```
+
+You can play around with the cutoff and width. I found a cutoff of 2000 which looked nice such that a nugget was visible, and I found a width 90. You might play with a cutoff that ranges from say 800 to 3000. FYI, the average distance between point sis 536km. You should try playing around with the cutoff.
+
+```{r eval=F}
+v.u <- variogram(Precip_in~Y + X, locations=P, cutoff = 2000, width=90)
+plot(v.u)
+```
+
+Based off this plot what do you think the sill, range, and nugget are?
+
+**Fit Variogram**
+
+```{r eval=F}
+# To quote LeVar Burton from Reading Rainbow
+# "Don't take my word for it."
+fve.u <- fit.variogram(v.u, model = vgm(psill = INSERT_YOUR_ESTIMATE_HERE, 
+                                        model = INSERT_YOUR_ESTIMATE_HERE, 
+                                        range = INSERT_YOUR_ESTIMATE_HERE, 
+                                        nugget = INSERT_YOUR_ESTIMATE_HERE))
+plot(v.u, fve.u)
+```
+
+```{r eval=F}
+# krig
+k.u <- gstat(formula = Precip_in~Y + X, locations = P, model=fve.u)
+
+# predict
+kp.u <- predict(k.u, g)
+```
+
+```{r eval=F}
+# plot
+# Convert kriged surface to a raster object for clipping
+uk.u <- raster(kp.u)
+uk.u <- mask(uk.u, TX)
+
+
+tm_shape(uk.u) + 
+  tm_raster(n=10, 
+            palette="RdBu", 
+            auto.palette.mapping=FALSE, 
+            title="Precip in") +
+  tm_legend(legend.outside=TRUE)
+```
+
+CV
+
+```{r eval=F}
+# Universal Kriging Cross Validation
+set.seed(5132015)
+
+kf <- kfold(nrow(P))
+
+rmseuk <- rep(NA, 5)
+
+for (k in 1:5) {
+ 
+  test <- P[kf == k, ]
+  train <- P[kf != k, ]
+  
+  uk_train <- gstat(formula = Precip_in~Y + X, 
+             locations = P, 
+             model=fve.u)
+  # predict
+  p <- predict(uk_train, g)$var1.pred
+  rmseuk[k] <- RMSE(test$Precip_in, p)
+}
+
+rmseuk
+
+mean(rmseuk)
+```
+

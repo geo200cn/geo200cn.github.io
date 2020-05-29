@@ -12,7 +12,7 @@
 <meta name="author" content="Kenji Tomari" />
 
 
-<title>Lab Lecture 9</title>
+<title>Lab Week 9</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -472,7 +472,8 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Lab Lecture 9</h1>
+<h1 class="title toc-ignore">Lab Week 9</h1>
+<h3 class="subtitle">Spring 2020</h3>
 <h4 class="author">Kenji Tomari</h4>
 
 </div>
@@ -506,9 +507,7 @@ div.tocify {
 </div>
 <div id="question-3" class="section level2">
 <h2>Question 3</h2>
-<blockquote>
 <p>See OSU p. 254.</p>
-</blockquote>
 </div>
 <div id="question-4" class="section level2">
 <h2>Question 4</h2>
@@ -520,6 +519,134 @@ div.tocify {
 <div id="question-5" class="section level2">
 <h2>Question 5</h2>
 <p>Hint: Look in the documentation on {gstat} to understand the arguments we haven’t come across yet, like <code>nmax</code>. You can use this code to read the documentation: <code>?gstat::gstat</code>. Understanding <code>set</code> is a bit more complicated from the documentation, and its less relevant for answering this question<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a>. So, if <code>nmax = 1</code>, how many control points are each predicted point relying upon? You should compare the map produced here with the previous maps we’ve produced to ascertain the proper name of this model.</p>
+</div>
+</div>
+<div id="kriging" class="section level1">
+<h1>Kriging</h1>
+<p>Do this first if you haven’t already:</p>
+<pre class="r"><code>r &lt;- raster(TX)
+res(r) &lt;- 10
+g &lt;- as(r, &#39;SpatialGrid&#39;)
+coordnames(g) &lt;- c(&quot;X&quot;, &quot;Y&quot;)</code></pre>
+<p>And make sure you created the function <code>RMSE</code>.</p>
+<div id="question-3-1" class="section level2">
+<h2>Question 3</h2>
+<p>Fill in the relevant model specification (<code>formula</code>) &amp; your data set (<code>data</code>).</p>
+<pre class="r"><code># Quadratic Polynomial
+quadratic_TX &lt;- lm(formula = ENTER_MODEL_SPECIFICATION_HERE ~ 
+                  X + 
+                  Y + 
+                  I(X*X) + 
+                  I(Y*Y) + 
+                  I(Y*X), 
+                data=P)
+
+# Use the regression model output to interpolate the surface
+sgdf &lt;- SpatialGridDataFrame(g, 
+                                data.frame(var1.pred = 
+                                             predict(quadratic_TX, newdata=g))) 
+
+# Clip the interpolated raster to CA
+r2   &lt;- raster(sgdf)
+r.m2 &lt;- mask(r2, TX)</code></pre>
+<pre class="r"><code># Quadratic Cross Validation
+set.seed(5132015)
+
+kf &lt;- kfold(nrow(P))
+
+rmseq &lt;- rep(NA, 5)
+
+for (k in 1:5) {
+ 
+  test &lt;- P[kf == k, ]
+  train &lt;- P[kf != k, ]
+  
+  quad_train &lt;- lm(Precip_in ~ 
+                     X + 
+                     Y + 
+                     I(X*X) + 
+                     I(Y*Y) + 
+                     I(Y*X), 
+                   data=train)
+  
+  # save the predictions with the spatial grid g as a SpatialGridDataFrame
+  sgdf &lt;- SpatialGridDataFrame(g, 
+                               data.frame(var1.pred = 
+                                            predict(quad_train, 
+                                                    newdata=g))) 
+  
+  # Clip the interpolated raster to CA
+  r2   &lt;- raster(sgdf)
+  r.m2 &lt;- mask(r2, TX)
+  
+  # Predict for test points.
+  p &lt;- extract(r.m2, test)
+  
+  rmseq[k] &lt;- RMSE(test$Precip_in, 
+                      p)
+}
+
+rmseq
+
+mean(rmseq)</code></pre>
+</div>
+<div id="question-4-1" class="section level2">
+<h2>Question 4</h2>
+<p><strong>Create Variogram</strong></p>
+<pre class="r"><code>plot(variogram(Precip_in~1, locations=P, cutoff=2000, width=90, cloud = TRUE))</code></pre>
+<p>You can play around with the cutoff and width. I found a cutoff of 2000 which looked nice such that a nugget was visible, and I found a width 90. You might play with a cutoff that ranges from say 800 to 3000. FYI, the average distance between point sis 536km. You should try playing around with the cutoff.</p>
+<pre class="r"><code>v.u &lt;- variogram(Precip_in~Y + X, locations=P, cutoff = 2000, width=90)
+plot(v.u)</code></pre>
+<p>Based off this plot what do you think the sill, range, and nugget are?</p>
+<p><strong>Fit Variogram</strong></p>
+<pre class="r"><code># To quote LeVar Burton from Reading Rainbow
+# &quot;Don&#39;t take my word for it.&quot;
+fve.u &lt;- fit.variogram(v.u, model = vgm(psill = INSERT_YOUR_ESTIMATE_HERE, 
+                                        model = INSERT_YOUR_ESTIMATE_HERE, 
+                                        range = INSERT_YOUR_ESTIMATE_HERE, 
+                                        nugget = INSERT_YOUR_ESTIMATE_HERE))
+plot(v.u, fve.u)</code></pre>
+<pre class="r"><code># krig
+k.u &lt;- gstat(formula = Precip_in~Y + X, locations = P, model=fve.u)
+
+# predict
+kp.u &lt;- predict(k.u, g)</code></pre>
+<pre class="r"><code># plot
+# Convert kriged surface to a raster object for clipping
+uk.u &lt;- raster(kp.u)
+uk.u &lt;- mask(uk.u, TX)
+
+
+tm_shape(uk.u) + 
+  tm_raster(n=10, 
+            palette=&quot;RdBu&quot;, 
+            auto.palette.mapping=FALSE, 
+            title=&quot;Precip in&quot;) +
+  tm_legend(legend.outside=TRUE)</code></pre>
+<p>CV</p>
+<pre class="r"><code># Universal Kriging Cross Validation
+set.seed(5132015)
+
+kf &lt;- kfold(nrow(P))
+
+rmseuk &lt;- rep(NA, 5)
+
+for (k in 1:5) {
+ 
+  test &lt;- P[kf == k, ]
+  train &lt;- P[kf != k, ]
+  
+  uk_train &lt;- gstat(formula = Precip_in~Y + X, 
+             locations = P, 
+             model=fve.u)
+  # predict
+  p &lt;- predict(uk_train, g)$var1.pred
+  rmseuk[k] &lt;- RMSE(test$Precip_in, p)
+}
+
+rmseuk
+
+mean(rmseuk)</code></pre>
 </div>
 </div>
 <div class="footnotes">
