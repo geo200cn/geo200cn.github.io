@@ -81,6 +81,8 @@ Wilson, F. 2001. Minerals and Migrants: How the Mining Industry Has Shaped South
 ---
 
 
+## Question 1
+
 Do this first if you haven't already:
 
 ```{r eval=F}
