@@ -1,5 +1,5 @@
 ---
-title: "Lab Lecture 9 and 10"
+title: "Lab Lecture 7"
 author: "Kenji Tomari"
 output: 
   html_document:
@@ -56,6 +56,8 @@ Hint: Look in the documentation on {gstat} to understand the arguments we haven'
 
 # Kriging
 
+## Introduction
+
 Before diving into the interpolation technique known as Kriging, let's quickly understand the history and origins of Kriging. Understanding the critical history of our tools has long been a tradition in Geography dating back to the 1960's. Notably, the role of Geographers in the construction of empire is a black mark on our field since it was first established in the 19th century, and evaluating how our current understanding of the field emerged from these violent frameworks shapes how we wield our knowledge to subvert those detestable origins. Precisely because you are learning quantitative Geographic or spatial statistical methods in the graduate program of Geography at UC Davis, you need to understand this. Critical cartography and critical Geography should not be dismissed simply because an elegant formula derived from a settler-colonial regime works well and advances our own projects. 
 
 Danie Krige was born in Bothaville, South Africa in 1919. His obituary in the Canadian Mining Journal lauds him for his achievements and his contributions to advances in the field of resource extraction, not least of which for the Kriging technique. The Journal highlights his seminal paper in 1951; it illustrates how he rose to prominence in the Anglovaal mining corporation; and later how he retired from the private sector to become a respected professor at a South African university. However, the Journal at no point considers the man in the context of his times. Krige entered the industry and advanced it during a critical stage in the industrialization and development of South Africa. His seminal paper was published only three years after the enactment of Apartheid legislation in 1948. His role as a financial engineer emerges during this period and we should consider this timing in the creation and valorization of the Kriging technique. 
@@ -75,6 +77,8 @@ Obituary: Danie Krige, South Africa’s giant of geostatistics. 2013. Canadian M
 Wilson, B. M. 2000. America’s Johannesburg: industrialization and racial transformation in Birmingham. Lanham, Maryland: Rowman & Littlefield Publishers.
 
 Wilson, F. 2001. Minerals and Migrants: How the Mining Industry Has Shaped South Africa. Daedalus 130 (1):99–121.
+
+---
 
 
 Do this first if you haven't already:
@@ -246,18 +250,18 @@ rmse_out
 mean(rmse_out)
 ```
 
-## Regression Trees
+# Regression Trees
 
-### Question 1
+## Question 1
 
 Look at the baseball example starting on p 304 in ISLR for interpreting a regression tree graph. More specifically the last paragraph on p 305.
 
-### Question 2
+## Question 2
 
 Generally, p314 in ISLR describes why we see terminal nodes that are both the same prediction. This isn't critical to understand in order to answer Question 2, but might help those of you scratching your heads.
 
 To begin to answer this question, figure out the pathway it takes to get to all the "Yes" terminal nodes.
 
-### Question 3
+## Question 3
 
 Try `help(tuneRF)`. Also try reading the first paragraph under "Random Forests" on p319, and the second to last paragraph on p320.

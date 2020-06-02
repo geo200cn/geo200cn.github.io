@@ -12,7 +12,7 @@
 <meta name="author" content="Kenji Tomari" />
 
 
-<title>Lab Lecture 9 and 10</title>
+<title>Lab Lecture 7</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -475,7 +475,7 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Lab Lecture 9 and 10</h1>
+<h1 class="title toc-ignore">Lab Lecture 7</h1>
 <h4 class="author">Kenji Tomari</h4>
 
 </div>
@@ -525,6 +525,8 @@ div.tocify {
 </div>
 <div id="kriging" class="section level1">
 <h1>Kriging</h1>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
 <p>Before diving into the interpolation technique known as Kriging, let’s quickly understand the history and origins of Kriging. Understanding the critical history of our tools has long been a tradition in Geography dating back to the 1960’s. Notably, the role of Geographers in the construction of empire is a black mark on our field since it was first established in the 19th century, and evaluating how our current understanding of the field emerged from these violent frameworks shapes how we wield our knowledge to subvert those detestable origins. Precisely because you are learning quantitative Geographic or spatial statistical methods in the graduate program of Geography at UC Davis, you need to understand this. Critical cartography and critical Geography should not be dismissed simply because an elegant formula derived from a settler-colonial regime works well and advances our own projects.</p>
 <p>Danie Krige was born in Bothaville, South Africa in 1919. His obituary in the Canadian Mining Journal lauds him for his achievements and his contributions to advances in the field of resource extraction, not least of which for the Kriging technique. The Journal highlights his seminal paper in 1951; it illustrates how he rose to prominence in the Anglovaal mining corporation; and later how he retired from the private sector to become a respected professor at a South African university. However, the Journal at no point considers the man in the context of his times. Krige entered the industry and advanced it during a critical stage in the industrialization and development of South Africa. His seminal paper was published only three years after the enactment of Apartheid legislation in 1948. His role as a financial engineer emerges during this period and we should consider this timing in the creation and valorization of the Kriging technique.</p>
 <p>The mining industry has long been a pillar of the economy of South Africa. As professor of Geography at the University of Alabama Bobby Wilson describes, South Africa’s political economy, like Birmingham Alabama, was founded on race-connected practices.</p>
@@ -537,12 +539,14 @@ div.tocify {
 <p>Obituary: Danie Krige, South Africa’s giant of geostatistics. 2013. Canadian Mining Journal. <a href="http://www.canadianminingjournal.com/news/obituary-danie-krige-south-africas-giant-of-geostatistics/" class="uri">http://www.canadianminingjournal.com/news/obituary-danie-krige-south-africas-giant-of-geostatistics/</a> (last accessed 1 June 2020).</p>
 <p>Wilson, B. M. 2000. America’s Johannesburg: industrialization and racial transformation in Birmingham. Lanham, Maryland: Rowman &amp; Littlefield Publishers.</p>
 <p>Wilson, F. 2001. Minerals and Migrants: How the Mining Industry Has Shaped South Africa. Daedalus 130 (1):99–121.</p>
+<hr />
 <p>Do this first if you haven’t already:</p>
 <pre class="r"><code>r &lt;- raster(TX)
 res(r) &lt;- 10
 g &lt;- as(r, &#39;SpatialGrid&#39;)
 coordnames(g) &lt;- c(&quot;X&quot;, &quot;Y&quot;)</code></pre>
 <p>And make sure you created the function <code>RMSE</code>.</p>
+</div>
 <div id="question-3-1" class="section level2">
 <h2>Question 3</h2>
 <p>Fill in the relevant model specification (<code>formula</code>).</p>
@@ -672,21 +676,21 @@ rmse_out
 
 mean(rmse_out)</code></pre>
 </div>
-<div id="regression-trees" class="section level2">
-<h2>Regression Trees</h2>
-<div id="question-1-1" class="section level3">
-<h3>Question 1</h3>
+</div>
+<div id="regression-trees" class="section level1">
+<h1>Regression Trees</h1>
+<div id="question-1-1" class="section level2">
+<h2>Question 1</h2>
 <p>Look at the baseball example starting on p 304 in ISLR for interpreting a regression tree graph. More specifically the last paragraph on p 305.</p>
 </div>
-<div id="question-2-1" class="section level3">
-<h3>Question 2</h3>
+<div id="question-2-1" class="section level2">
+<h2>Question 2</h2>
 <p>Generally, p314 in ISLR describes why we see terminal nodes that are both the same prediction. This isn’t critical to understand in order to answer Question 2, but might help those of you scratching your heads.</p>
 <p>To begin to answer this question, figure out the pathway it takes to get to all the “Yes” terminal nodes.</p>
 </div>
-<div id="question-3-2" class="section level3">
-<h3>Question 3</h3>
+<div id="question-3-2" class="section level2">
+<h2>Question 3</h2>
 <p>Try <code>help(tuneRF)</code>. Also try reading the first paragraph under “Random Forests” on p319, and the second to last paragraph on p320.</p>
-</div>
 </div>
 </div>
 <div class="footnotes">
