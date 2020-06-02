@@ -1,0 +1,479 @@
+---
+title: "Regression Trees"
+subtitle: <h4 style="font-style:normal">GEO 200CN - Quantitative Geography</h4>
+author: <h4 style="font-style:normal">Professor Noli Brazil</h4>
+date: <h4 style="font-style:normal">Spring 2020</h4>
+output: 
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    theme: yeti
+    code_folding: show
+---
+
+
+<style>
+p.comment {
+background-color: #DBDBDB;
+padding: 10px;
+border: 1px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: italic;
+}
+
+.figure {
+   margin-top: 20px;
+   margin-bottom: 20px;
+}
+
+h1.title {
+  font-weight: bold;
+  font-family: Arial;  
+}
+
+h2.title {
+  font-family: Arial;  
+}
+
+</style>
+
+
+<style type="text/css">
+#TOC {
+  font-size: 13px;
+  font-family: Arial;
+}
+</style>
+
+
+\
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message = FALSE)
+```
+
+This lab guide goes through the use of regression trees to make spatial predictions. It follows closely the material presented in ISLR Ch. 8. The objectives of this lab guide are as follows
+
+1. Learn how to run classification trees
+2. Learn how to prune classification trees
+3. Learn how to run regression and classification random forest models
+4. Learn how to make predictions using a random forest model
+
+To achieve these objectives, you will be applying regression tree methods in [species distribution modelling](https://rspatial.org/sdm) or ecological niche modeling. The objective in species distribution modelling is to predict the entire range of a species based on a set of locations where it has been observed. In this lab guide, we use the hominid species Imaginus magnapedum (also known under the vernacular names of “bigfoot” and “sasquatch”). This species is so hard to find (at least by scientists) that its very existence is commonly denied by the mainstream media! For more information about this controversy, see the article by Lozier, Aniello and Hickerson: [Predicting the distribution of Sasquatch in western North America: anything goes with ecological niche modelling](http://onlinelibrary.wiley.com/doi/10.1111/j.1365-2699.2009.02152.x/abstract). Note that much of this lab guide has been adapted from rspatial.org.
+
+
+<div style="margin-bottom:25px;">
+</div>
+## **Installing and loading packages**
+\
+
+We'll be using two new packages in this lab guide.  First, install them
+
+
+```{r eval = FALSE}
+if (!require("tree")) install.packages("tree")
+if (!require("randomForest")) install.packages("randomForest")
+```
+
+Second, load these packages and the others we will need for executing the commands in this lab guide.
+
+```{r}
+library(sp)
+library(maptools)
+library(raster)
+library(dismo)
+library(tree)
+library(randomForest)
+```
+
+
+<div style="margin-bottom:25px;">
+</div>
+## **Bringing in the data**
+\
+
+The research objectives are to find out
+
+1. What the complete range of the bigfoot species might be.
+2. How good (general) our model is by predicting the range of the Eastern bigfoot sub-species, with data from the Western sub-species.
+3. Predict where in Mexico the creature is likely to occur.
+
+First bring in the bigfoot location data. Download the file *bigfoot.csv* from Canvas in the Labs and Assignments Week 10 folder.
+
+```{r}
+bf <- read.csv("bigfoot.csv")
+dim(bf)
+head(bf)
+```
+
+These data show the latitude and longitude information of the known locations of bigfoot sightings.  Let's plot where these fellas like to roam.
+
+```{r}
+plot(bf[,1:2], cex=0.5, col='red')
+## Checking rgeos availability: TRUE
+data(wrld_simpl)
+plot(wrld_simpl, add=TRUE)
+```
+
+We want to predict bigfoot locations, so we need predictors. The main predictors typically used in species distribution modeling are climate data. Specifically, we use ‘bioclimatic variables’. A record layout of the variables can be found [here](https://www.worldclim.org/data/bioclim.html).  Bring these data in, which are conveniently stored in the package **raster**.
+
+```{r}
+wc <- raster::getData('worldclim', res=10, var='bio')
+```
+
+What does these data look like? Plot the variables *bio1* (Annual Mean Temperature) and *bio12* (Annual Precipitation) for the world.
+
+```{r}
+plot(wc[[c(1, 12)]], nr=2)
+```
+
+Now extract climate data for the locations of our observations. That is, get data about the climate where the species have been spotted.
+
+```{r}
+bfc <- extract(wc, bf[,1:2])
+head(bfc)
+```
+
+The dataset *bf* gives us data for bigfoot sightings. The dataset *bfc* gives us the climate data for the locations of these sightings. But, in order to build a prediction model, we also need the locations and their climate data for where bigfoot was not observed. But we do not have data from a systematic survey that determined both presence and absence. We have presence-only data. 
+
+The common trick to deal with this is to not model presence versus absence, but presence versus a ‘random expectation’. This random expectation (also referred to as ‘background’, or ‘random-absence’ data) is what you would get if the species had no preference for any of the predictor variables.
+
+Our study region is North America. So, you create a set of random climate observations from within the area of North America where bigfoot observations have been made.
+
+```{r}
+#measures extent of area for bigfoot observations
+e <- extent(SpatialPoints(bf[, 1:2]))
+e
+```
+
+```{r}
+set.seed(0)
+#takes a 5000 random samples from wc within the extent e for bigfoot observations
+bg <- sampleRandom(wc, 5000, ext=e)
+dim(bg)
+head(bg)
+```
+
+Now you combine the random locations where bigfoot has not been "observed" (*bg*) with the bigfoot observation data (*bfc*) into a single data frame.
+
+```{r}
+#bfc is the bigfoot climate data and bg is the nonbigfoot climate data. We also create an indicator pa of whether bigfoot was seen in this location (pa =1) or not (pa=0)
+d <- rbind(cbind(pa=1, bfc), cbind(pa=0, bg))
+d <- data.frame(d)
+dim(d)
+```
+
+Now we have the data to fit a model. But let's split the data into East and West. In this case, we may believe Western and Eastern bigfoots are actually different, albeit related, sub-species (for example, the Eastern Sasquatch is darker and less hairy). We are going to fit the model using Western data and then see if it predicts well for the Eastern data.
+
+```{r}
+#eastern north america
+de <- d[bf[,1] > -102, ]
+de <- na.omit(de) #kicks out the two empty cells in eastern data set
+#western north america
+dw <- d[bf[,1] <= -102, ]
+```
+
+Now, we are ready. Let's run some regression [trees](https://www.youtube.com/watch?v=n5h0qHwNrHk)!!
+
+<div style="margin-bottom:25px;">
+</div>
+## **Classification trees**
+\
+
+Our response variable is whether bigfoot is located in a particular location (Yes) or not (No).  We can use a [classification](https://geo200cn.github.io/classification.html) method to predict this binary variable.  Here, we use a Classification Tree (CART), which is discussed on page 311 in ISLR.  We'll need to convert the (0,1) numeric indicator *pa* into a new (No, Yes) factor variable we'll name *fpa*.
+
+```{r}
+dw$fpa <- as.factor(ifelse(dw$pa == 1, "Yes", "No"))
+```
+
+Use the `tree()` function in the **tree** package to run a CART.  The syntax of the function is similar to `lm()` and other linear regression modelling functions we've used extensively in this class. Note that we take out the (0,1) indicator from the dataset using the function `select()` when we run the model.
+
+```{r}
+cart1 <- tree(fpa~., data=dplyr::select(dw,-pa))
+```
+
+Here is a summary of the results.
+
+```{r}
+summary(cart1)
+```
+
+We see that the training error rate is 10.35%. And here is the decision tree diagram, like the one shown in Figure 8.4 in ISLR.
+
+```{r}
+plot(cart1, main="Classification Tree")
+# text(cart, use.n=TRUE, all=TRUE, cex=.8)
+text(cart1, cex=.8, digits=1)
+```
+
+
+<br>
+
+<p class="comment", style="font-style:normal">**Question 1**: Which variable is the most important indicator of where our species might be located? </p>
+
+<p class="comment", style="font-style:normal">**Question 2**: Describe the conditions under which you are likely to find our species? </p>
+
+<br>
+
+<div style="margin-bottom:25px;">
+</div>
+### **Tree Pruning**
+\
+
+Next, we consider whether pruning the tree might lead to improved results. Pruning is described in ISLR starting on page 307.  The algorithm is located on page 309.  The key step is step 3, which describes using k-fold cross validation to find the best tuning parameter alpha, which dictates the number of terminal nodes of the best fit tree.  The function `cv.tree()` performs cross-validation in order to determine the optimal level of tree complexity.  Plug in the big tree *cart1* produced by `tree()` in the section above followed by `FUN = prune.misclass`, which indicates that we want the classification error rate to guide the cross-validation and pruning process.
+
+```{r}
+#kfold cuts the fold in random so set a set.
+set.seed(123)
+cv.cart <- cv.tree(cart1, FUN = prune.misclass)
+```
+
+Let's see what we get 
+
+```{r}
+names(cv.cart)
+```
+
+and their values
+
+```{r}
+cv.cart
+```
+
+Note that, despite the name, *dev* corresponds to the cross-validation error rate in this instance. The results under *size* give the number of terminal nodes (size of the tree).  The tree with eight and six terminal nodes (see *size*) results in the lowest cross-validation error rate, with 359 cross-validation errors (see *dev*). We plot the error rate as a function of the size.
+
+```{r}
+plot(cv.cart$size, cv.cart$dev, type = "b")
+```
+
+Let's be parsimonious and choose 6 as the best fit tree. We then apply the `prune.misclass()` function in order to prune the tree to obtain the six-node tree.
+
+
+```{r}
+prune.cart <- prune.misclass(cart1, best = 6)
+```
+
+And now the decision tree diagram
+
+```{r}
+plot(prune.cart, main="Regression Tree")
+# text(cart, use.n=TRUE, all=TRUE, cex=.8)
+text(prune.cart, cex=.8, digits=1)
+```
+
+Differ much from the tree we got from *cart1*?
+
+<div style="margin-bottom:25px;">
+</div>
+## **Random Forest**
+\
+
+CART gives us a nice result to look at that can be easily interpreted. But the approach suffers from high variance (meaning that the model will be over-fit, it is different each time a somewhat different datasets are used). Random Forest does not have that problem as much. The method, which is an extension of Bagging, is discussed starting on page 319 in ISLR.
+
+
+<div style="margin-bottom:25px;">
+</div>
+### **Classification**
+\
+
+We fit the Random Forest model using the function `randomForest()` from the package **randomForest**.
+
+```{r}
+#use the western data in all the predictor columns with the climate except "pa" which is the response variable
+crf <- randomForest(fpa~., data=dplyr::select(dw,-pa))
+crf
+```
+
+The variable importance plot shows which variables are most important in fitting the model. Variable importance is described in ISLR on page 319. The plot is generated by randomizing each predictor variable one by one and then computing the decline in model prediction.
+
+```{r}
+varImpPlot(crf)
+```
+
+<div style="margin-bottom:25px;">
+</div>
+### **Regression**
+\
+
+In the above sections, we've modelled bigfoot locations from a classification perspective.  But, we can also use regression.  In this case, by using a (0,1) numeric variable as the response, we are modelling the probability that bigfoot is located in a location. We still use the `randomForest()` function to run a Random Forest regression model.
+
+Note that there is an important parameter that differentiates Random Forests from regular bagging (page 319 in ISLR talks about this parameter).  In the `randomForest()` function, this parameter is designated by the argument `mtry =`.  We did not specify `mtry =` above, and thus took whatever the default is.  
+
+Instead of the default, we can instead find the best value for this parameter by using the function `tuneRF()`.
+
+
+```{r}
+trf <- tuneRF(dplyr::select(dw,-c(pa,fpa)), dw[, 'pa'])
+```
+
+We then find the best value
+
+```{r}
+trf
+mt <- trf[which.min(trf[,2]), 1]
+mt
+```
+
+We can then plug this value into the `randomForest()` function in the argument `mtry =`
+
+
+```{r}
+rrf <- randomForest(dw[, 2:ncol(d)], dw[, 'pa'], mtry=mt)
+rrf
+```
+
+<br>
+
+<p class="comment", style="font-style:normal">**Question 3**: What did tuneRF help us find? What does the value of *mt* represent? </p>
+
+<br>
+
+Here we show the variable importance plot for the model.
+
+```{r}
+varImpPlot(rrf)
+```
+
+
+<div style="margin-bottom:25px;">
+</div>
+## **Predict**
+\
+
+We can use the random forest models we constructed above to make predictions to any other place for which we have values for the predictor variables. Our climate data is global so we could find suitable places for bigfoot anywhere. But before we start placing sasquatch anywhere we please, let's first predict their locations in the western portion of North America. 
+
+We are going to construct a continuous raster surface predicting the presence of sasquatch in  western North America. We need to specify the spatial extent of  western North America using the following code.
+
+```{r}
+ew <- extent(SpatialPoints(bf[bf[,1] <= -102, 1:2]))
+```
+
+<div style="margin-bottom:25px;">
+</div>
+### **Regression**
+\
+
+Let's interpolate the probability that bigfoot will be present in a location using the regression random forest model *rrf*
+
+```{r}
+rp <- predict(wc, rrf, ext=ew)
+```
+
+Show a raster map of the predicted range for the probability of our species presence across the study area.
+
+```{r}
+plot(rp)
+```
+
+Note that the regression predictions are well-behaved, in the sense that they are between 0 and 1. However, they are continuous within that range, and if you wanted presence/absence, you would need a threshold (i.e. if it is above the threshold, bigfoot is present, otherwise absent). To get the optimal threshold, you would normally have a hold out data set (see ISLR 8.3 for examples of using test and training data), but here we used the training data for simplicity.
+
+```{r}
+eva <- evaluate(dw[dw$pa==1, ], dw[dw$pa==0, ], rrf)
+eva
+```
+
+Find a good threshold to determine presence/absence.  Anything in green is classifying that cell as bigfoot territory.  Otherwise, not.
+
+```{r}
+#uses the evaluation to find an optimal threshold
+tr <- threshold(eva)
+tr
+#choosing spec_sens at the threshold value and plotting range as a binary
+plot(rp > tr[1, 'spec_sens'])
+```
+
+
+<div style="margin-bottom:25px;">
+</div>
+### **Classification**
+\
+
+We can also use the classification Random Forest model *crf* to make a present/absent prediction.
+
+```{r}
+rc <- predict(wc, crf, ext=ew)
+plot(rc)
+```
+
+You can also get and plot probabilities
+
+```{r}
+rc2 <- predict(wc, crf, ext=ew, type='prob', index=2)
+#shows the probability of sightings in the U.S.
+plot(rc2)
+```
+
+
+<div style="margin-bottom:25px;">
+</div>
+## **Extrapolation**
+\
+
+Remember that we fitted our model using the Western portion of the region. Now, let’s see if our model is general enough to predict the distribution of the Eastern species.  We grab the spatial extent of Eastern North America.
+
+```{r}
+eus <- extent(SpatialPoints(bf[bf[,1] > -102, 1:2]))
+#predicts the presence using the random forest model
+rcusa <- predict(wc, rrf, ext=eus)
+```
+
+We can look at the predictions on a map.
+
+```{r}
+#plots the climate data and the observed points
+plot(rcusa)
+points(bf[bf[,1] > -102,1:2], cex=.25)
+```
+
+Let's see the predictions we got for the western and eastern sides together in one map.
+
+```{r}
+#spatial extent of the entire region
+allus <- extent(SpatialPoints(bf[, 1:2]))
+#predict for the entire region using rrf
+allrusa <- predict(wc, rrf, ext=allus)
+#plot the predictions and observed points
+plot(allrusa)
+points(bf[,1:2], cex=.25)
+```
+
+<br>
+
+<p class="comment", style="font-style:normal">**Question 4**: Why would it be that the model does not extrapolate well? </p>
+
+<br>
+
+
+An important question in the biogeography of the western species is why does it not occur in Mexico. Or if it does, where would that be?
+
+To answer these questions, we predict species distribution using Mexican climate data. 
+
+```{r}
+#gets geographic data for Mexico
+mex <- getData('GADM', country='MEX', level=1)
+#uses model with Mexico climate data
+pm <- predict(wc, rrf, ext=mex)
+```
+
+Next, we map the prediction
+
+```{r}
+pm <- mask(pm, mex)
+plot(pm)
+```
+
+<br>
+
+<p class="comment", style="font-style:normal">**Question 5**: Based on the map above, where in Mexico are you most likely to encounter the western bigfoot? </p>
+
+<br>
+
+You're done with the last lab of the class. Hooray!! [Where'd all the time go?](https://www.youtube.com/watch?v=bmZQpbNK7t4)
+
+***
+
+
+Website created and maintained by [Noli Brazil](https://nbrazil.faculty.ucdavis.edu/)

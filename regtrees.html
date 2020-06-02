@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Regression Trees</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/yeti.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 45px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h2 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h3 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h4 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h5 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h6 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">GEO 200CN: Winter 2020</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="syllabus.html">Syllabus</a>
+</li>
+<li>
+  <a href="hw_guidelines.html">Assignment Guidelines</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Labs
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="getting_started.html">Getting Started</a>
+    </li>
+    <li>
+      <a href="tidyr.html">Intro to tidyverse</a>
+    </li>
+    <li>
+      <a href="central.html">Sampling, CIs, CLT</a>
+    </li>
+    <li>
+      <a href="hypothesis.html">Hypothesis Testing</a>
+    </li>
+    <li>
+      <a href="spatialsf.html">Mapping in sf</a>
+    </li>
+    <li>
+      <a href="pointpatterns.html">Point Pattern Analysis</a>
+    </li>
+    <li>
+      <a href="spatialautocorrelation.html">Spatial Autocorrelation</a>
+    </li>
+    <li>
+      <a href="linearregression.html">Linear Regression I</a>
+    </li>
+    <li>
+      <a href="linearregression2.html">Linear Regression II</a>
+    </li>
+    <li>
+      <a href="spatialreg.html">Spatial Regression</a>
+    </li>
+    <li>
+      <a href="spatialheterogeneity.html">Spatial Heterogeneity</a>
+    </li>
+    <li>
+      <a href="classification.html">Classification</a>
+    </li>
+    <li>
+      <a href="resampling.html">Resampling and Selection</a>
+    </li>
+    <li>
+      <a href="interpolation.html">Interpolation</a>
+    </li>
+    <li>
+      <a href="kriging.html">Kriging</a>
+    </li>
+    <li>
+      <a href="regtrees.html">Regression Trees</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Lab Lectures
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="Lab_Week1.html">Lab Lecture - 1</a>
+    </li>
+    <li>
+      <a href="Lab_Week2.html">Lab Lecture - 2</a>
+    </li>
+    <li>
+      <a href="Lab_Week3.html">Lab Lecture - 3</a>
+    </li>
+    <li>
+      <a href="Lab_Week4.html">Lab Lecture - 4</a>
+    </li>
+    <li>
+      <a href="Lab_Week5.html">Lab Lecture - 5</a>
+    </li>
+    <li>
+      <a href="Lab_Week6.html">Lab Lecture - 6</a>
+    </li>
+    <li>
+      <a href="Lab_Week7.html">Lab Lecture - 7</a>
+    </li>
+    <li>
+      <a href="Lab_Week8.html">Lab Lecture - 8</a>
+    </li>
+    <li>
+      <a href="Lab_Week9.html">Lab Lecture - 9</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Other
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a></a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Regression Trees</h1>
+<h3 class="subtitle"><h4 style="font-style:normal">
+GEO 200CN - Quantitative Geography
+</h4></h3>
+<h4 class="author"><h4 style="font-style:normal">
+Professor Noli Brazil
+</h4></h4>
+<h4 class="date"><h4 style="font-style:normal">
+Spring 2020
+</h4></h4>
+
+</div>
+
+
+<style>
+p.comment {
+background-color: #DBDBDB;
+padding: 10px;
+border: 1px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: italic;
+}
+
+.figure {
+   margin-top: 20px;
+   margin-bottom: 20px;
+}
+
+h1.title {
+  font-weight: bold;
+  font-family: Arial;  
+}
+
+h2.title {
+  font-family: Arial;  
+}
+
+</style>
+<style type="text/css">
+#TOC {
+  font-size: 13px;
+  font-family: Arial;
+}
+</style>
+<p><br />
+</p>
+<p>This lab guide goes through the use of regression trees to make spatial predictions. It follows closely the material presented in ISLR Ch. 8. The objectives of this lab guide are as follows</p>
+<ol style="list-style-type: decimal">
+<li>Learn how to run classification trees</li>
+<li>Learn how to prune classification trees</li>
+<li>Learn how to run regression and classification random forest models</li>
+<li>Learn how to make predictions using a random forest model</li>
+</ol>
+<p>To achieve these objectives, you will be applying regression tree methods in <a href="https://rspatial.org/sdm">species distribution modelling</a> or ecological niche modeling. The objective in species distribution modelling is to predict the entire range of a species based on a set of locations where it has been observed. In this lab guide, we use the hominid species Imaginus magnapedum (also known under the vernacular names of “bigfoot” and “sasquatch”). This species is so hard to find (at least by scientists) that its very existence is commonly denied by the mainstream media! For more information about this controversy, see the article by Lozier, Aniello and Hickerson: <a href="http://onlinelibrary.wiley.com/doi/10.1111/j.1365-2699.2009.02152.x/abstract">Predicting the distribution of Sasquatch in western North America: anything goes with ecological niche modelling</a>. Note that much of this lab guide has been adapted from rspatial.org.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+<div id="installing-and-loading-packages" class="section level2">
+<h2><strong>Installing and loading packages</strong></h2>
+<p><br />
+We’ll be using two new packages in this lab guide. First, install them</p>
+<pre class="r"><code>if (!require(&quot;tree&quot;)) install.packages(&quot;tree&quot;)
+if (!require(&quot;randomForest&quot;)) install.packages(&quot;randomForest&quot;)</code></pre>
+<p>Second, load these packages and the others we will need for executing the commands in this lab guide.</p>
+<pre class="r"><code>library(sp)
+library(maptools)
+library(raster)
+library(dismo)
+library(tree)
+library(randomForest)</code></pre>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="bringing-in-the-data" class="section level2">
+<h2><strong>Bringing in the data</strong></h2>
+<p><br />
+The research objectives are to find out</p>
+<ol style="list-style-type: decimal">
+<li>What the complete range of the bigfoot species might be.</li>
+<li>How good (general) our model is by predicting the range of the Eastern bigfoot sub-species, with data from the Western sub-species.</li>
+<li>Predict where in Mexico the creature is likely to occur.</li>
+</ol>
+<p>First bring in the bigfoot location data. Download the file <em>bigfoot.csv</em> from Canvas in the Labs and Assignments Week 10 folder.</p>
+<pre class="r"><code>bf &lt;- read.csv(&quot;bigfoot.csv&quot;)
+dim(bf)</code></pre>
+<pre><code>## [1] 3092    3</code></pre>
+<pre class="r"><code>head(bf)</code></pre>
+<pre><code>##         lon      lat Class
+## 1 -142.9000 61.50000     A
+## 2 -132.7982 55.18720     A
+## 3 -132.8202 55.20350     A
+## 4 -141.5667 62.93750     A
+## 5 -149.7853 61.05950     A
+## 6 -141.3165 62.77335     A</code></pre>
+<p>These data show the latitude and longitude information of the known locations of bigfoot sightings. Let’s plot where these fellas like to roam.</p>
+<pre class="r"><code>plot(bf[,1:2], cex=0.5, col=&#39;red&#39;)
+## Checking rgeos availability: TRUE
+data(wrld_simpl)
+plot(wrld_simpl, add=TRUE)</code></pre>
+<p><img src="regtrees_files/figure-html/unnamed-chunk-4-1.png" /><!-- --></p>
+<p>We want to predict bigfoot locations, so we need predictors. The main predictors typically used in species distribution modeling are climate data. Specifically, we use ‘bioclimatic variables’. A record layout of the variables can be found <a href="https://www.worldclim.org/data/bioclim.html">here</a>. Bring these data in, which are conveniently stored in the package <strong>raster</strong>.</p>
+<pre class="r"><code>wc &lt;- raster::getData(&#39;worldclim&#39;, res=10, var=&#39;bio&#39;)</code></pre>
+<p>What does these data look like? Plot the variables <em>bio1</em> (Annual Mean Temperature) and <em>bio12</em> (Annual Precipitation) for the world.</p>
+<pre class="r"><code>plot(wc[[c(1, 12)]], nr=2)</code></pre>
+<p><img src="regtrees_files/figure-html/unnamed-chunk-6-1.png" /><!-- --></p>
+<p>Now extract climate data for the locations of our observations. That is, get data about the climate where the species have been spotted.</p>
+<pre class="r"><code>bfc &lt;- extract(wc, bf[,1:2])
+head(bfc)</code></pre>
+<pre><code>##      bio1 bio2 bio3  bio4 bio5 bio6 bio7 bio8 bio9 bio10 bio11 bio12 bio13
+## [1,]  -14  102   27  9672  174 -197  371   51  -11   108  -137   973   119
+## [2,]   62   55   31  4136  157  -17  174   43   98   118    15  2602   385
+## [3,]   62   55   31  4136  157  -17  174   43   98   118    15  2602   385
+## [4,]  -57  125   23 15138  206 -332  538  127 -129   127  -256   282    67
+## [5,]   10   80   25  8308  174 -140  314   66    5   119   -91   532    81
+## [6,]  -59  128   23 14923  204 -334  538  122 -130   122  -255   322    75
+##      bio14 bio15 bio16 bio17 bio18 bio19
+## [1,]    43    30   332   156   290   210
+## [2,]   128    33   953   407   556   721
+## [3,]   128    33   953   407   556   721
+## [4,]     6    81   163    22   163    27
+## [5,]    22    41   215    72   159   117
+## [6,]     8    79   183    28   183    32</code></pre>
+<p>The dataset <em>bf</em> gives us data for bigfoot sightings. The dataset <em>bfc</em> gives us the climate data for the locations of these sightings. But, in order to build a prediction model, we also need the locations and their climate data for where bigfoot was not observed. But we do not have data from a systematic survey that determined both presence and absence. We have presence-only data.</p>
+<p>The common trick to deal with this is to not model presence versus absence, but presence versus a ‘random expectation’. This random expectation (also referred to as ‘background’, or ‘random-absence’ data) is what you would get if the species had no preference for any of the predictor variables.</p>
+<p>Our study region is North America. So, you create a set of random climate observations from within the area of North America where bigfoot observations have been made.</p>
+<pre class="r"><code>#measures extent of area for bigfoot observations
+e &lt;- extent(SpatialPoints(bf[, 1:2]))
+e</code></pre>
+<pre><code>## class      : Extent 
+## xmin       : -156.75 
+## xmax       : -64.4627 
+## ymin       : 25.141 
+## ymax       : 69.5</code></pre>
+<pre class="r"><code>set.seed(0)
+#takes a 5000 random samples from wc within the extent e for bigfoot observations
+bg &lt;- sampleRandom(wc, 5000, ext=e)
+dim(bg)</code></pre>
+<pre><code>## [1] 5000   19</code></pre>
+<pre class="r"><code>head(bg)</code></pre>
+<pre><code>##      bio1 bio2 bio3  bio4 bio5 bio6 bio7 bio8 bio9 bio10 bio11 bio12 bio13
+## [1,]  100  111   29  9586  290  -91  381  199  -30   219   -30   963   100
+## [2,] -100   81   16 14284  148 -330  478   73 -271    83  -273   254    44
+## [3,]  120  117   30  9465  311  -73  384  218   -8   237    -8  1047   112
+## [4,]  145  134   38  7783  315  -30  345   57  201   242    40  1403   155
+## [5,]   26   89   32  6545  186  -91  277  -47  111   113   -52  1531   257
+## [6,]  128  133   41  7000  285  -37  322   49  134   215    35  1841   186
+##      bio14 bio15 bio16 bio17 bio18 bio19
+## [1,]    51    20   294   180   287   180
+## [2,]    11    50   113    35    97    37
+## [3,]    59    19   318   201   294   201
+## [4,]    86    16   403   287   318   386
+## [5,]    29    61   731   131   136   676
+## [6,]   139     8   489   429   460   466</code></pre>
+<p>Now you combine the random locations where bigfoot has not been “observed” (<em>bg</em>) with the bigfoot observation data (<em>bfc</em>) into a single data frame.</p>
+<pre class="r"><code>#bfc is the bigfoot climate data and bg is the nonbigfoot climate data. We also create an indicator pa of whether bigfoot was seen in this location (pa =1) or not (pa=0)
+d &lt;- rbind(cbind(pa=1, bfc), cbind(pa=0, bg))
+d &lt;- data.frame(d)
+dim(d)</code></pre>
+<pre><code>## [1] 8092   20</code></pre>
+<p>Now we have the data to fit a model. But let’s split the data into East and West. In this case, we may believe Western and Eastern bigfoots are actually different, albeit related, sub-species (for example, the Eastern Sasquatch is darker and less hairy). We are going to fit the model using Western data and then see if it predicts well for the Eastern data.</p>
+<pre class="r"><code>#eastern north america
+de &lt;- d[bf[,1] &gt; -102, ]
+de &lt;- na.omit(de) #kicks out the two empty cells in eastern data set
+#western north america
+dw &lt;- d[bf[,1] &lt;= -102, ]</code></pre>
+<p>Now, we are ready. Let’s run some regression <a href="https://www.youtube.com/watch?v=n5h0qHwNrHk">trees</a>!!</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="classification-trees" class="section level2">
+<h2><strong>Classification trees</strong></h2>
+<p><br />
+Our response variable is whether bigfoot is located in a particular location (Yes) or not (No). We can use a <a href="https://geo200cn.github.io/classification.html">classification</a> method to predict this binary variable. Here, we use a Classification Tree (CART), which is discussed on page 311 in ISLR. We’ll need to convert the (0,1) numeric indicator <em>pa</em> into a new (No, Yes) factor variable we’ll name <em>fpa</em>.</p>
+<pre class="r"><code>dw$fpa &lt;- as.factor(ifelse(dw$pa == 1, &quot;Yes&quot;, &quot;No&quot;))</code></pre>
+<p>Use the <code>tree()</code> function in the <strong>tree</strong> package to run a CART. The syntax of the function is similar to <code>lm()</code> and other linear regression modelling functions we’ve used extensively in this class. Note that we take out the (0,1) indicator from the dataset using the function <code>select()</code> when we run the model.</p>
+<pre class="r"><code>cart1 &lt;- tree(fpa~., data=dplyr::select(dw,-pa))</code></pre>
+<p>Here is a summary of the results.</p>
+<pre class="r"><code>summary(cart1)</code></pre>
+<pre><code>## 
+## Classification tree:
+## tree(formula = fpa ~ ., data = dplyr::select(dw, -pa))
+## Variables actually used in tree construction:
+## [1] &quot;bio4&quot;  &quot;bio10&quot; &quot;bio18&quot; &quot;bio19&quot; &quot;bio14&quot; &quot;bio2&quot; 
+## Number of terminal nodes:  8 
+## Residual mean deviance:  0.5177 = 1676 / 3238 
+## Misclassification error rate: 0.1035 = 336 / 3246</code></pre>
+<p>We see that the training error rate is 10.35%. And here is the decision tree diagram, like the one shown in Figure 8.4 in ISLR.</p>
+<pre class="r"><code>plot(cart1, main=&quot;Classification Tree&quot;)
+# text(cart, use.n=TRUE, all=TRUE, cex=.8)
+text(cart1, cex=.8, digits=1)</code></pre>
+<p><img src="regtrees_files/figure-html/unnamed-chunk-15-1.png" /><!-- --></p>
+<p><br></p>
+<p class="comment" , style="font-style:normal">
+<strong>Question 1</strong>: Which variable is the most important indicator of where our species might be located?
+</p>
+<p class="comment" , style="font-style:normal">
+<strong>Question 2</strong>: Describe the conditions under which you are likely to find our species?
+</p>
+<p><br></p>
+<div style="margin-bottom:25px;">
+
+</div>
+<div id="tree-pruning" class="section level3">
+<h3><strong>Tree Pruning</strong></h3>
+<p><br />
+Next, we consider whether pruning the tree might lead to improved results. Pruning is described in ISLR starting on page 307. The algorithm is located on page 309. The key step is step 3, which describes using k-fold cross validation to find the best tuning parameter alpha, which dictates the number of terminal nodes of the best fit tree. The function <code>cv.tree()</code> performs cross-validation in order to determine the optimal level of tree complexity. Plug in the big tree <em>cart1</em> produced by <code>tree()</code> in the section above followed by <code>FUN = prune.misclass</code>, which indicates that we want the classification error rate to guide the cross-validation and pruning process.</p>
+<pre class="r"><code>#kfold cuts the fold in random so set a set.
+set.seed(123)
+cv.cart &lt;- cv.tree(cart1, FUN = prune.misclass)</code></pre>
+<p>Let’s see what we get</p>
+<pre class="r"><code>names(cv.cart)</code></pre>
+<pre><code>## [1] &quot;size&quot;   &quot;dev&quot;    &quot;k&quot;      &quot;method&quot;</code></pre>
+<p>and their values</p>
+<pre class="r"><code>cv.cart</code></pre>
+<pre><code>## $size
+## [1] 8 6 4 3 2 1
+## 
+## $dev
+## [1]  359  359  369  413  644 1224
+## 
+## $k
+## [1] -Inf    0    4   64  234  582
+## 
+## $method
+## [1] &quot;misclass&quot;
+## 
+## attr(,&quot;class&quot;)
+## [1] &quot;prune&quot;         &quot;tree.sequence&quot;</code></pre>
+<p>Note that, despite the name, <em>dev</em> corresponds to the cross-validation error rate in this instance. The results under <em>size</em> give the number of terminal nodes (size of the tree). The tree with eight and six terminal nodes (see <em>size</em>) results in the lowest cross-validation error rate, with 359 cross-validation errors (see <em>dev</em>). We plot the error rate as a function of the size.</p>
+<pre class="r"><code>plot(cv.cart$size, cv.cart$dev, type = &quot;b&quot;)</code></pre>
+<p><img src="regtrees_files/figure-html/unnamed-chunk-19-1.png" /><!-- --></p>
+<p>Let’s be parsimonious and choose 6 as the best fit tree. We then apply the <code>prune.misclass()</code> function in order to prune the tree to obtain the six-node tree.</p>
+<pre class="r"><code>prune.cart &lt;- prune.misclass(cart1, best = 6)</code></pre>
+<p>And now the decision tree diagram</p>
+<pre class="r"><code>plot(prune.cart, main=&quot;Regression Tree&quot;)
+# text(cart, use.n=TRUE, all=TRUE, cex=.8)
+text(prune.cart, cex=.8, digits=1)</code></pre>
+<p><img src="regtrees_files/figure-html/unnamed-chunk-21-1.png" /><!-- --></p>
+<p>Differ much from the tree we got from <em>cart1</em>?</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+</div>
+<div id="random-forest" class="section level2">
+<h2><strong>Random Forest</strong></h2>
+<p><br />
+CART gives us a nice result to look at that can be easily interpreted. But the approach suffers from high variance (meaning that the model will be over-fit, it is different each time a somewhat different datasets are used). Random Forest does not have that problem as much. The method, which is an extension of Bagging, is discussed starting on page 319 in ISLR.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+<div id="classification" class="section level3">
+<h3><strong>Classification</strong></h3>
+<p><br />
+We fit the Random Forest model using the function <code>randomForest()</code> from the package <strong>randomForest</strong>.</p>
+<pre class="r"><code>#use the western data in all the predictor columns with the climate except &quot;pa&quot; which is the response variable
+crf &lt;- randomForest(fpa~., data=dplyr::select(dw,-pa))
+crf</code></pre>
+<pre><code>## 
+## Call:
+##  randomForest(formula = fpa ~ ., data = dplyr::select(dw, -pa)) 
+##                Type of random forest: classification
+##                      Number of trees: 500
+## No. of variables tried at each split: 4
+## 
+##         OOB estimate of  error rate: 8.53%
+## Confusion matrix:
+##       No  Yes class.error
+## No  1881  141  0.06973294
+## Yes  136 1088  0.11111111</code></pre>
+<p>The variable importance plot shows which variables are most important in fitting the model. Variable importance is described in ISLR on page 319. The plot is generated by randomizing each predictor variable one by one and then computing the decline in model prediction.</p>
+<pre class="r"><code>varImpPlot(crf)</code></pre>
+<p><img src="regtrees_files/figure-html/unnamed-chunk-23-1.png" /><!-- --></p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="regression" class="section level3">
+<h3><strong>Regression</strong></h3>
+<p><br />
+In the above sections, we’ve modelled bigfoot locations from a classification perspective. But, we can also use regression. In this case, by using a (0,1) numeric variable as the response, we are modelling the probability that bigfoot is located in a location. We still use the <code>randomForest()</code> function to run a Random Forest regression model.</p>
+<p>Note that there is an important parameter that differentiates Random Forests from regular bagging (page 319 in ISLR talks about this parameter). In the <code>randomForest()</code> function, this parameter is designated by the argument <code>mtry =</code>. We did not specify <code>mtry =</code> above, and thus took whatever the default is.</p>
+<p>Instead of the default, we can instead find the best value for this parameter by using the function <code>tuneRF()</code>.</p>
+<pre class="r"><code>trf &lt;- tuneRF(dplyr::select(dw,-c(pa,fpa)), dw[, &#39;pa&#39;])</code></pre>
+<pre><code>## mtry = 6  OOB error = 0.06565627 
+## Searching left ...
+## mtry = 3     OOB error = 0.06557058 
+## 0.001305069 0.05 
+## Searching right ...
+## mtry = 12    OOB error = 0.06721088 
+## -0.02367799 0.05</code></pre>
+<p><img src="regtrees_files/figure-html/unnamed-chunk-24-1.png" /><!-- --></p>
+<p>We then find the best value</p>
+<pre class="r"><code>trf</code></pre>
+<pre><code>##    mtry   OOBError
+## 3     3 0.06557058
+## 6     6 0.06565627
+## 12   12 0.06721088</code></pre>
+<pre class="r"><code>mt &lt;- trf[which.min(trf[,2]), 1]
+mt</code></pre>
+<pre><code>## [1] 3</code></pre>
+<p>We can then plug this value into the <code>randomForest()</code> function in the argument <code>mtry =</code></p>
+<pre class="r"><code>rrf &lt;- randomForest(dw[, 2:ncol(d)], dw[, &#39;pa&#39;], mtry=mt)
+rrf</code></pre>
+<pre><code>## 
+## Call:
+##  randomForest(x = dw[, 2:ncol(d)], y = dw[, &quot;pa&quot;], mtry = mt) 
+##                Type of random forest: regression
+##                      Number of trees: 500
+## No. of variables tried at each split: 3
+## 
+##           Mean of squared residuals: 0.06360254
+##                     % Var explained: 72.92</code></pre>
+<p><br></p>
+<p class="comment" , style="font-style:normal">
+<strong>Question 3</strong>: What did tuneRF help us find? What does the value of <em>mt</em> represent?
+</p>
+<p><br></p>
+<p>Here we show the variable importance plot for the model.</p>
+<pre class="r"><code>varImpPlot(rrf)</code></pre>
+<p><img src="regtrees_files/figure-html/unnamed-chunk-27-1.png" /><!-- --></p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+</div>
+<div id="predict" class="section level2">
+<h2><strong>Predict</strong></h2>
+<p><br />
+We can use the random forest models we constructed above to make predictions to any other place for which we have values for the predictor variables. Our climate data is global so we could find suitable places for bigfoot anywhere. But before we start placing sasquatch anywhere we please, let’s first predict their locations in the western portion of North America.</p>
+<p>We are going to construct a continuous raster surface predicting the presence of sasquatch in western North America. We need to specify the spatial extent of western North America using the following code.</p>
+<pre class="r"><code>ew &lt;- extent(SpatialPoints(bf[bf[,1] &lt;= -102, 1:2]))</code></pre>
+<div style="margin-bottom:25px;">
+
+</div>
+<div id="regression-1" class="section level3">
+<h3><strong>Regression</strong></h3>
+<p><br />
+Let’s interpolate the probability that bigfoot will be present in a location using the regression random forest model <em>rrf</em></p>
+<pre class="r"><code>rp &lt;- predict(wc, rrf, ext=ew)</code></pre>
+<p>Show a raster map of the predicted range for the probability of our species presence across the study area.</p>
+<pre class="r"><code>plot(rp)</code></pre>
+<p><img src="regtrees_files/figure-html/unnamed-chunk-30-1.png" /><!-- --></p>
+<p>Note that the regression predictions are well-behaved, in the sense that they are between 0 and 1. However, they are continuous within that range, and if you wanted presence/absence, you would need a threshold (i.e. if it is above the threshold, bigfoot is present, otherwise absent). To get the optimal threshold, you would normally have a hold out data set (see ISLR 8.3 for examples of using test and training data), but here we used the training data for simplicity.</p>
+<pre class="r"><code>eva &lt;- evaluate(dw[dw$pa==1, ], dw[dw$pa==0, ], rrf)
+eva</code></pre>
+<pre><code>## class          : ModelEvaluation 
+## n presences    : 1224 
+## n absences     : 2022 
+## AUC            : 0.9996099 
+## cor            : 0.9679664 
+## max TPR+TNR at : 0.4876013</code></pre>
+<p>Find a good threshold to determine presence/absence. Anything in green is classifying that cell as bigfoot territory. Otherwise, not.</p>
+<pre class="r"><code>#uses the evaluation to find an optimal threshold
+tr &lt;- threshold(eva)
+tr</code></pre>
+<pre><code>##                kappa spec_sens no_omission prevalence equal_sens_spec
+## thresholds 0.4876013 0.4876013   0.4506381  0.3749117       0.5226831
+##            sensitivity
+## thresholds   0.7531567</code></pre>
+<pre class="r"><code>#choosing spec_sens at the threshold value and plotting range as a binary
+plot(rp &gt; tr[1, &#39;spec_sens&#39;])</code></pre>
+<p><img src="regtrees_files/figure-html/unnamed-chunk-32-1.png" /><!-- --></p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="classification-1" class="section level3">
+<h3><strong>Classification</strong></h3>
+<p><br />
+We can also use the classification Random Forest model <em>crf</em> to make a present/absent prediction.</p>
+<pre class="r"><code>rc &lt;- predict(wc, crf, ext=ew)
+plot(rc)</code></pre>
+<p><img src="regtrees_files/figure-html/unnamed-chunk-33-1.png" /><!-- --></p>
+<p>You can also get and plot probabilities</p>
+<pre class="r"><code>rc2 &lt;- predict(wc, crf, ext=ew, type=&#39;prob&#39;, index=2)
+#shows the probability of sightings in the U.S.
+plot(rc2)</code></pre>
+<p><img src="regtrees_files/figure-html/unnamed-chunk-34-1.png" /><!-- --></p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+</div>
+<div id="extrapolation" class="section level2">
+<h2><strong>Extrapolation</strong></h2>
+<p><br />
+Remember that we fitted our model using the Western portion of the region. Now, let’s see if our model is general enough to predict the distribution of the Eastern species. We grab the spatial extent of Eastern North America.</p>
+<pre class="r"><code>eus &lt;- extent(SpatialPoints(bf[bf[,1] &gt; -102, 1:2]))
+#predicts the presence using the random forest model
+rcusa &lt;- predict(wc, rrf, ext=eus)</code></pre>
+<p>We can look at the predictions on a map.</p>
+<pre class="r"><code>#plots the climate data and the observed points
+plot(rcusa)
+points(bf[bf[,1] &gt; -102,1:2], cex=.25)</code></pre>
+<p><img src="regtrees_files/figure-html/unnamed-chunk-36-1.png" /><!-- --></p>
+<p>Let’s see the predictions we got for the western and eastern sides together in one map.</p>
+<pre class="r"><code>#spatial extent of the entire region
+allus &lt;- extent(SpatialPoints(bf[, 1:2]))
+#predict for the entire region using rrf
+allrusa &lt;- predict(wc, rrf, ext=allus)
+#plot the predictions and observed points
+plot(allrusa)
+points(bf[,1:2], cex=.25)</code></pre>
+<p><img src="regtrees_files/figure-html/unnamed-chunk-37-1.png" /><!-- --></p>
+<p><br></p>
+<p class="comment" , style="font-style:normal">
+<strong>Question 4</strong>: Why would it be that the model does not extrapolate well?
+</p>
+<p><br></p>
+<p>An important question in the biogeography of the western species is why does it not occur in Mexico. Or if it does, where would that be?</p>
+<p>To answer these questions, we predict species distribution using Mexican climate data.</p>
+<pre class="r"><code>#gets geographic data for Mexico
+mex &lt;- getData(&#39;GADM&#39;, country=&#39;MEX&#39;, level=1)
+#uses model with Mexico climate data
+pm &lt;- predict(wc, rrf, ext=mex)</code></pre>
+<p>Next, we map the prediction</p>
+<pre class="r"><code>pm &lt;- mask(pm, mex)
+plot(pm)</code></pre>
+<p><img src="regtrees_files/figure-html/unnamed-chunk-39-1.png" /><!-- --></p>
+<p><br></p>
+<p class="comment" , style="font-style:normal">
+<strong>Question 5</strong>: Based on the map above, where in Mexico are you most likely to encounter the western bigfoot?
+</p>
+<p><br></p>
+<p>You’re done with the last lab of the class. Hooray!! <a href="https://www.youtube.com/watch?v=bmZQpbNK7t4">Where’d all the time go?</a></p>
+<hr />
+<p>Website created and maintained by <a href="https://nbrazil.faculty.ucdavis.edu/">Noli Brazil</a></p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("show" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+
+</body>
+</html>

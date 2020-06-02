@@ -12,7 +12,7 @@
 <meta name="author" content="Kenji Tomari" />
 
 
-<title>Lab Week 9</title>
+<title>Lab Lecture 9 and 10</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -410,6 +410,9 @@ div.tocify {
     <li>
       <a href="kriging.html">Kriging</a>
     </li>
+    <li>
+      <a href="regtrees.html">Regression Trees</a>
+    </li>
   </ul>
 </li>
 <li class="dropdown">
@@ -472,8 +475,7 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Lab Week 9</h1>
-<h3 class="subtitle">Spring 2020</h3>
+<h1 class="title toc-ignore">Lab Lecture 9 and 10</h1>
 <h4 class="author">Kenji Tomari</h4>
 
 </div>
@@ -523,6 +525,18 @@ div.tocify {
 </div>
 <div id="kriging" class="section level1">
 <h1>Kriging</h1>
+<p>Before diving into the interpolation technique known as Kriging, let’s quickly understand the history and origins of Kriging. Understanding the critical history of our tools has long been a tradition in Geography dating back to the 1960’s. Notably, the role of Geographers in the construction of empire is a black mark on our field since it was first established in the 19th century, and evaluating how our current understanding of the field emerged from these violent frameworks shapes how we wield our knowledge to subvert those detestable origins. Precisely because you are learning quantitative Geographic or spatial statistical methods in the graduate program of Geography at UC Davis, you need to understand this. Critical cartography and critical Geography should not be dismissed simply because an elegant formula derived from a settler-colonial regime works well and advances our own projects.</p>
+<p>Danie Krige was born in Bothaville, South Africa in 1919. His obituary in the Canadian Mining Journal lauds him for his achievements and his contributions to advances in the field of resource extraction, not least of which for the Kriging technique. The Journal highlights his seminal paper in 1951; it illustrates how he rose to prominence in the Anglovaal mining corporation; and later how he retired from the private sector to become a respected professor at a South African university. However, the Journal at no point considers the man in the context of his times. Krige entered the industry and advanced it during a critical stage in the industrialization and development of South Africa. His seminal paper was published only three years after the enactment of Apartheid legislation in 1948. His role as a financial engineer emerges during this period and we should consider this timing in the creation and valorization of the Kriging technique.</p>
+<p>The mining industry has long been a pillar of the economy of South Africa. As professor of Geography at the University of Alabama Bobby Wilson describes, South Africa’s political economy, like Birmingham Alabama, was founded on race-connected practices.</p>
+<blockquote>
+<p>“Owners of production used race-connected practices to regulate the struggle between themselves and workers and used racial (as well as gender and ethnic) divisions of labor to restructure production to make it more profitable.” (B. Wilson 2000)</p>
+</blockquote>
+<p>In other words, the wealth created by Krige’s methods never went to the exploited Black miners in South Africa. The South African regime of using forced oscillating migrant labor to develop its white afluent cities depended on the suppressed wages of Black workers and the racial institutions and segregation that became codified by Apartheid legislation (F. Wilson 2001). Thus far, having describing this in political economic terms, I have not elaborated the day-to-day immiseration these systems enacted on the Black population of South Africa, but rest assured that the working conditions were deplorable.</p>
+<p>The point here is not to demonize the individual that developed the method of interpolation we use here in this lab. The problem is social and not individual. Rather, the point is that the development of Kriging is directly tied to racial-capitalism, to the exploitation of Black workers, and emerged out of an industry that benefitted from and contributed to the construction of Apartheid South Africa. Should this history not be recounted as we utilize these methods? What lessons does this leave us when using quantitative methods? Should not the memory of Danie Krige be complicated with the blood and sweat of forced labor? How did Kriging aid the Apartheid program? How will you use Kriging to subvert its origins in expanding the exploitive South African mining industry?</p>
+<p><strong>References</strong></p>
+<p>Obituary: Danie Krige, South Africa’s giant of geostatistics. 2013. Canadian Mining Journal. <a href="http://www.canadianminingjournal.com/news/obituary-danie-krige-south-africas-giant-of-geostatistics/" class="uri">http://www.canadianminingjournal.com/news/obituary-danie-krige-south-africas-giant-of-geostatistics/</a> (last accessed 1 June 2020).</p>
+<p>Wilson, B. M. 2000. America’s Johannesburg: industrialization and racial transformation in Birmingham. Lanham, Maryland: Rowman &amp; Littlefield Publishers.</p>
+<p>Wilson, F. 2001. Minerals and Migrants: How the Mining Industry Has Shaped South Africa. Daedalus 130 (1):99–121.</p>
 <p>Do this first if you haven’t already:</p>
 <pre class="r"><code>r &lt;- raster(TX)
 res(r) &lt;- 10
@@ -531,7 +545,7 @@ coordnames(g) &lt;- c(&quot;X&quot;, &quot;Y&quot;)</code></pre>
 <p>And make sure you created the function <code>RMSE</code>.</p>
 <div id="question-3-1" class="section level2">
 <h2>Question 3</h2>
-<p>Fill in the relevant model specification (<code>formula</code>) &amp; your data set (<code>data</code>).</p>
+<p>Fill in the relevant model specification (<code>formula</code>).</p>
 <pre class="r"><code># Quadratic Polynomial
 quadratic_TX &lt;- lm(formula = ENTER_MODEL_SPECIFICATION_HERE ~ 
                   X + 
@@ -543,18 +557,25 @@ quadratic_TX &lt;- lm(formula = ENTER_MODEL_SPECIFICATION_HERE ~
 
 # Use the regression model output to interpolate the surface
 sgdf &lt;- SpatialGridDataFrame(g, 
-                                data.frame(var1.pred = 
-                                             predict(quadratic_TX, newdata=g))) 
+                             data.frame(var1.pred = 
+                                          predict(quadratic_TX, newdata=g))) 
 
 # Clip the interpolated raster to CA
 r2   &lt;- raster(sgdf)
-r.m2 &lt;- mask(r2, TX)</code></pre>
+r.m2 &lt;- mask(r2, TX)
+
+# Plot the map
+tm_shape(r.m2) + 
+  tm_raster(n=10, palette=&quot;RdBu&quot;, auto.palette.mapping=FALSE, 
+            title=&quot;Predicted precip quadratic tsa&quot;) +
+  tm_shape(P) + tm_dots(size=0.1) +
+  tm_legend(legend.outside=TRUE)</code></pre>
 <pre class="r"><code># Quadratic Cross Validation
 set.seed(5132015)
 
 kf &lt;- kfold(nrow(P))
 
-rmseq &lt;- rep(NA, 5)
+rmse_out &lt;- rep(NA, 5)
 
 for (k in 1:5) {
  
@@ -567,7 +588,7 @@ for (k in 1:5) {
                      I(X*X) + 
                      I(Y*Y) + 
                      I(Y*X), 
-                   data=train)
+                   data = train)
   
   # save the predictions with the spatial grid g as a SpatialGridDataFrame
   sgdf &lt;- SpatialGridDataFrame(g, 
@@ -575,27 +596,30 @@ for (k in 1:5) {
                                             predict(quad_train, 
                                                     newdata=g))) 
   
-  # Clip the interpolated raster to CA
+  # Clip the interpolated raster to TX
   r2   &lt;- raster(sgdf)
   r.m2 &lt;- mask(r2, TX)
   
   # Predict for test points.
+  # note this p is different from the earlier P.
   p &lt;- extract(r.m2, test)
   
-  rmseq[k] &lt;- RMSE(test$Precip_in, 
+  rmse_out[k] &lt;- RMSE(test$Precip_in, 
                       p)
 }
 
-rmseq
+rmse_out
 
-mean(rmseq)</code></pre>
+mean(rmse_out)
+
+1 - (mean(rmse_out) / null)</code></pre>
 </div>
 <div id="question-4-1" class="section level2">
 <h2>Question 4</h2>
 <p><strong>Create Variogram</strong></p>
-<pre class="r"><code>plot(variogram(Precip_in~1, locations=P, cutoff=2000, width=90, cloud = TRUE))</code></pre>
-<p>You can play around with the cutoff and width. I found a cutoff of 2000 which looked nice such that a nugget was visible, and I found a width 90. You might play with a cutoff that ranges from say 800 to 3000. FYI, the average distance between point sis 536km. You should try playing around with the cutoff.</p>
-<pre class="r"><code>v.u &lt;- variogram(Precip_in~Y + X, locations=P, cutoff = 2000, width=90)
+<pre class="r"><code>plot(variogram(Precip_in~1, locations=P, width=200, cloud = TRUE))</code></pre>
+<p>You can play around with the cutoff and width. I found a width of 133 which looked nice such that a nugget was visible. You might play with a cutoff that ranges from say 800 to 3000. FYI, the average distance between points is 536km. You should try playing around with the cutoff and width.</p>
+<pre class="r"><code>v.u &lt;- variogram(Precip_in ~ Y + X, locations = P, cutoff = 2000)
 plot(v.u)</code></pre>
 <p>Based off this plot what do you think the sill, range, and nugget are?</p>
 <p><strong>Fit Variogram</strong></p>
@@ -623,13 +647,13 @@ tm_shape(uk.u) +
             auto.palette.mapping=FALSE, 
             title=&quot;Precip in&quot;) +
   tm_legend(legend.outside=TRUE)</code></pre>
-<p>CV</p>
+<p><strong>CV</strong></p>
 <pre class="r"><code># Universal Kriging Cross Validation
 set.seed(5132015)
 
 kf &lt;- kfold(nrow(P))
 
-rmseuk &lt;- rep(NA, 5)
+rmse_out &lt;- rep(NA, 5)
 
 for (k in 1:5) {
  
@@ -637,16 +661,32 @@ for (k in 1:5) {
   train &lt;- P[kf != k, ]
   
   uk_train &lt;- gstat(formula = Precip_in~Y + X, 
-             locations = P, 
+             locations = train, # Corrected!
              model=fve.u)
   # predict
   p &lt;- predict(uk_train, g)$var1.pred
-  rmseuk[k] &lt;- RMSE(test$Precip_in, p)
+  rmse_out[k] &lt;- RMSE(test$Precip_in, p)
 }
 
-rmseuk
+rmse_out
 
-mean(rmseuk)</code></pre>
+mean(rmse_out)</code></pre>
+</div>
+<div id="regression-trees" class="section level2">
+<h2>Regression Trees</h2>
+<div id="question-1-1" class="section level3">
+<h3>Question 1</h3>
+<p>Look at the baseball example starting on p 304 in ISLR for interpreting a regression tree graph. More specifically the last paragraph on p 305.</p>
+</div>
+<div id="question-2-1" class="section level3">
+<h3>Question 2</h3>
+<p>Generally, p314 in ISLR describes why we see terminal nodes that are both the same prediction. This isn’t critical to understand in order to answer Question 2, but might help those of you scratching your heads.</p>
+<p>To begin to answer this question, figure out the pathway it takes to get to all the “Yes” terminal nodes.</p>
+</div>
+<div id="question-3-2" class="section level3">
+<h3>Question 3</h3>
+<p>Try <code>help(tuneRF)</code>. Also try reading the first paragraph under “Random Forests” on p319, and the second to last paragraph on p320.</p>
+</div>
 </div>
 </div>
 <div class="footnotes">

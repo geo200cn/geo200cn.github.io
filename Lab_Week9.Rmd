@@ -1,7 +1,6 @@
 ---
-title: "Lab Week 9"
+title: "Lab Lecture 9 and 10"
 author: "Kenji Tomari"
-subtitle: "Spring 2020"
 output: 
   html_document:
     theme: readable
@@ -57,6 +56,26 @@ Hint: Look in the documentation on {gstat} to understand the arguments we haven'
 
 # Kriging
 
+Before diving into the interpolation technique known as Kriging, let's quickly understand the history and origins of Kriging. Understanding the critical history of our tools has long been a tradition in Geography dating back to the 1960's. Notably, the role of Geographers in the construction of empire is a black mark on our field since it was first established in the 19th century, and evaluating how our current understanding of the field emerged from these violent frameworks shapes how we wield our knowledge to subvert those detestable origins. Precisely because you are learning quantitative Geographic or spatial statistical methods in the graduate program of Geography at UC Davis, you need to understand this. Critical cartography and critical Geography should not be dismissed simply because an elegant formula derived from a settler-colonial regime works well and advances our own projects. 
+
+Danie Krige was born in Bothaville, South Africa in 1919. His obituary in the Canadian Mining Journal lauds him for his achievements and his contributions to advances in the field of resource extraction, not least of which for the Kriging technique. The Journal highlights his seminal paper in 1951; it illustrates how he rose to prominence in the Anglovaal mining corporation; and later how he retired from the private sector to become a respected professor at a South African university. However, the Journal at no point considers the man in the context of his times. Krige entered the industry and advanced it during a critical stage in the industrialization and development of South Africa. His seminal paper was published only three years after the enactment of Apartheid legislation in 1948. His role as a financial engineer emerges during this period and we should consider this timing in the creation and valorization of the Kriging technique. 
+
+The mining industry has long been a pillar of the economy of South Africa. As professor of Geography at the University of Alabama Bobby Wilson describes, South Africa's political economy, like Birmingham Alabama, was founded on race-connected practices.
+
+> "Owners of production used race-connected practices to regulate the struggle between themselves and workers and used racial (as well as gender and ethnic) divisions of labor to restructure production to make it more profitable." (B. Wilson 2000)
+
+In other words, the wealth created by Krige's methods never went to the exploited Black miners in South Africa. The South African regime of using forced oscillating migrant labor to develop its white afluent cities depended on the suppressed wages of Black workers and the racial institutions and segregation that became codified by Apartheid legislation (F. Wilson 2001). Thus far, having describing this in political economic terms, I have not elaborated the day-to-day immiseration these systems enacted on the Black population of South Africa, but rest assured that the working conditions were deplorable. 
+
+The point here is not to demonize the individual that developed the method of interpolation we use here in this lab. The problem is social and not individual. Rather, the point is that the development of Kriging is directly tied to racial-capitalism, to the exploitation of Black workers, and emerged out of an industry that benefitted from and contributed to the construction of Apartheid South Africa. Should this history not be recounted as we utilize these methods? What lessons does this leave us when using quantitative methods? Should not the memory of Danie Krige be complicated with the blood and sweat of forced labor? How did Kriging aid the Apartheid program? How will you use Kriging to subvert its origins in expanding the exploitive South African mining industry?
+
+**References**
+
+Obituary: Danie Krige, South Africa’s giant of geostatistics. 2013. Canadian Mining Journal. http://www.canadianminingjournal.com/news/obituary-danie-krige-south-africas-giant-of-geostatistics/ (last accessed 1 June 2020).
+
+Wilson, B. M. 2000. America’s Johannesburg: industrialization and racial transformation in Birmingham. Lanham, Maryland: Rowman & Littlefield Publishers.
+
+Wilson, F. 2001. Minerals and Migrants: How the Mining Industry Has Shaped South Africa. Daedalus 130 (1):99–121.
+
 
 Do this first if you haven't already:
 
@@ -72,7 +91,7 @@ And make sure you created the function `RMSE`.
 
 ## Question 3
 
-Fill in the relevant model specification (`formula`) & your data set (`data`).
+Fill in the relevant model specification (`formula`).
 
 ```{r eval=F}
 # Quadratic Polynomial
@@ -86,13 +105,19 @@ quadratic_TX <- lm(formula = ENTER_MODEL_SPECIFICATION_HERE ~
 
 # Use the regression model output to interpolate the surface
 sgdf <- SpatialGridDataFrame(g, 
-                                data.frame(var1.pred = 
-                                             predict(quadratic_TX, newdata=g))) 
+                             data.frame(var1.pred = 
+                                          predict(quadratic_TX, newdata=g))) 
 
 # Clip the interpolated raster to CA
 r2   <- raster(sgdf)
 r.m2 <- mask(r2, TX)
 
+# Plot the map
+tm_shape(r.m2) + 
+  tm_raster(n=10, palette="RdBu", auto.palette.mapping=FALSE, 
+            title="Predicted precip quadratic tsa") +
+  tm_shape(P) + tm_dots(size=0.1) +
+  tm_legend(legend.outside=TRUE)
 ```
 
 ```{r eval=F}
@@ -101,7 +126,7 @@ set.seed(5132015)
 
 kf <- kfold(nrow(P))
 
-rmseq <- rep(NA, 5)
+rmse_out <- rep(NA, 5)
 
 for (k in 1:5) {
  
@@ -114,7 +139,7 @@ for (k in 1:5) {
                      I(X*X) + 
                      I(Y*Y) + 
                      I(Y*X), 
-                   data=train)
+                   data = train)
   
   # save the predictions with the spatial grid g as a SpatialGridDataFrame
   sgdf <- SpatialGridDataFrame(g, 
@@ -122,20 +147,23 @@ for (k in 1:5) {
                                             predict(quad_train, 
                                                     newdata=g))) 
   
-  # Clip the interpolated raster to CA
+  # Clip the interpolated raster to TX
   r2   <- raster(sgdf)
   r.m2 <- mask(r2, TX)
   
   # Predict for test points.
+  # note this p is different from the earlier P.
   p <- extract(r.m2, test)
   
-  rmseq[k] <- RMSE(test$Precip_in, 
+  rmse_out[k] <- RMSE(test$Precip_in, 
                       p)
 }
 
-rmseq
+rmse_out
 
-mean(rmseq)
+mean(rmse_out)
+
+1 - (mean(rmse_out) / null)
 ```
 
 ## Question 4
@@ -143,13 +171,13 @@ mean(rmseq)
 **Create Variogram**
 
 ```{r eval=F}
-plot(variogram(Precip_in~1, locations=P, cutoff=2000, width=90, cloud = TRUE))
+plot(variogram(Precip_in~1, locations=P, width=200, cloud = TRUE))
 ```
 
-You can play around with the cutoff and width. I found a cutoff of 2000 which looked nice such that a nugget was visible, and I found a width 90. You might play with a cutoff that ranges from say 800 to 3000. FYI, the average distance between point sis 536km. You should try playing around with the cutoff.
+You can play around with the cutoff and width. I found a width of 133 which looked nice such that a nugget was visible. You might play with a cutoff that ranges from say 800 to 3000. FYI, the average distance between points is 536km. You should try playing around with the cutoff and width.
 
 ```{r eval=F}
-v.u <- variogram(Precip_in~Y + X, locations=P, cutoff = 2000, width=90)
+v.u <- variogram(Precip_in ~ Y + X, locations = P, cutoff = 2000)
 plot(v.u)
 ```
 
@@ -190,7 +218,7 @@ tm_shape(uk.u) +
   tm_legend(legend.outside=TRUE)
 ```
 
-CV
+**CV**
 
 ```{r eval=F}
 # Universal Kriging Cross Validation
@@ -198,7 +226,7 @@ set.seed(5132015)
 
 kf <- kfold(nrow(P))
 
-rmseuk <- rep(NA, 5)
+rmse_out <- rep(NA, 5)
 
 for (k in 1:5) {
  
@@ -206,15 +234,30 @@ for (k in 1:5) {
   train <- P[kf != k, ]
   
   uk_train <- gstat(formula = Precip_in~Y + X, 
-             locations = P, 
+             locations = train, # Corrected!
              model=fve.u)
   # predict
   p <- predict(uk_train, g)$var1.pred
-  rmseuk[k] <- RMSE(test$Precip_in, p)
+  rmse_out[k] <- RMSE(test$Precip_in, p)
 }
 
-rmseuk
+rmse_out
 
-mean(rmseuk)
+mean(rmse_out)
 ```
 
+## Regression Trees
+
+### Question 1
+
+Look at the baseball example starting on p 304 in ISLR for interpreting a regression tree graph. More specifically the last paragraph on p 305.
+
+### Question 2
+
+Generally, p314 in ISLR describes why we see terminal nodes that are both the same prediction. This isn't critical to understand in order to answer Question 2, but might help those of you scratching your heads.
+
+To begin to answer this question, figure out the pathway it takes to get to all the "Yes" terminal nodes.
+
+### Question 3
+
+Try `help(tuneRF)`. Also try reading the first paragraph under "Random Forests" on p319, and the second to last paragraph on p320.

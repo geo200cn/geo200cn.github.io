@@ -410,6 +410,9 @@ div.tocify {
     <li>
       <a href="kriging.html">Kriging</a>
     </li>
+    <li>
+      <a href="regtrees.html">Regression Trees</a>
+    </li>
   </ul>
 </li>
 <li class="dropdown">
@@ -899,7 +902,7 @@ while(TRUE){
 <p>If you ever need stop code from continuing to execute, just hit the CTRL + C keys or the ESC key. Here’s a more useful example of an infinite loop. We’ll describe some of its components in more detail in the next section.</p>
 <pre class="r"><code>random_value &lt;- sample(5:10, 1)
 print(random_value)</code></pre>
-<pre><code>## [1] 6</code></pre>
+<pre><code>## [1] 9</code></pre>
 <pre class="r"><code>while(TRUE){
   # decrease value
   random_value &lt;- random_value - 1
@@ -913,6 +916,9 @@ print(random_value)</code></pre>
   print(&quot;I&#39;ll keep going for now.&quot;)
 }</code></pre>
 <pre><code>## [1] &quot;I&#39;ll keep going for now.&quot;
+## [1] &quot;I&#39;ll keep going for now.&quot;
+## [1] &quot;I&#39;ll keep going for now.&quot;
+## [1] &quot;I&#39;ll keep going for now.&quot;
 ## [1] &quot;I&#39;ll keep going for now.&quot;
 ## [1] &quot;I&#39;ll keep going for now.&quot;
 ## [1] &quot;I&#39;ll keep going for now.&quot;
@@ -1241,20 +1247,20 @@ head(lob2)</code></pre>
 <p>Here’s what you got:</p>
 <pre class="r"><code>head(iris_petals)</code></pre>
 <pre><code>##    ID    Species Petal.Length Petal.Width
-## 1 224 versicolor          4.9         1.5
-## 2 839  virginica          5.5         1.8
-## 3 689     setosa          1.0         0.2
-## 4 638 versicolor          4.5         1.5
-## 5 281     setosa          1.2         0.2
-## 6 402     setosa          1.3         0.3</code></pre>
+## 1 900     setosa          1.9         0.4
+## 2 743 versicolor          3.5         1.0
+## 3 356 versicolor          4.9         1.5
+## 4 856     setosa          1.5         0.2
+## 5 884  virginica          5.6         2.1
+## 6 169 versicolor          4.7         1.6</code></pre>
 <pre class="r"><code>head(iris_sepals)</code></pre>
 <pre><code>##    ID    Species Sepal.Length Sepal.Width
-## 1 811     setosa          4.6         3.4
-## 2 564     setosa          4.7         3.2
-## 3 184 versicolor          5.9         3.2
-## 4 713  virginica          6.9         3.2
-## 5 975     setosa          5.0         3.0
-## 6 829     setosa          4.9         3.1</code></pre>
+## 1 668  virginica          7.3         2.9
+## 2 901     setosa          5.0         3.2
+## 3 795 versicolor          6.1         2.8
+## 4 247     setosa          5.1         3.3
+## 5 123     setosa          5.2         3.4
+## 6 241 versicolor          6.1         3.0</code></pre>
 <p>R makes resolving this a trivial issue. Here you can use <code>merge</code>.</p>
 <pre class="r"><code>all_irises &lt;- merge(
   # first data.frame
@@ -1272,18 +1278,18 @@ head(lob2)</code></pre>
 
 head(all_irises)</code></pre>
 <pre><code>##    ID    Species Sepal.Length Sepal.Width Petal.Length Petal.Width
-## 1 101 versicolor          5.7         2.8          4.1         1.3
-## 2 111 versicolor          5.7         2.8          4.5         1.3
-## 3 118 versicolor          5.0         2.0          3.5         1.0
-## 4 120 versicolor          5.2         2.7          3.9         1.4
-## 5 128     setosa          4.4         3.0          1.3         0.2
-## 6 145 versicolor          6.3         2.3          4.4         1.3</code></pre>
+## 1 104     setosa          5.1         3.5          1.4         0.3
+## 2 114     setosa          4.4         3.0          1.3         0.2
+## 3 115 versicolor          5.6         3.0          4.5         1.5
+## 4 116  virginica          6.7         3.1          5.6         2.4
+## 5 121 versicolor          6.5         2.8          4.6         1.5
+## 6 123     setosa          5.2         3.4          1.4         0.2</code></pre>
 <p>You’ll note that because your partner only did 148 irises that there are two rows missing petals.</p>
 <pre class="r"><code>all_irises[is.na(all_irises$Petal.Length), 
            c(1,2,5,6)]</code></pre>
 <pre><code>##     ID   Species Petal.Length Petal.Width
-## 17 248 virginica           NA          NA
-## 99 644 virginica           NA          NA</code></pre>
+## 18 220 virginica           NA          NA
+## 79 559 virginica           NA          NA</code></pre>
 <p>What if you wanted only complete rows, and you didn’t need these two individuals with missing Petal data? This where we specify that one of the data.frames is the primary data.frame. In this case, the complete 150 sepals data you collected has superfluous data that can be cast aside.</p>
 <pre class="r"><code>partial_irises &lt;- merge(
   # first data.frame
@@ -1554,12 +1560,12 @@ iris %&gt;%
                    &quot;Species&quot;)) %&gt;%
   head()</code></pre>
 <pre><code>##    ID    Species Sepal.Length Sepal.Width Petal.Length Petal.Width
-## 1 811     setosa          4.6         3.4          1.4         0.3
-## 2 564     setosa          4.7         3.2          1.6         0.2
-## 3 184 versicolor          5.9         3.2          4.8         1.8
-## 4 713  virginica          6.9         3.2          5.7         2.3
-## 5 975     setosa          5.0         3.0          1.6         0.2
-## 6 829     setosa          4.9         3.1          1.5         0.2</code></pre>
+## 1 668  virginica          7.3         2.9          6.3         1.8
+## 2 901     setosa          5.0         3.2          1.2         0.2
+## 3 795 versicolor          6.1         2.8          4.0         1.3
+## 4 247     setosa          5.1         3.3          1.7         0.5
+## 5 123     setosa          5.2         3.4          1.4         0.2
+## 6 241 versicolor          6.1         3.0          4.6         1.4</code></pre>
 <p>What if the column names don’t match? No problem!</p>
 <pre class="r"><code>iris_sepals %&gt;%
   # here we rename Species to spp in just iris_sepals
@@ -1574,12 +1580,12 @@ iris %&gt;%
                    &quot;spp&quot; = &quot;Species&quot;)) %&gt;%
   head()</code></pre>
 <pre><code>##    ID        spp Sepal.Length Sepal.Width Petal.Length Petal.Width
-## 1 811     setosa          4.6         3.4          1.4         0.3
-## 2 564     setosa          4.7         3.2          1.6         0.2
-## 3 184 versicolor          5.9         3.2          4.8         1.8
-## 4 713  virginica          6.9         3.2          5.7         2.3
-## 5 975     setosa          5.0         3.0          1.6         0.2
-## 6 829     setosa          4.9         3.1          1.5         0.2</code></pre>
+## 1 668  virginica          7.3         2.9          6.3         1.8
+## 2 901     setosa          5.0         3.2          1.2         0.2
+## 3 795 versicolor          6.1         2.8          4.0         1.3
+## 4 247     setosa          5.1         3.3          1.7         0.5
+## 5 123     setosa          5.2         3.4          1.4         0.2
+## 6 241 versicolor          6.1         3.0          4.6         1.4</code></pre>
 <p>Compare to <code>merge</code> below:</p>
 <pre class="r"><code>all_irises &lt;- merge(
   # first data.frame
@@ -1606,13 +1612,13 @@ iris %&gt;%
   # let&#39;s look at the last 6 values to see the missing values
   # ID: 289 should be the one missing Sepal.Length &amp; Width.
   tail()</code></pre>
-<pre><code>##      ID    Species Sepal.Length Sepal.Width Petal.Length Petal.Width
-## 145 275 versicolor          5.6         2.7          4.2         1.3
-## 146 421  virginica          6.2         3.4          5.4         2.3
-## 147 430 versicolor          6.1         2.8          4.7         1.2
-## 148 965 versicolor          6.6         3.0          4.4         1.4
-## 149 773 versicolor          6.4         3.2          4.5         1.5
-## 150 802 versicolor           NA          NA          3.3         1.0</code></pre>
+<pre><code>##      ID   Species Sepal.Length Sepal.Width Petal.Length Petal.Width
+## 145 263    setosa          4.9         3.0          1.4         0.2
+## 146 900    setosa          5.1         3.8          1.9         0.4
+## 147 212    setosa          5.0         3.4          1.6         0.4
+## 148 339 virginica          6.9         3.2          5.7         2.3
+## 149 800    setosa          4.6         3.4          1.4         0.3
+## 150 899    setosa           NA          NA          1.3         0.2</code></pre>
 <p>Finally, take note that it doesn’t matter which table you begin with when you’re using <code>full_join</code>. We could begin with <code>iris_petals</code> instead of <code>iris_sepals</code> and all the code chunks above in this section would have had the same effect (albeit with the columns in a different order). However, this is the the case with join functions <code>left_join</code> and <code>right_join</code> which prioritize one table over the other. When using these latter functions, missing data is not filled in with <code>NA</code> values, but rather the whole row is excised.</p>
 </div>
 </div>
