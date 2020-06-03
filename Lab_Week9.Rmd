@@ -1,5 +1,5 @@
 ---
-title: "Lab Lecture 7"
+title: "Lab Lecture 9"
 author: "Kenji Tomari"
 output: 
   html_document:
@@ -79,7 +79,6 @@ Wilson, B. M. 2000. America’s Johannesburg: industrialization and racial trans
 Wilson, F. 2001. Minerals and Migrants: How the Mining Industry Has Shaped South Africa. Daedalus 130 (1):99–121.
 
 ---
-
 
 ## Question 1
 
@@ -239,13 +238,16 @@ for (k in 1:5) {
   test <- P[kf == k, ]
   train <- P[kf != k, ]
   
-  uk_train <- gstat(formula = Precip_in~Y + X, 
-             locations = train, # Corrected!
-             model=fve.u)
+  gscv <- gstat(formula = Precip_in~Y + X, 
+                locations = train, 
+                model = fve.u)
   # predict
-  p <- predict(uk_train, g)$var1.pred
+  p <- predict(gscv, 
+               newdata = test, 
+               debug.level = 0)$var1.pred
   rmse_out[k] <- RMSE(test$Precip_in, p)
 }
+
 
 rmse_out
 

@@ -12,7 +12,7 @@
 <meta name="author" content="Kenji Tomari" />
 
 
-<title>Lab Lecture 7</title>
+<title>Lab Lecture 9</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -475,7 +475,7 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Lab Lecture 7</h1>
+<h1 class="title toc-ignore">Lab Lecture 9</h1>
 <h4 class="author">Kenji Tomari</h4>
 
 </div>
@@ -667,13 +667,16 @@ for (k in 1:5) {
   test &lt;- P[kf == k, ]
   train &lt;- P[kf != k, ]
   
-  uk_train &lt;- gstat(formula = Precip_in~Y + X, 
-             locations = train, # Corrected!
-             model=fve.u)
+  gscv &lt;- gstat(formula = Precip_in~Y + X, 
+                locations = train, 
+                model = fve.u)
   # predict
-  p &lt;- predict(uk_train, g)$var1.pred
+  p &lt;- predict(gscv, 
+               newdata = test, 
+               debug.level = 0)$var1.pred
   rmse_out[k] &lt;- RMSE(test$Precip_in, p)
 }
+
 
 rmse_out
 
