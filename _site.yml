@@ -43,30 +43,6 @@ navbar:
           href: kriging.html
         - text: "Regression Trees"
           href: regtrees.html
-    - text: "Lab Lectures"
-      menu:
-        - text: "Lab Lecture - 1"
-          href: Lab_Week1.html
-        - text: "Lab Lecture - 2"
-          href: Lab_Week2.html
-        - text: "Lab Lecture - 3"
-          href: Lab_Week3.html
-        - text: "Lab Lecture - 4"
-          href: Lab_Week4.html
-        - text: "Lab Lecture - 5"
-          href: Lab_Week5.html
-        - text: "Lab Lecture - 6"
-          href: Lab_Week6.html
-        - text: "Lab Lecture - 7"
-          href: Lab_Week7.html
-        - text: "Lab Lecture - 8"
-          href: Lab_Week8.html
-        - text: "Lab Lecture - 9"
-          href: Lab_Week9.html
-    - text: "Other"
-      menu:
-        - text:
-          href:
 
 output:
   html_document:
