@@ -13,6 +13,7 @@ output:
 ---
 
 
+
 <style>
 p.comment {
 background-color: #DBDBDB;
@@ -55,7 +56,7 @@ h2.title {
 knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message = FALSE)
 ```
 
-This lab guide goes through the use of regression trees to make spatial predictions. It follows closely the material presented in ISLR Ch. 8. The objectives of this lab guide are as follows
+This lab guide goes through the use of regression trees to make spatial predictions. It follows closely the material presented in ISLR Ch. 8. The objectives of this lab guide are as follows.
 
 1. Learn how to run classification trees
 2. Learn how to prune classification trees
