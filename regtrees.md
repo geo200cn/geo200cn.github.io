@@ -2,7 +2,6 @@
 title: "Regression Trees"
 subtitle: <h4 style="font-style:normal">GEO 200CN - Quantitative Geography</h4>
 author: <h4 style="font-style:normal">Professor Noli Brazil</h4>
-date: <h4 style="font-style:normal">Spring 2020</h4>
 output: 
   html_document:
     toc: true
@@ -54,7 +53,7 @@ h2.title {
 
 
 
-This lab guide goes through the use of regression trees to make spatial predictions. It follows closely the material presented in ISLR Ch. 8. The objectives of this lab guide are as follows.
+This lab guide goes through the use of regression trees to make spatial predictions. It follows closely the material presented in ISLR Ch. 8. The objectives of this lab guide are as follows..
 
 1. Learn how to run classification trees
 2. Learn how to prune classification trees
