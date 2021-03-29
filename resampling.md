@@ -54,7 +54,7 @@ h2.title {
 
 In the last lab guide, we learned how to partition our data into training and testing sets to estimate the predictive quality of a regression model.  In this lab, we extend this knowledge by going through the resampling techniques described in ISRL Ch. 5. We further expand our statistical toolkit by exploring methods that will allow us to choose the best set of predictors based on predictive quality.  These methods are discussed in ISLR Ch 6.  Although discussed in separate chapters, these methods are [intimately tied](https://www.youtube.com/watch?v=FA5jsa1lR9c). You run a Ch. 6 method to give a set of possible models and then you run a Ch. 5 method to give you a metric for determining which model gives the best predictive fit.
 
-The objectives of this lab are as follows
+The objectives of this lab are as follows.
 
 1. Learn how to run cross validation to calculate test error rates
 2. Learn how to run forward and backward stepwise selection
