@@ -5,44 +5,6 @@ navbar:
   left:
     - text: "Home"
       href: index.html
-    - text: "Syllabus"
-      href: syllabus.html
-    - text: "Assignment Guidelines"
-      href: hw_guidelines.html
-    - text: "Labs"
-      menu:
-        - text: "Getting Started"
-          href: getting_started.html
-        - text: "Intro to tidyverse"
-          href: tidyr.html
-        - text: "Sampling, CIs, CLT"
-          href: central.html
-        - text: "Hypothesis Testing"
-          href: hypothesis.html
-        - text: "Mapping in sf"
-          href: spatialsf.html
-        - text: "Point Pattern Analysis"
-          href: pointpatterns.html
-        - text: "Spatial Autocorrelation"
-          href: spatialautocorrelation.html
-        - text: "Linear Regression I"
-          href: linearregression.html
-        - text: "Linear Regression II"
-          href: linearregression2.html
-        - text: "Spatial Regression"
-          href: spatialreg.html
-        - text: "Spatial Heterogeneity"
-          href: spatialheterogeneity.html
-        - text: "Classification"
-          href: classification.html
-        - text: "Resampling and Selection"
-          href: resampling.html
-        - text: "Interpolation"
-          href: interpolation.html
-        - text: "Kriging"
-          href: kriging.html
-        - text: "Regression Trees"
-          href: regtrees.html
 
 output:
   html_document:
