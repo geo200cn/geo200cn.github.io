@@ -13,12 +13,22 @@
 
 <title>Linear Regression II</title>
 
-<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/yeti.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
 <script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
@@ -27,12 +37,17 @@
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 
-<style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
-  pre:not([class]) {
-    background-color: white;
-  }
-</style>
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+      .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+
+<style type="text/css">code{white-space: pre;}</style>
 <script type="text/javascript">
 if (window.hljs) {
   hljs.configure({languages: []});
@@ -45,32 +60,7 @@ if (window.hljs) {
 
 
 
-<style type="text/css">
-h1 {
-  font-size: 34px;
-}
-h1.title {
-  font-size: 38px;
-}
-h2 {
-  font-size: 30px;
-}
-h3 {
-  font-size: 24px;
-}
-h4 {
-  font-size: 18px;
-}
-h5 {
-  font-size: 16px;
-}
-h6 {
-  font-size: 12px;
-}
-.table th:not([align]) {
-  text-align: left;
-}
-</style>
+
 
 <link rel="stylesheet" href="styles.css" type="text/css" />
 
@@ -81,10 +71,6 @@ h6 {
   max-width: 940px;
   margin-left: auto;
   margin-right: auto;
-}
-code {
-  color: inherit;
-  background-color: rgba(0, 0, 0, 0.04);
 }
 img {
   max-width:100%;
@@ -101,40 +87,13 @@ button.code-folding-btn:focus {
 summary {
   display: list-item;
 }
+pre code {
+  padding: 0;
+}
 </style>
 
 
 <style type="text/css">
-/* padding for bootstrap navbar */
-body {
-  padding-top: 45px;
-  padding-bottom: 40px;
-}
-/* offset scroll position for anchor links (for fixed navbar)  */
-.section h1 {
-  padding-top: 50px;
-  margin-top: -50px;
-}
-.section h2 {
-  padding-top: 50px;
-  margin-top: -50px;
-}
-.section h3 {
-  padding-top: 50px;
-  margin-top: -50px;
-}
-.section h4 {
-  padding-top: 50px;
-  margin-top: -50px;
-}
-.section h5 {
-  padding-top: 50px;
-  margin-top: -50px;
-}
-.section h6 {
-  padding-top: 50px;
-  margin-top: -50px;
-}
 .dropdown-submenu {
   position: relative;
 }
@@ -162,7 +121,7 @@ body {
   margin-right: -10px;
 }
 .dropdown-submenu:hover>a:after {
-  border-left-color: #ffffff;
+  border-left-color: #adb5bd;
 }
 .dropdown-submenu.pull-left {
   float: none;
@@ -174,7 +133,7 @@ body {
 }
 </style>
 
-<script>
+<script type="text/javascript">
 // manage active state of menu based on current page
 $(document).ready(function () {
   // active menu anchor
@@ -185,10 +144,23 @@ $(document).ready(function () {
   var menuAnchor = $('a[href="' + href + '"]');
 
   // mark it active
-  menuAnchor.parent().addClass('active');
+  menuAnchor.tab('show');
 
   // if it's got a parent navbar menu mark it active as well
   menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
 });
 </script>
 
@@ -200,7 +172,6 @@ $(document).ready(function () {
   max-height: 500px;
   min-height: 44px;
   overflow-y: auto;
-  background: white;
   border: 1px solid #ddd;
   border-radius: 4px;
 }
@@ -329,7 +300,7 @@ div.tocify {
 
 
 <!-- setup 3col/9col grid for toc_float and main content  -->
-<div class="row-fluid">
+<div class="row">
 <div class="col-xs-12 col-sm-4 col-md-3">
 <div id="TOC" class="tocify">
 </div>
@@ -355,69 +326,6 @@ div.tocify {
         <li>
   <a href="index.html">Home</a>
 </li>
-<li>
-  <a href="syllabus.html">Syllabus</a>
-</li>
-<li>
-  <a href="hw_guidelines.html">Assignment Guidelines</a>
-</li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Labs
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-    <li>
-      <a href="getting_started.html">Getting Started</a>
-    </li>
-    <li>
-      <a href="tidyr.html">Intro to tidyverse</a>
-    </li>
-    <li>
-      <a href="central.html">Sampling, CIs, CLT</a>
-    </li>
-    <li>
-      <a href="hypothesis.html">Hypothesis Testing</a>
-    </li>
-    <li>
-      <a href="spatialsf.html">Mapping in sf</a>
-    </li>
-    <li>
-      <a href="pointpatterns.html">Point Pattern Analysis</a>
-    </li>
-    <li>
-      <a href="spatialautocorrelation.html">Spatial Autocorrelation</a>
-    </li>
-    <li>
-      <a href="linearregression.html">Linear Regression I</a>
-    </li>
-    <li>
-      <a href="linearregression2.html">Linear Regression II</a>
-    </li>
-    <li>
-      <a href="spatialreg.html">Spatial Regression</a>
-    </li>
-    <li>
-      <a href="spatialheterogeneity.html">Spatial Heterogeneity</a>
-    </li>
-    <li>
-      <a href="classification.html">Classification</a>
-    </li>
-    <li>
-      <a href="resampling.html">Resampling and Selection</a>
-    </li>
-    <li>
-      <a href="interpolation.html">Interpolation</a>
-    </li>
-    <li>
-      <a href="kriging.html">Kriging</a>
-    </li>
-    <li>
-      <a href="regtrees.html">Regression Trees</a>
-    </li>
-  </ul>
-</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         
@@ -426,11 +334,11 @@ div.tocify {
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-<div class="fluid-row" id="header">
+<div id="header">
 
-<div class="btn-group pull-right">
-<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
-<ul class="dropdown-menu" style="min-width: 50px;">
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
 <li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
 <li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
 </ul>
@@ -482,444 +390,6 @@ h2.title {
 </style>
 <p><br />
 </p>
-<p>We’re in the second leg of our journey into linear regression. In this lab, we go through the R functions for running regression diagnostics and multiple linear regression. The objectives of this lab are as follows</p>
-<ol style="list-style-type: decimal">
-<li>Learn how to interpret regression statistical inference from R output</li>
-<li>Learn how to run diagnostic tools to test Ordinary Least Squares (OLS) regression assumptions</li>
-<li>Learn how to run and evaluate a multiple linear regression model</li>
-<li>Learn how to standardize variables</li>
-<li>Learn how to detect multicollinearity</li>
-</ol>
-<p>To help us accomplish these learning objectives, we will continue examining the association between neighborhood characteristics and COVID-19 case rates in New York City. We’ll be following BBR chapters 12 and 13.</p>
-<div style="margin-bottom:25px;">
-
-</div>
-<div id="installing-and-loading-packages" class="section level2">
-<h2><strong>Installing and loading packages</strong></h2>
-<p><br />
-We’ll be using a couple of new packages in this lab. First, you’ll need to install them. The code checks if you’ve already installed these packages before. If you haven’t, it will install them.</p>
-<pre class="r"><code>if (!require(&quot;GGally&quot;)) install.packages(&quot;GGally&quot;)
-if (!require(&quot;standardize&quot;)) install.packages(&quot;standardize&quot;)
-if (!require(&quot;lmtest&quot;)) install.packages(&quot;lmtest&quot;)</code></pre>
-<p>Load these packages and others we will need for this lab.</p>
-<pre class="r"><code>library(MASS)
-library(tidyverse)
-library(GGally)
-library(gridExtra)
-library(car)
-library(standardize)
-library(lmtest)
-library(sf)</code></pre>
-<div style="margin-bottom:25px;">
-
-</div>
-</div>
-<div id="bringing-in-the-data" class="section level2">
-<h2><strong>Bringing in the data</strong></h2>
-<p><br />
-We will bring in a shape file containing COVID-19 cases per 1,000 residents and demographic and socioeconomic characteristics for New York city zip codes. I zipped up the file and uploaded it onto Github. Set your working directory to an appropriate folder and use the following code to download and unzip the file. I also uploaded the file in Canvas in the Lab and Assignments Week 6 folder.</p>
-<pre class="r"><code>#insert the pathway to the folder you want your data stored into
-setwd(&quot;insert your pathway here&quot;)
-#downloads file into your working directory 
-download.file(url = &quot;https://raw.githubusercontent.com/geo200cn/data/master/zctanyccovidwk6.zip&quot;, destfile = &quot;zctanyccovidwk6.zip&quot;)
-#unzips the zipped file
-unzip(zipfile = &quot;zctanyccovidwk6.zip&quot;)</code></pre>
-<p>Bring in the New York City zip code shape file into R using <code>st_read()</code></p>
-<pre class="r"><code>zctanyc &lt;- st_read(&quot;zctanyccovidwk6.shp&quot;)</code></pre>
-<p>COVID-19 case data were downloaded from the <a href="https://github.com/nychealth/coronavirus-data">NYC Department of Health and Mental Hygiene</a> (confirmed cases up through May 1, 2020). Socioeconomic and demographic data were downloaded from the 2014-2018 <a href="https://www.census.gov/programs-surveys/acs">American Community Survey</a>. A record layout of the data can be found <a href="https://raw.githubusercontent.com/geo200cn/data/master/zctanyccovidRL.txt">here</a>. Our research question in this guide is: What ecological characteristics are associated with zip code COVID-19 case rates in New York City?</p>
-<div style="margin-bottom:25px;">
-
-</div>
-</div>
-<div id="statistical-inference" class="section level2">
-<h2><strong>Statistical Inference</strong></h2>
-<p><br />
-In the last lab guide, we ran a simple regression model using ordinary least squares (OLS) to estimate the relationship between COVID-19 cases per 1,000 residents and percent black at the zip code level. Let’s run this model using <code>lm()</code> and save its results in an object named <em>lm1</em>. Our dependent variable is <em>covidrate</em> and the independent variable is <em>pblk</em>.</p>
-<pre class="r"><code>#eliminate scientific notation
-options(scipen=999)
-
-lm1 &lt;- lm(covidrate ~ pblk, data = zctanyc)</code></pre>
-<p>We asked you in last lab guide to interpret the coefficients in terms of how they characterize the relationship between the dependent and independent variables. We did not ask you, however, to make any statistical inferences regarding the significance of the coefficients (e.g. is the coefficient statistically significant from 0). After reading BBR Ch. 12, we now have the tools to make these inferences. Let’s get a summary of our regression results</p>
-<pre class="r"><code>summary(lm1)</code></pre>
-<pre><code>## 
-## Call:
-## lm(formula = covidrate ~ pblk, data = zctanyc)
-## 
-## Residuals:
-##      Min       1Q   Median       3Q      Max 
-## -12.0235  -5.2758  -0.1771   4.4919  17.8935 
-## 
-## Coefficients:
-##             Estimate Std. Error t value             Pr(&gt;|t|)    
-## (Intercept) 15.58486    0.63189  24.664 &lt; 0.0000000000000002 ***
-## pblk         0.09636    0.02044   4.714           0.00000493 ***
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-## 
-## Residual standard error: 6.464 on 175 degrees of freedom
-## Multiple R-squared:  0.1127, Adjusted R-squared:  0.1076 
-## F-statistic: 22.23 on 1 and 175 DF,  p-value: 0.000004929</code></pre>
-<p>What is this output showing?</p>
-<ul>
-<li>The values under “Estimate” provide the coefficient estimates. In last assignment, you interpreted what the values 15.585 and 0.096 mean. In the case of the <em>pblk</em> coefficient, we say that for each one percentage point increase in percent black, COVID-19 case rates per 1,000 residents increase by 0.09636.</li>
-<li>The values under “Std. Error” provide the standard error of each coefficient. We are conducting two hypothesis tests, one for each coefficient. The null hypothesis is the coefficient (Intercept or the coefficient for <em>pblk</em>) is equal to 0, the alternative is the coefficient is not equal to 0.</li>
-<li>The values under “t value” show the values of the test statistic <em>t</em> for these hypothesis tests. The use of the <em>t</em> value indicates that were going to be using the <em>t</em> distribution as the null distribution (hence we conduct a <em>t</em>-test). More precisely, if the null hypothesis is true, the test statistic has a <em>t</em> distribution with degrees of freedom of 175, which is denoted next to “Residual standard error”.</li>
-<li>The values under the column “Pr(&gt;|t|)” indicate the p-value, which is the probability of obtaining an effect at least as extreme as the one in your sample data, assuming the truth of the null hypothesis.<br />
-</li>
-<li>The asterisks after the p-value indicate the significance level of the test: 0.001, 0.01, 0.05 and 0.1. We find that the coefficient value for <em>pblk</em> is statistically significant at the 0.001 level. The actual p-value is much smaller than 0.001, indicating a very small probability that the effect we find is due to chance.</li>
-</ul>
-<div style="margin-bottom:25px;">
-
-</div>
-</div>
-<div id="checking-ols-assumptions" class="section level2">
-<h2><strong>Checking OLS assumptions</strong></h2>
-<p><br />
-BBR Ch. 12 outlines the core assumptions that need to be met in order to obtain unbiased regression estimates from an OLS model. BBR Ch. 12.4 goes through several diagnostic tools for examining whether an OLS model breaks these assumptions. In this section, we will go through how to run these diagnostics in R.</p>
-<p>Let’s also create a fake dataset that meets the OLS assumptions to act as a point of comparison along the way. We’ll call this the <em>goodreg</em> model.</p>
-<pre class="r"><code>set.seed(08544)
-x &lt;-rnorm(5000, mean = 7, sd = 1.56)# just some normally distributed data
-
-## We&#39;re establishing here a linear relationship,
-## What&#39;s this &quot;true&quot; linear relationship we&#39;re setting up?
-## So that y = 12 - .4x + some normally distributed error values
-y &lt;- 12 - 0.4*x +rnorm(5000, mean = 0, sd = 1)
-
-goodreg &lt;- lm(y ~ x)
-summary(goodreg)</code></pre>
-<pre><code>## 
-## Call:
-## lm(formula = y ~ x)
-## 
-## Residuals:
-##     Min      1Q  Median      3Q     Max 
-## -3.7188 -0.6658  0.0158  0.6944  3.5102 
-## 
-## Coefficients:
-##              Estimate Std. Error t value            Pr(&gt;|t|)    
-## (Intercept) 12.033221   0.064450  186.71 &lt;0.0000000000000002 ***
-## x           -0.402152   0.008986  -44.75 &lt;0.0000000000000002 ***
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-## 
-## Residual standard error: 0.9932 on 4998 degrees of freedom
-## Multiple R-squared:  0.2861, Adjusted R-squared:  0.2859 
-## F-statistic:  2003 on 1 and 4998 DF,  p-value: &lt; 0.00000000000000022</code></pre>
-<p>To be clear, we know the exact functional form of this model, all OLS assumptions should be met, and therefore this model should pass all diagnostics.</p>
-<div style="margin-bottom:25px;">
-
-</div>
-<div id="histogram-of-residuals" class="section level3">
-<h3><strong>Histogram of residuals</strong></h3>
-<p><br />
-The first graphical diagnostic tool that BBR recommends is a histogram of residuals. The histogram will test Assumption 4, errors are normally distributed. We can extract the residuals from an <em>lm</em> object using the function <code>resid()</code>. We will need to use the residuals for other diagnostics, so let’s save them into the <em>zctanyc</em> data frame under the variable <em>resid</em> using the <code>mutate()</code> function.</p>
-<pre class="r"><code>zctanyc &lt;- mutate(zctanyc, resid = resid(lm1))</code></pre>
-<p>The order of the tracts in<code>resid(lm1)</code> is the same as the order of the tracts in <em>zctanyc</em> and that’s why we were able to directly column bind it like we did in the above code rather than doing a <code>left_join()</code>.</p>
-<p>Now, we create a histogram of residuals using our best bud <code>ggplot()</code></p>
-<pre class="r"><code>ggplot(zctanyc) + geom_histogram(mapping = (aes(x=resid))) + xlab(&quot;Absolute Residuals&quot;)</code></pre>
-<p><img src="linearregression2_files/figure-html/unnamed-chunk-10-1.png" /><!-- --></p>
-<p>We’re trying to see if its shape is that of a normal distribution (bell curve). This is a histogram of absolute residuals. To get a histogram of standardized residuals like the one shown in Fig 12-12 (b) on page 489 in BBR, use the function <code>stdres()</code>, where the main argument is our model results <em>lm1</em></p>
-<pre class="r"><code>ggplot(zctanyc) + geom_histogram((aes(x=stdres(lm1)))) + xlab(&quot;Standardized Residuals&quot;)</code></pre>
-<p><img src="linearregression2_files/figure-html/unnamed-chunk-11-1.png" /><!-- --></p>
-<p>For comparison, the following is what the residuals from our simulated good data look like</p>
-<pre class="r"><code>ggplot() + geom_histogram(aes(x = stdres(goodreg))) +
-  xlab(&quot;Standardized Residuals&quot;) +
-  ggtitle(&quot;Distribution of Residuals - Simulated Data&quot;)</code></pre>
-<p><img src="linearregression2_files/figure-html/unnamed-chunk-12-1.png" /><!-- --></p>
-<div style="margin-bottom:25px;">
-
-</div>
-</div>
-<div id="q-q-plot-of-residuals" class="section level3">
-<h3><strong>Q-Q plot of residuals</strong></h3>
-<p><br />
-BBR next suggests a normal probability plot, also known as a Q-Q plot, to check error normality. Use the function <code>qqnorm()</code> and just plug in the model residuals. The function <code>qqline()</code> adds the line for what normally distributed data should theoretically follow.</p>
-<pre class="r"><code>qqnorm(zctanyc$resid)
-qqline(zctanyc$resid,col=&quot;red&quot;)</code></pre>
-<p><img src="linearregression2_files/figure-html/unnamed-chunk-13-1.png" /><!-- --></p>
-<p>In short, if the points of the plot do not closely follow a straight line, this would suggest that the data do not come from a normal distribution. What does the Q-Q plot look like for our good model?</p>
-<pre class="r"><code>qqnorm(stdres(goodreg))
-qqline(stdres(goodreg),col=&quot;red&quot;)</code></pre>
-<p><img src="linearregression2_files/figure-html/unnamed-chunk-14-1.png" /><!-- --></p>
-<p><br></p>
-<p class="comment" , style="font-style:normal">
-<strong>Question 1</strong>: What do you conclude by visually examining the histogram and Q-Q plot of the <em>lm1</em> residuals?
-</p>
-<p><br></p>
-<div style="margin-bottom:25px;">
-
-</div>
-</div>
-<div id="shapiro-wilk-test" class="section level3">
-<h3><strong>Shapiro-Wilk test</strong></h3>
-<p><br />
-Histograms and Q-Q plots give a nice visual presentation of the residual distribution, however if we are interested in formal hypothesis testing, there are a number of options available. A commonly used test is the Shapiro–Wilk test, which is implemented in R using the function <code>shapiro.test()</code>. The null is that the data are normally distributed. Our good model <em>goodreg</em> should not reject the null</p>
-<pre class="r"><code>shapiro.test(resid(goodreg))</code></pre>
-<pre><code>## 
-##  Shapiro-Wilk normality test
-## 
-## data:  resid(goodreg)
-## W = 0.9994, p-value = 0.1026</code></pre>
-<p>What about our simple linear regression model?</p>
-<pre class="r"><code>shapiro.test(resid(lm1))</code></pre>
-<pre><code>## 
-##  Shapiro-Wilk normality test
-## 
-## data:  resid(lm1)
-## W = 0.97764, p-value = 0.006004</code></pre>
-<div style="margin-bottom:25px;">
-
-</div>
-</div>
-<div id="residual-scatterplots" class="section level3">
-<h3><strong>Residual scatterplots</strong></h3>
-<p><br />
-BBR on page 490-492 suggests a plot of the residuals against the fitted values to test assumptions 1-4. In particular, the plot will is useful for checking both the linearity and homoscedasticity assumptions. We should look for two things in this plot.</p>
-<ul>
-<li>At any fitted value, the mean of the residuals should be roughly 0. If this is the case, the linearity assumption is valid. For this reason, we generally add a horizontal line in the plot at y = 0 to emphasize this point.</li>
-<li>At every fitted value, the spread of the residuals should be roughly the same. If this is the case, the homoscedasticity (equal variance) assumption is valid.</li>
-</ul>
-<p><br></p>
-<p class="comment" , style="font-style:normal">
-<strong>Question 2</strong>: Create a residual against fitted value plot as described by BBR for the <em>lm1</em> model. Do the same for the <em>goodreg</em> model. What do you conclude from these plots?
-</p>
-<p><br></p>
-<p>We know what diagnostic plots should like when we have good data. But what about for bad data? Below is an example of some bad data that breaks the linearity assumption. Don’t worry too much about the intricacies of the code - were just trying creating simulated data that is deliberately not normal so you can see what nonlinearity looks like in the context of the diagnostic tools we’ve been running.</p>
-<pre class="r"><code>set.seed(42)
-sim_3 = function(sample_size = 500) {
-  x = runif(n = sample_size) * 5
-  y = 3 + 5 * x ^ 2 + rnorm(n = sample_size, mean = 0, sd = 5)
-  data.frame(x, y)
-}
-
-sim_data_3 = sim_3()
-badreg = lm(y ~ x, data = sim_data_3)</code></pre>
-<p>Here is the residual vs fitted values plot for <em>badreg</em></p>
-<pre class="r"><code>plot(fitted(badreg), resid(badreg), col = &quot;grey&quot;, pch = 20,
-     xlab = &quot;Fitted&quot;, ylab = &quot;Residuals&quot;, main = &quot;Data from Bad Model&quot;)
-abline(h = 0, col = &quot;darkorange&quot;, lwd = 2)</code></pre>
-<p><img src="linearregression2_files/figure-html/unnamed-chunk-18-1.png" /><!-- --></p>
-<p>BBR’s final diagnostic tool is a plot of the residuals against omitted variables (page 492-494). The utility of this tool is to determine if omitted variable bias is present. It can also test for linearity and constant variance. The residuals are on the y-axis and the omitted variable is on the x-axis.</p>
-<p><br></p>
-<p class="comment" , style="font-style:normal">
-<strong>Question 3</strong>: Create residual against omitted variable plots for <em>medincome</em> and one more numeric variable not already included in the model <em>lm1</em>. What do you conclude from these plots?
-</p>
-<p><br></p>
-<div style="margin-bottom:25px;">
-
-</div>
-</div>
-</div>
-<div id="multiple-linear-regression" class="section level2">
-<h2><strong>Multiple linear regression</strong></h2>
-<p><br />
-A simple linear regression is, well, too simple. You’ll want to add more variables in your model to</p>
-<ol style="list-style-type: decimal">
-<li>Obtain more precise predictions</li>
-<li>Examine the relationship between the response and more than one variable</li>
-<li>Control for variables that are confounding the relationship between <em>X</em> and <em>Y</em>.</li>
-</ol>
-<p>Reason (3) is particularly important for avoiding violations of the OLS assumptions. Let’s go through this reason first to help motivate why to include more than one variable in the model.</p>
-<div style="margin-bottom:25px;">
-
-</div>
-<div id="controlling-for-variables" class="section level3">
-<h3><strong>Controlling for variables</strong></h3>
-<p><br />
-The most common reason why your model is breaking OLS assumptions is because you’ve failed to include a variable that is confounding the relationship between your primary independent variable(s) and the outcome. Here, we are interested in examining the impact of a variable X on the outcome Y controlling for the impact of another variable Z. In other words, we don’t really care about the effect of Z, but simply want to control for it so we can get an unbiased estimate of the effect of X. In this case, Z is a confounding variable. Let’s try to make clear what we mean by confounding. Here are three ways to define a confounding variable, all saying the same thing, but in different ways.</p>
-<ul>
-<li><p>Confounding variables or confounders are often defined as variables that correlate (positively or negatively) with both the dependent variable and the independent variable</p></li>
-<li><p>A confounder is an extraneous variable whose presence affects the variables being studied so that the results do not reflect the actual relationship between the variables under study.</p></li>
-<li><p>A third variable, not the dependent (outcome) or main independent(exposure) variable of interest, that distorts the observed relationship between the exposure and outcome.</p></li>
-</ul>
-<p>Confounding can have serious consequences on your results. For example, consider the COVID-19 case rate in Florida, which is much higher than in Michigan. Before concluding that Florida is a riskier place to live, one needs to consider confounding factors such as age. Florida has a higher proportion of people of retirement age and older than does Michigan, and older people are at higher risk of getting COVID-19. Therefore, one must “adjust” or control for age before drawing any conclusions about the influence of some other variable on COVID-19 case rates.</p>
-<p>Going back to our case study of New York City let’s say we ran a simple linear regression of COVID-19 rates on percent unemployment</p>
-<pre class="r"><code>summary(lm(covidrate ~  punemp, data = zctanyc))</code></pre>
-<pre><code>## 
-## Call:
-## lm(formula = covidrate ~ punemp, data = zctanyc)
-## 
-## Residuals:
-##     Min      1Q  Median      3Q     Max 
-## -11.970  -5.625  -0.926   4.463  17.840 
-## 
-## Coefficients:
-##             Estimate Std. Error t value             Pr(&gt;|t|)    
-## (Intercept)  12.8605     1.2641  10.174 &lt; 0.0000000000000002 ***
-## punemp        0.8267     0.2078   3.978             0.000101 ***
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-## 
-## Residual standard error: 6.571 on 175 degrees of freedom
-## Multiple R-squared:  0.08294,    Adjusted R-squared:  0.0777 
-## F-statistic: 15.83 on 1 and 175 DF,  p-value: 0.0001015</code></pre>
-<p>We would conclude that a one percentage point increase in percent unemployment in a neighborhood is associated with an increase of 0.827 COVID-19 cases per 1,000 residents. The results also show that the coefficient has a p-value of 0.000101, which indicates that the <em>punemp</em> coefficient is statistically significant at the 0.001 level. This means that the probability that the association between <em>punemp</em> and <em>covidrate</em> is due to chance is less than 100*0.001 = 0.1 percent. In other words, the probability of seeing the association 0.8267 just by chance if the null hypothesis is true is 0.1 percent.</p>
-<p>But, when you include percent black, you get</p>
-<pre class="r"><code>summary(lm(covidrate ~  pblk + punemp, data = zctanyc))</code></pre>
-<pre><code>## 
-## Call:
-## lm(formula = covidrate ~ pblk + punemp, data = zctanyc)
-## 
-## Residuals:
-##      Min       1Q   Median       3Q      Max 
-## -11.5354  -5.0580  -0.7489   4.3570  17.7511 
-## 
-## Coefficients:
-##             Estimate Std. Error t value            Pr(&gt;|t|)    
-## (Intercept) 13.69444    1.26782  10.802 &lt;0.0000000000000002 ***
-## pblk         0.07294    0.02448   2.980              0.0033 ** 
-## punemp       0.42024    0.24478   1.717              0.0878 .  
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-## 
-## Residual standard error: 6.428 on 174 degrees of freedom
-## Multiple R-squared:  0.1275, Adjusted R-squared:  0.1174 
-## F-statistic: 12.71 on 2 and 174 DF,  p-value: 0.000007044</code></pre>
-<p>And just like that, gone.</p>
-<p><br></p>
-<p class="comment" , style="font-style:normal">
-<strong>Question 4</strong>: In your own words, explain why the statistically significant relationship between percent unemployment and COVID-19 rates disappeared when we included percent black.
-</p>
-<p><br></p>
-<p>This example illustrates the importance of accounting for potential confounding in your model. This includes confounding introduced by spatial dependency or autocorrelation, which we will discuss in the next guide.</p>
-<div style="margin-bottom:25px;">
-
-</div>
-</div>
-<div id="standardized-coefficients" class="section level3">
-<h3><strong>Standardized coefficients</strong></h3>
-<p><br />
-Including more variables mitigates confounding. We also might be substantively interested in understanding the relationship between COVID-19 rates and other variables besides percent black. Let’s beef up our regression model by including percent Hispanic, percent 65 year old and over, median household income, and total population as independent variables.</p>
-<pre class="r"><code>lm2 &lt;- lm(covidrate ~  pblk + phisp +  medincome +totp + p65old, data = zctanyc)</code></pre>
-<p>And summarize</p>
-<pre class="r"><code>summary(lm2)</code></pre>
-<pre><code>## 
-## Call:
-## lm(formula = covidrate ~ pblk + phisp + medincome + totp + p65old, 
-##     data = zctanyc)
-## 
-## Residuals:
-##      Min       1Q   Median       3Q      Max 
-## -10.5625  -4.2955  -0.8762   3.7455  15.4670 
-## 
-## Coefficients:
-##                Estimate  Std. Error t value  Pr(&gt;|t|)    
-## (Intercept) 12.57451167  3.21496495   3.911  0.000132 ***
-## pblk         0.09056056  0.02013347   4.498 0.0000126 ***
-## phisp        0.12825817  0.03007490   4.265 0.0000331 ***
-## medincome   -0.00004588  0.00001737  -2.642  0.009012 ** 
-## totp        -0.00004357  0.00001757  -2.480  0.014097 *  
-## p65old       0.36634418  0.09276337   3.949  0.000114 ***
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-## 
-## Residual standard error: 5.48 on 171 degrees of freedom
-## Multiple R-squared:  0.3767, Adjusted R-squared:  0.3585 
-## F-statistic: 20.67 on 5 and 171 DF,  p-value: 0.0000000000000004017</code></pre>
-<p><br></p>
-<p class="comment" , style="font-style:normal">
-<strong>Question 5</strong>: What is the interpretation of the intercept?
-</p>
-<p><br></p>
-<p class="comment" , style="font-style:normal">
-<strong>Question 6</strong>: What is the interpretation of the coefficient value for the <em>pblk</em> variable? Include in your interpretation a statement regarding the statistical significance of the coefficient.
-</p>
-<p><br></p>
-<p>You might be tempted to say that <em>p65old</em> has the most dramatic effect on COVID-19 rates because the absolute value of its coefficient is the largest and it is statistically significant at the 0.001 level (i.e. the magnitude of the effect is the largest and the probability that this effect is due to chance is very small). But, the variable scales are not the same. For example, <em>p65old</em> is in percent whereas <em>medincome</em> is in dollars. As outlined in BBR page 505, you can obtain standardized regression coefficients to make comparisons regarding effect sizes. One way to do this is to use the function <code>standardize()</code>, which is a part of the <strong>standardize</strong> package.</p>
-<p>Insert the same exact regression formula and data argument used to create <em>lm2</em> inside the <code>standardize()</code> function. Make sure to save it to an object.</p>
-<pre class="r"><code>zctanycstd &lt;- standardize(covidrate ~  pblk + phisp +  medincome +totp + p65old, data = zctanyc)</code></pre>
-<p>You get an object of class <em>standardized</em>. This object contains the standardized values for all of the variables in your model.</p>
-<pre class="r"><code>class(zctanycstd)</code></pre>
-<pre><code>## [1] &quot;standardized&quot;</code></pre>
-<p>Plug the object’s data <em>zctanycstd$data</em> into the <code>lm()</code> function</p>
-<pre class="r"><code>lm3 &lt;- lm(covidrate ~  pblk + phisp +  medincome +totp + p65old, data = zctanycstd$data)</code></pre>
-<p>And summarize</p>
-<pre class="r"><code>summary(lm3)</code></pre>
-<pre><code>## 
-## Call:
-## lm(formula = covidrate ~ pblk + phisp + medincome + totp + p65old, 
-##     data = zctanycstd$data)
-## 
-## Residuals:
-##     Min      1Q  Median      3Q     Max 
-## -1.5437 -0.6278 -0.1280  0.5474  2.2605 
-## 
-## Coefficients:
-##                            Estimate              Std. Error t value  Pr(&gt;|t|)
-## (Intercept) -0.00000000000000007238  0.06020090504594896585   0.000  1.000000
-## pblk         0.31549674005828370893  0.07014141495741302301   4.498 0.0000126
-## phisp        0.36508323439634066121  0.08560733328960749844   4.265 0.0000331
-## medincome   -0.24499765787620594870  0.09274025013144404639  -2.642  0.009012
-## totp        -0.16999844205348582649  0.06854135112997390700  -2.480  0.014097
-## p65old       0.26995857538764173045  0.06835721360849304762   3.949  0.000114
-##                
-## (Intercept)    
-## pblk        ***
-## phisp       ***
-## medincome   ** 
-## totp        *  
-## p65old      ***
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-## 
-## Residual standard error: 0.8009 on 171 degrees of freedom
-## Multiple R-squared:  0.3767, Adjusted R-squared:  0.3585 
-## F-statistic: 20.67 on 5 and 171 DF,  p-value: 0.0000000000000004017</code></pre>
-<p><br></p>
-<p class="comment" , style="font-style:normal">
-<strong>Question 7</strong>: What is the interpretation of the coefficient value for <em>p65old</em>?
-</p>
-<p><br></p>
-<p>You can also use the non standardized model coefficient values from <em>lm2</em> and plug them into BBR equation 13-6 on page 505</p>
-<pre class="r"><code>b &lt;- summary(lm2)$coef[2:6, 1]
-sy &lt;- apply(lm2$model[1], 2, sd)
-sx &lt;- apply(lm2$model[2:6], 2, sd)
-betas &lt;- b * (sx/sy)
-betas</code></pre>
-<pre><code>##       pblk      phisp  medincome       totp     p65old 
-##  0.3154967  0.3650832 -0.2449977 -0.1699984  0.2699586</code></pre>
-<div style="margin-bottom:25px;">
-
-</div>
-</div>
-</div>
-<div id="multicollinearity" class="section level2">
-<h2><strong>Multicollinearity</strong></h2>
-<p><br />
-It might seem that if confounding is such a big problem (and it is when trying to make causal inferences) you should aim to try to control for <em>everything.</em> Including the kitchen sink. The downside of this strategy is that including too many variables will likely introduce multicollinearity in your model. Multicollinearity is defined to be high, but not perfect, correlation between two independent variables in a regression.</p>
-<p>What are the effects of multicollinearity? Mainly you will get blown up standard errors for the coefficient on one of your correlated variables. In other words, you will not detect a relationship even if one does exist because the standard error on the coefficient is artificially inflated.</p>
-<p>What to do? First, run a correlation matrix for all your proposed independent variables. We did that with <code>ggpairs()</code>, but another way of doing it is to use the <code>cor()</code> function as such. This function doesn’t work with <strong>sf</strong> objects, so we convert <em>zctanyc</em> to a regular data frame using the <strong>st_drop_geometry()</strong> function. We use the function <code>select()</code> to keep the variables we need from <em>zctanyc</em>. We use the <code>round()</code> function to round up the correlation values to two significant digits after the decimal point.</p>
-<pre class="r"><code>round(cor(dplyr::select(st_drop_geometry(zctanyc), pblk, phisp, medincome, totp, p65old)),2)</code></pre>
-<pre><code>##            pblk phisp medincome  totp p65old
-## pblk       1.00 -0.01     -0.36  0.17  -0.13
-## phisp     -0.01  1.00     -0.57  0.28  -0.33
-## medincome -0.36 -0.57      1.00 -0.47   0.01
-## totp       0.17  0.28     -0.47  1.00  -0.08
-## p65old    -0.13 -0.33      0.01 -0.08   1.00</code></pre>
-<p>Any correlation that is high is worth flagging. In this case, we see a few pairwise correlations greater than 0.5 that might be worth keeping in mind.</p>
-<p>You can also run your regression and then detect multicollinearity in your results. Signs of multicollinearity include</p>
-<ul>
-<li>Large changes in the estimated regression coefficients when a predictor variable is added or deleted</li>
-<li>Lack of statistical significance despite high <span class="math inline"><em>R</em><sup>2</sup></span></li>
-<li>Estimated regression coefficients have an opposite sign from predicted</li>
-</ul>
-<p>A formal and likely the most common indicator of multicollinearity is the Variance Inflation Factor (VIF). Use the function <code>vif()</code> in the <strong>car</strong> package to get the VIFs for each variable. Let’s check the VIFs for the <em>lm2</em> model</p>
-<pre class="r"><code>vif(lm2)</code></pre>
-<pre><code>##      pblk     phisp medincome      totp    p65old 
-##  1.349840  2.010737  2.359771  1.288958  1.282041</code></pre>
-<p>A large VIF indicates a troublesome variable. What is a large VIF? There are <a href="https://link.springer.com/article/10.1007/s11135-006-9018-6">many rules of thumbs</a> out there in terms of what counts for an alarmingly high VIF. The most common is greater than 5. If a VIF is greater than 5, flag it. So, what should you do next?</p>
-<ol style="list-style-type: decimal">
-<li>If possible, get more data. Multicollinearity is often a small sample size problem.</li>
-<li>Combine variables into an index</li>
-<li>Use a variable selection procedure like stepwise selection or ridge regression to select the best subset of variables. We will cover these methods later in the course.</li>
-<li>Drop one of the highly correlated variables</li>
-<li>Maybe linear regression is not the right tool.</li>
-</ol>
-<p>You’re done! <a href="https://www.youtube.com/watch?v=-kFUSgR7ujI">Woohoo!</a></p>
-<hr />
-<p><a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>.</p>
-<p>Website created and maintained by <a href="https://nbrazil.faculty.ucdavis.edu/">Noli Brazil</a></p>
-</div>
 
 
 
@@ -932,7 +402,7 @@ It might seem that if confounding is such a big problem (and it is when trying t
 
 // add bootstrap table styles to pandoc tables
 function bootstrapStylePandocTables() {
-  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
 }
 $(document).ready(function () {
   bootstrapStylePandocTables();
@@ -950,7 +420,7 @@ $(document).ready(function () {
 
 $(document).ready(function () {
   $('.tabset-dropdown > .nav-tabs > li').click(function () {
-    $(this).parent().toggleClass('nav-tabs-open')
+    $(this).parent().toggleClass('nav-tabs-open');
   });
 });
 </script>
@@ -965,6 +435,9 @@ $(document).ready(function () {
 <script>
 $(document).ready(function ()  {
 
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
     // move toc-ignore selectors from section div to header
     $('div.section.toc-ignore')
         .removeClass('toc-ignore')
@@ -976,7 +449,7 @@ $(document).ready(function ()  {
       theme: "bootstrap3",
       context: '.toc-content',
       hashGenerator: function (text) {
-        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
       },
       ignoreSelector: ".toc-ignore",
       scrollTo: 0

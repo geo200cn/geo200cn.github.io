@@ -13,12 +13,22 @@
 
 <title>Getting Started</title>
 
-<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/yeti.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
 <script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
@@ -27,12 +37,17 @@
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 
-<style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
-  pre:not([class]) {
-    background-color: white;
-  }
-</style>
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+      .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+
+<style type="text/css">code{white-space: pre;}</style>
 <script type="text/javascript">
 if (window.hljs) {
   hljs.configure({languages: []});
@@ -45,32 +60,7 @@ if (window.hljs) {
 
 
 
-<style type="text/css">
-h1 {
-  font-size: 34px;
-}
-h1.title {
-  font-size: 38px;
-}
-h2 {
-  font-size: 30px;
-}
-h3 {
-  font-size: 24px;
-}
-h4 {
-  font-size: 18px;
-}
-h5 {
-  font-size: 16px;
-}
-h6 {
-  font-size: 12px;
-}
-.table th:not([align]) {
-  text-align: left;
-}
-</style>
+
 
 <link rel="stylesheet" href="styles.css" type="text/css" />
 
@@ -81,10 +71,6 @@ h6 {
   max-width: 940px;
   margin-left: auto;
   margin-right: auto;
-}
-code {
-  color: inherit;
-  background-color: rgba(0, 0, 0, 0.04);
 }
 img {
   max-width:100%;
@@ -101,40 +87,13 @@ button.code-folding-btn:focus {
 summary {
   display: list-item;
 }
+pre code {
+  padding: 0;
+}
 </style>
 
 
 <style type="text/css">
-/* padding for bootstrap navbar */
-body {
-  padding-top: 45px;
-  padding-bottom: 40px;
-}
-/* offset scroll position for anchor links (for fixed navbar)  */
-.section h1 {
-  padding-top: 50px;
-  margin-top: -50px;
-}
-.section h2 {
-  padding-top: 50px;
-  margin-top: -50px;
-}
-.section h3 {
-  padding-top: 50px;
-  margin-top: -50px;
-}
-.section h4 {
-  padding-top: 50px;
-  margin-top: -50px;
-}
-.section h5 {
-  padding-top: 50px;
-  margin-top: -50px;
-}
-.section h6 {
-  padding-top: 50px;
-  margin-top: -50px;
-}
 .dropdown-submenu {
   position: relative;
 }
@@ -162,7 +121,7 @@ body {
   margin-right: -10px;
 }
 .dropdown-submenu:hover>a:after {
-  border-left-color: #ffffff;
+  border-left-color: #adb5bd;
 }
 .dropdown-submenu.pull-left {
   float: none;
@@ -174,7 +133,7 @@ body {
 }
 </style>
 
-<script>
+<script type="text/javascript">
 // manage active state of menu based on current page
 $(document).ready(function () {
   // active menu anchor
@@ -185,10 +144,23 @@ $(document).ready(function () {
   var menuAnchor = $('a[href="' + href + '"]');
 
   // mark it active
-  menuAnchor.parent().addClass('active');
+  menuAnchor.tab('show');
 
   // if it's got a parent navbar menu mark it active as well
   menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
 });
 </script>
 
@@ -200,7 +172,6 @@ $(document).ready(function () {
   max-height: 500px;
   min-height: 44px;
   overflow-y: auto;
-  background: white;
   border: 1px solid #ddd;
   border-radius: 4px;
 }
@@ -329,7 +300,7 @@ div.tocify {
 
 
 <!-- setup 3col/9col grid for toc_float and main content  -->
-<div class="row-fluid">
+<div class="row">
 <div class="col-xs-12 col-sm-4 col-md-3">
 <div id="TOC" class="tocify">
 </div>
@@ -355,69 +326,6 @@ div.tocify {
         <li>
   <a href="index.html">Home</a>
 </li>
-<li>
-  <a href="syllabus.html">Syllabus</a>
-</li>
-<li>
-  <a href="hw_guidelines.html">Assignment Guidelines</a>
-</li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Labs
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-    <li>
-      <a href="getting_started.html">Getting Started</a>
-    </li>
-    <li>
-      <a href="tidyr.html">Intro to tidyverse</a>
-    </li>
-    <li>
-      <a href="central.html">Sampling, CIs, CLT</a>
-    </li>
-    <li>
-      <a href="hypothesis.html">Hypothesis Testing</a>
-    </li>
-    <li>
-      <a href="spatialsf.html">Mapping in sf</a>
-    </li>
-    <li>
-      <a href="pointpatterns.html">Point Pattern Analysis</a>
-    </li>
-    <li>
-      <a href="spatialautocorrelation.html">Spatial Autocorrelation</a>
-    </li>
-    <li>
-      <a href="linearregression.html">Linear Regression I</a>
-    </li>
-    <li>
-      <a href="linearregression2.html">Linear Regression II</a>
-    </li>
-    <li>
-      <a href="spatialreg.html">Spatial Regression</a>
-    </li>
-    <li>
-      <a href="spatialheterogeneity.html">Spatial Heterogeneity</a>
-    </li>
-    <li>
-      <a href="classification.html">Classification</a>
-    </li>
-    <li>
-      <a href="resampling.html">Resampling and Selection</a>
-    </li>
-    <li>
-      <a href="interpolation.html">Interpolation</a>
-    </li>
-    <li>
-      <a href="kriging.html">Kriging</a>
-    </li>
-    <li>
-      <a href="regtrees.html">Regression Trees</a>
-    </li>
-  </ul>
-</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         
@@ -426,11 +334,11 @@ div.tocify {
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-<div class="fluid-row" id="header">
+<div id="header">
 
-<div class="btn-group pull-right">
-<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
-<ul class="dropdown-menu" style="min-width: 50px;">
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
 <li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
 <li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
 </ul>
@@ -472,168 +380,7 @@ h2.title {
 }
 </style>
 <p><br />
-The purpose of this lab guide is to install and set up R and RStudio. You will be using R to complete all data analysis tasks in this class. For those who have never used R or it has been a long time since you’ve used the program, welcome to what will be a life fulfilling journey!</p>
-<div style="margin-bottom:25px;">
-
-</div>
-<div id="what-is-r" class="section level2">
-<h2><strong>What is R?</strong></h2>
-<p><br />
-R is an environment for data analysis and graphics. R is an interpreted language, not a compiled one. This means that you type something into R and it does what you tell it. It is both a command line software and a programming environment. It is an extensible, open-source language and computing environment for Windows, Macintosh, UNIX, and Linux platforms, which allows for the user to freely distribute, study, change, and improve the software. It is basically a free, super big, and complex calculator. You will be using R to accomplish all data analysis tasks in this class. You might be wondering “Why in the world do we need to know how to use a statistical software program?” Here are the main reasons:</p>
-<p><br></p>
-<ol style="list-style-type: decimal">
-<li><p>We will be going through a lot of equations and abstract concepts in lecture and readings. Applying these concepts using real data is an important form of learning. A statistical software program is the most efficient (and in many cases the only) means of running data analyses, not just in the cloistered setting of a university classroom, but especially in the real world. Applied data analysis will be the way we bridge statistical theory to the “real world.” And R is the vehicle for accomplishing this.</p></li>
-<li><p>In order to do applied data analysis outside of the classroom, you need to know how to use a statistical program. There is no way around it as we don’t live in an exclusively pen and paper world. If you want to collect data on soil health, you need a program to store and analyze that data. If you want to collect data on the characteristics of recent migrants, you need a program to store and analyze that data. Even in qualitative work, after you’ve transcribed your interviews, the information you collected are data, which you will then need a software program to store and analyze that data.</p></li>
-</ol>
-<p><br></p>
-<p>The next question you may have is “I love Excel [or insert your favorite program]. Why can’t I use that and forget your stupid R?” Here are some reasons</p>
-<p><br></p>
-<ol style="list-style-type: decimal">
-<li>it is free. Most programs are not;</li>
-<li>it is open source. Which means the software is community supported. This allows you to get help not from some big corporation (e.g. Microsoft with Excel), but people all around the world who are using R. And R has <strong>a lot</strong> of users, which means that if you have a problem, and you pose it to the user community, someone will help you;</li>
-<li>it is powerful and extensible (meaning that procedures for analyzing data that don’t currently exist can be readily developed);</li>
-<li>it has the capability for mapping data, an asset not generally available in other statistical software;</li>
-<li>If it isn’t already there, R is becoming the de-facto data analysis tool in the physical and social sciences</li>
-</ol>
-<p><br></p>
-<p>R is different from Excel in that it is generally not a point-and-click program. You will be primarily writing code to clean and analyze data. What does <em>writing</em> or <em>sourcing</em> code mean? A basic example will help clarify. Let’s say you are given a dataset with 10 rows representing people living in Davis, CA. You have a variable in the dataset representing individual income. Let’s say this variable is named <em>inc</em>. To get the mean income of the 10 people in your dataset, you would write code that would look something like this</p>
-<pre class="r"><code>mean(inc)</code></pre>
-<p>The command tells the program to get the mean of the variable <em>inc</em>. If you wanted the sum, you write the command <code>sum(inc)</code>.</p>
-<p>Now, where do you write this command? You write it in a script. A script is basically a text file. Think of writing code as something similar to writing an essay in a word document. Instead of sentences to produce an essay, in a programming script you are writing code to run a data analysis. The basic process of sourcing code to run a data analysis task is as follows.</p>
-<ol style="list-style-type: decimal">
-<li><strong>Write code</strong>. First, you open your script file, and write code or various commands (like <code>mean(inc)</code>) that will execute data analysis tasks in this file.</li>
-<li><strong>Send code to the software program</strong>. You then send your some or all of your commands to the statistical software program (R in our case).</li>
-<li><strong>Program produces results based on code</strong>. The program then reads in your commands from the file and executes them, spitting out results in its console screen.</li>
-</ol>
-<p>I am skipping over many details, most of which are dependent on the type of statistical software program you are using, but the above steps outline the general work flow. You might now be thinking that you’re perfectly happy pointing and clicking your mouse in Excel (or wherever) to do your data analysis tasks. So, why should you adopt the statistical programming approach to conducting a data analysis?</p>
-<p><br></p>
-<ol style="list-style-type: decimal">
-<li>Your script documents the decisions you made during the data analysis process. This is beneficial for many reasons.</li>
-</ol>
-<ul>
-<li>It allows you to recreate your steps if you need to rerun your analysis many weeks, months or even years in the future.</li>
-<li>It allows you to share your steps with other people. If someone asks you what were the decisions made in the data analysis process, just hand them the script.</li>
-<li>Related to the above points, a script promotes transparency (here is what i did) and reproducibility (you can do it too). When you write code, you are forced to explicitly state the steps you took to do your research. When you do research by clicking through drop-down menus, your steps are lost, or at least documenting them requires considerable extra effort.</li>
-</ul>
-<ol start="2" style="list-style-type: decimal">
-<li>If you make a mistake in a data analysis step, you can go back, change a few lines of code, and poof, you’ve fixed your problem.</li>
-<li>It is more efficient. In particular, cleaning data can encompass a lot of tedious work that can be streamlined using statistical programming.</li>
-</ol>
-<p><br></p>
-<p>Hopefully, I’ve convinced you that statistical programming and R are worthwhile to learn.</p>
-<div style="margin-bottom:25px;">
-
-</div>
-</div>
-<div id="getting-r" class="section level2">
-<h2><strong>Getting R</strong></h2>
-<p><br />
-R can be downloaded from one of the “CRAN” (Comprehensive R Archive Network) sites. In the US, the main site is at <a href="http://cran.us.r-project.org/" class="uri">http://cran.us.r-project.org/</a>. Look in the “Download and Install R” area. Click on the appropriate link based on your operating system.</p>
-<p><strong>If you already have R on your computer, make sure you have the most updated version of R on your personal computer (3.6.3 “Holding the Windsock”).</strong></p>
-<div style="margin-bottom:25px;">
-
-</div>
-<div id="mac-os-x" class="section level3">
-<h3><strong>Mac OS X</strong></h3>
-<ol style="list-style-type: decimal">
-<li><p>On the “R for Mac OS X” page, there are multiple packages that could be downloaded. If you are running Mavericks, Yosemite, El Capitan, Sierra, High Sierra, Mojave or Catalina, click on R-3.6.3.pkg; if you are running an earlier version of OS X, download the R-3.2.1-snowleopard.pkg.</p></li>
-<li><p>After the package finishes downloading, locate the installer on your hard drive, double-click on the installer package, and after a few screens, select a destination for the installation of the R framework (the program) and the R.app GUI. Note that you will have to supply the Administrator’s password. Close the window when the installation is done.</p></li>
-<li><p>An application will appear in the Applications folder: R.app.</p></li>
-</ol>
-<div style="margin-bottom:25px;">
-
-</div>
-</div>
-<div id="windows" class="section level3">
-<h3><strong>Windows</strong></h3>
-<ol style="list-style-type: decimal">
-<li><p>On the “R for Windows” page, click on the “base” link, which should take you to the “R-3.6.3 for Windows (32/64 bit)” page</p></li>
-<li><p>On this page, click either on the “base” or “install R for the first time links”.</p></li>
-<li><p>On the next page, click on the “Download R 3.6.3 for Windows” link, and save the exe file to your hard disk when prompted. Saving to the desktop is fine.</p></li>
-<li><p>To begin the installation, double-click on the downloaded file. Don’t be alarmed if you get unknown publisher type warnings. Window’s User Account Control will also worry about an unidentified program wanting access to your computer. Click on “Run”.</p></li>
-<li><p>Select the proposed options in each part of the install dialog. When the “Select Components” screen appears, just accept the standard choices</p></li>
-</ol>
-<p>Note: Depending on the age of your computer and version of Windows, you may be running either a “32-bit” or “64-bit” version of the Windows operating system. If you have the 64-bit version (most likely), R will install the appropriate version (R x64 3.5.2) and will also (for backwards compatibility) install the 32-bit version (R i386 3.5.2). You can run either, but you will probably just want to run the 64-bit version.</p>
-<div style="margin-bottom:25px;">
-
-</div>
-</div>
-</div>
-<div id="what-is-rstudio" class="section level2">
-<h2><strong>What is RStudio?</strong></h2>
-<p><br />
-If you click on the R program you just downloaded, you will find a very basic user interface. For example, below is what I get on a Mac</p>
-<p><br></p>
-<center>
-<img src="rint.png" alt="R’s Interface." />
-</center>
-<p>We will not use R’s direct interface to run analyses. Instead, we will use the program RStudio. RStudio gives you a true integrated development environment (IDE), where you can write code in a window, see results in other windows, see locations of files, see objects you’ve created, and so on. To clarify which is which: R is the name of the programming language itself and RStudio is a convenient interface.</p>
-<p>To download and install RStudio, follow the directions below</p>
-<ol style="list-style-type: decimal">
-<li>Navigate to RStudio’s download <a href="https://rstudio.com/products/rstudio/download/#download">site</a></li>
-<li>Click on the appropriate link based on your OS (Windows, Mac, Linux and many others). Do not download anything from the “Zip/Tarballs” section.</li>
-<li>Click on the installer that you downloaded. Follow the installation wizard’s directions, making sure to keep all defaults intact. After installation, RStudio should pop up in your Applications or Programs folder/menu.</li>
-</ol>
-<div style="margin-bottom:25px;">
-
-</div>
-</div>
-<div id="the-rstudio-interface" class="section level2">
-<h2><strong>The RStudio Interface</strong></h2>
-<p><br />
-Open up RStudio. You should see the interface shown in the figure below, which has three windows.</p>
-<p><br></p>
-<center>
-<img src="rstudio.png" alt="R Studio’s Interface." />
-</center>
-<p><br></p>
-<ul>
-<li><strong>Console</strong> (left) - The way R works is you write a line of code to execute some kind of task on a data object. The R Console allows you to run code interactively. The screen prompt <code>&gt;</code> is an invitation from R to enter its world. This is where you type code in, press enter to execute the code, and see the results.</li>
-<li><strong>Environment, History, and Connections tabs</strong> (upper-right)
-<ul>
-<li><strong>Environment</strong> - shows all the R objects that are currently open in your workspace. This is the place, for example, where you will see any data you’ve loaded into R. When you exit RStudio, R will clear all objects in this window. You can also click on <img src="/Users/noli/Documents/UCD/teaching/CRD150/Lab/crd150.github.io/broom.png" /> to clear out all the objects loaded and created in your current session.</li>
-<li><strong>History</strong> - shows a list of executed commands in the current session.</li>
-<li><strong>Connections</strong> - you can connect to a variety of data sources, and explore the objects and data inside the connection. I typically don’t use this window, but you <a href="https://support.rstudio.com/hc/en-us/articles/115010915687-Using-RStudio-Connections">can</a>.<br />
-</li>
-</ul></li>
-<li><strong>Files, Plots, Packages, Help and Viewer tabs</strong> (lower-right)
-<ul>
-<li><strong>Files</strong> - shows all the files and folders in your current working directory (more on what this means later).</li>
-<li><strong>Plots</strong> - shows any charts, graphs, maps and plots you’ve successfully executed.<br />
-</li>
-<li><strong>Packages</strong> - tells you all the R packages that you have access to (more on this later).</li>
-<li><strong>Help</strong> - shows help documentation for R commands that you’ve called up.<br />
-</li>
-<li><strong>Viewer</strong> - allows you to view local web content (won’t be using this much).</li>
-</ul></li>
-</ul>
-<p>There is actually a fourth window, but we’ll get to it shortly (oh, the suspense!)</p>
-<div style="margin-bottom:25px;">
-
-</div>
-</div>
-<div id="using-r" class="section level2">
-<h2><strong>Using R</strong></h2>
-<p><br />
-R is really just a big fancy calculator. For example, type in the following mathematical expression next to the <code>&gt;</code> in the R console (left window)</p>
-<pre class="r"><code>1+1</code></pre>
-<p>Note that spacing does not matter: <code>1+1</code> will generate the same answer as <code>1      +       1</code>. Can you say hello to the world?<br />
 </p>
-<pre class="r"><code>hello world</code></pre>
-<pre><code>## Error: &lt;text&gt;:1:7: unexpected symbol
-## 1: hello world
-##           ^</code></pre>
-<p>Nope. What is the problem here? We need to put quotes around it.</p>
-<pre class="r"><code>&quot;hello world&quot;</code></pre>
-<pre><code>## [1] &quot;hello world&quot;</code></pre>
-<p>“hello world” is a character and R recognizes characters only if there are quotes around it. Characters are one of R’s four basic data types. You will learn more about these shortly (more suspense!)</p>
-<p>In running the few lines of code above, we’ve asked you to work directly in the R Console and issue commands in an <em>interactive</em> way. That is, you type a command after <code>&gt;</code>, you hit enter/return, R responds, you type the next command, hit enter/return, R responds, and so on. Instead of writing the command directly into the console, you should write it in a script. The process is now: Type your command in the script. Run the code from the script. R responds. You get results. You can write two commands in a script. Run both simultaneously. R responds. You get results. This is the basic flow.</p>
-<p>In your homework assignments, we will be asking you to submit code in a specific type of script: the R Markdown file. R Markdown allows you to create documents that serve as a neat record of your analysis. Think of it as a word document file, but instead of sentences in an essay, you are writing code for a data analysis.</p>
-<p>Now may be a good time to read through the class <a href="https://geo200cn.github.io/hw_guidelines.html">assignment guidelines</a> as they go through the basics of R Markdown files.</p>
-<hr />
-<p><a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>.</p>
-<p>Website created and maintained by <a href="https://nbrazil.faculty.ucdavis.edu/">Noli Brazil</a></p>
-</div>
 
 
 
@@ -646,7 +393,7 @@ R is really just a big fancy calculator. For example, type in the following math
 
 // add bootstrap table styles to pandoc tables
 function bootstrapStylePandocTables() {
-  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
 }
 $(document).ready(function () {
   bootstrapStylePandocTables();
@@ -664,7 +411,7 @@ $(document).ready(function () {
 
 $(document).ready(function () {
   $('.tabset-dropdown > .nav-tabs > li').click(function () {
-    $(this).parent().toggleClass('nav-tabs-open')
+    $(this).parent().toggleClass('nav-tabs-open');
   });
 });
 </script>
@@ -679,6 +426,9 @@ $(document).ready(function () {
 <script>
 $(document).ready(function ()  {
 
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
     // move toc-ignore selectors from section div to header
     $('div.section.toc-ignore')
         .removeClass('toc-ignore')
@@ -690,7 +440,7 @@ $(document).ready(function ()  {
       theme: "bootstrap3",
       context: '.toc-content',
       hashGenerator: function (text) {
-        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
       },
       ignoreSelector: ".toc-ignore",
       scrollTo: 0
