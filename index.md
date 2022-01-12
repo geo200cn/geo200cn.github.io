@@ -61,13 +61,13 @@ On Canvas you will find:
 
 ## About the class
 
-This course provides an introduction to quantitative geographic methods with a focus on spatial data manipulation, modeling, and analysis.  Students leaving the course should have gained both methodological skills, and have a stronger sense of the concepts underlying this type of research analysis. Lectures will present abstract statistical concepts alongside data analysis examples motivated through real-world problems.  Labs will provide hands-on practice of the methods covered in lecture and readings using the statistical software program R. 
+This course provides an introduction to quantitative geographic methods with a focus on spatial data manipulation, modeling, and analysis.  Students leaving the course should have gained both methodological skills, and have a stronger sense of the concepts underlying this type of research analysis. Lectures will present abstract statistical concepts alongside data analysis examples motivated through real-world problems.  Labs will provide hands-on practice of the methods covered in lecture and readings using the statistical software program R 
 
 <br>
 
 ## Giving Credit
 
-The following websites were used in the construction of this course website. My gratitude to the people who invested their time and effort in developing and offering these valuable resources to the public.
+The following websites were used in the construction of this course website.  My gratitude to the people who invested their time and effort in developing and offering these valuable resources to the public.
 
 * Manuel Gimond's [Intro to GIS and Spatial Analysis](https://mgimond.github.io/Spatial/index.html)
 * Emily Burchfield's [Geospatial Analysis in R](https://eburchfield.github.io/programming_resources.html)
@@ -79,5 +79,8 @@ The following websites were used in the construction of this course website. My 
 
 
 ***
+
+<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>.
+
 
 Website created and maintained by [Noli Brazil](https://nbrazil.faculty.ucdavis.edu/)
