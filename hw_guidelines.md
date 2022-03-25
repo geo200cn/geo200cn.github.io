@@ -4,9 +4,9 @@ subtitle: <h4 style="font-style:normal">GEO 200CN - Quantitative Geography</h4>
 output: 
   html_document:
     toc: true
-    toc_depth: 3
+    toc_depth: 4
     toc_float: true
-    theme: yeti
+    theme: cosmo
 ---
 
 

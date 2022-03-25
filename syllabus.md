@@ -5,9 +5,9 @@ author: <h4 style="font-style:normal">Professor Noli Brazil</h4>
 output: 
   html_document:
     toc: true
-    toc_depth: 3
+    toc_depth: 4
     toc_float: true
-    theme: yeti
+    theme: cosmo
 ---
 
 <style>
