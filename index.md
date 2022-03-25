@@ -75,7 +75,7 @@ This course provides an introduction to quantitative geographic methods with a f
 
 ## Giving Credit
 
-The following websites were used in the construction of this course website.  My gratitude to the people who invested their time and effort in developing and offering these valuable resources to the public
+The following websites were used in the construction of this course website.  My gratitude to the people who invested their time and effort in developing and offering these valuable resources to the public.
 
 * Robert Hijman's [Spatial Data Science with R](https://rspatial.org/)
 * Manuel Gimond's [Intro to GIS and Spatial Analysis](https://mgimond.github.io/Spatial/index.html)

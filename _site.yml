@@ -12,6 +12,7 @@ navbar:
     - text: "Labs"
       menu:
         - text: "Getting Started"
+          href:
     - text: "R Tips"
       href: tips.html
 
