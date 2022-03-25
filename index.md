@@ -37,7 +37,6 @@ h2.title {
 
 \
 
-
 Welcome to the GEO 200CN website!  This website complements the class [Canvas](https://login.canvas.ucdavis.edu/) site  
 
 On this website you will find:
@@ -61,7 +60,8 @@ On Canvas you will find:
 
 ## About the class
 
-This course provides an introduction to quantitative geographic methods with a focus on spatial data manipulation, modeling, and analysis.  Students leaving the course should have gained both methodological skills, and have a stronger sense of the concepts underlying this type of research analysis. Lectures will present abstract statistical concepts alongside data analysis examples motivated through real-world problems.  Labs will provide hands-on practice of the methods covered in lecture and readings using the statistical software program R 
+This course provides an introduction to quantitative geographic methods with a focus on spatial data manipulation, modeling, and analysis.  Students leaving the course should have gained both methodological skills, and have a stronger sense of the concepts underlying this type of research analysis. Lectures will present abstract statistical concepts alongside data analysis examples motivated through real-world problems.  Labs will provide hands-on practice of the methods covered in lecture and readings using the statistical software program R. 
+
 
 
 <br>
