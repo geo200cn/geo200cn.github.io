@@ -37,7 +37,7 @@ h2.title {
 
 \
 
-Welcome to the GEO 200CN website!  This website complements the class [Canvas](https://login.canvas.ucdavis.edu/) site  
+Welcome to the GEO 200CN website!  This website complements the class [Canvas](https://login.canvas.ucdavis.edu/) site.  
 
 On this website you will find:
 
