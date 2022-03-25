@@ -21,7 +21,7 @@ output:
     theme: cosmo
     highlight: textmate
     mathjax: ~
-    toc_depth: 4
+    toc_depth: 3
     toc_float:
       collapsed: yes
       smooth_scroll: yes
@@ -29,4 +29,3 @@ output:
     css: styles.css
     keep_md: true
     lib_dir: site_libs
-
