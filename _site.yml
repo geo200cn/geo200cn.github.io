@@ -20,7 +20,7 @@ output:
     theme: cosmo
     highlight: textmate
     mathjax: ~
-    toc_depth: 3
+    toc_depth: 4
     toc_float:
       collapsed: yes
       smooth_scroll: yes

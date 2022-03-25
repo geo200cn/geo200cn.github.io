@@ -1,9 +1,24 @@
 ---
 title: 'GEO 200CN: Quantitative Geography'
-output: html_document
+subtitle: <h4 style="font-style:normal">Professor Noli Brazil</h4>
+author: <h4 style="font-style:normal">University of California, Davis</h4>
 ---
 
 <style>
+p.comment {
+background-color: #DBDBDB;
+padding: 10px;
+border: 1px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: italic;
+}
+
+.figure {
+   margin-top: 20px;
+   margin-bottom: 20px;
+}
+
 h1.title {
   font-weight: bold;
   font-family: Arial;  
@@ -13,12 +28,8 @@ h2.title {
   font-family: Arial;  
 }
 
-.figure {
-   margin-top: 20px;
-   margin-bottom: 20px;
-}
-
 </style>
+
 
 <style type="text/css">
 #TOC {
@@ -27,15 +38,11 @@ h2.title {
 }
 </style>
 
-\
+</style>
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-
-<h4 style="font-style:normal">Professor Noli Brazil</h4>
-<h4 style="font-style:normal">University of California, Davis</h4>
-<h4 style="font-style:normal">Department of Human Ecology, Community and Regional Development</h4>
 
 \
 
