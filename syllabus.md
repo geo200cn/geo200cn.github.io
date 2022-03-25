@@ -1,7 +1,7 @@
 ---
 title: "Syllabus"
 subtitle: <h4 style="font-style:normal">GEO 200CN - Quantitative Geography</h4>
-date: <h4 style="font-style:normal">Spring 2022</h4>
+author: <h4 style="font-style:normal">Professor Noli Brazil</h4>
 output: 
   html_document:
     toc: true
