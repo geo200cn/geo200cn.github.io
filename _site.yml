@@ -13,6 +13,8 @@ navbar:
       menu:
         - text: "Getting Started"
           href: getting_started.html
+        - text: "Exploratory Data Analysis"
+          href: eda.html
     - text: "R Tips"
       href: tips.html
 
