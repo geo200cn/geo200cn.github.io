@@ -127,7 +127,7 @@ Before we do so, by learning how to read and write data the tidy way, you've ear
 ## **Tibbles**
 \
 
-Although the **tidyverse** works with all data objects, its fundamental object type is the tibble. Tibbles are essentially a special variant of [data frames]() that have desirable properties for printing and joining.  To illustrate comparisons between tibbles and regular data frames, let's bring in the county data we downloaded above but using the base R function `read.csv()`  
+Although the **tidyverse** works with all data objects, its fundamental object type is the tibble. Tibbles are essentially a special variant of [data frames](https://geo200cn.github.io/getting_started.html#Data_Frames) that have desirable properties for printing and joining.  To illustrate comparisons between tibbles and regular data frames, let's bring in the county data we downloaded above but using the base R function `read.csv()`  
 
 ```{r message = FALSE, warning = FALSE}
 neighborhoods.df <- read.csv("https://raw.githubusercontent.com/geo200cn/data/master/week2data.csv")
@@ -200,7 +200,7 @@ In practice, most of the data files you will download will contain variables you
 
 
 <center>
-![](/Users/noli/Documents/UCD/teaching/CRD 230/Lab/crd230.github.io/subsetcols.png)
+![](/Users/noli/Documents/UCD/teaching/GEO 200CN/lab/geo200cn.github.io/subsetcols.png)
 
 </center>
 
@@ -229,7 +229,7 @@ The negative sign tells R to exclude the variable.
 The `mutate()` function allows you to create new variables within your dataset.  This is important when you need to transform variables in some way - for example, calculating a ratio or adding two variables together.  Visually, you are doing this
 
 <center>
-![](/Users/noli/Documents/UCD/teaching/CRD 230/Lab/crd230.github.io/mutate.png)
+![](/Users/noli/Documents/UCD/teaching/GEO 200CN/lab/geo200cn.github.io/mutate.png)
 
 </center>
 

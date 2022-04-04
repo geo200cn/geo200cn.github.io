@@ -468,7 +468,7 @@ h2.title {
 <h2><strong>Tibbles</strong></h2>
 <p><br />
 </p>
-<p>Although the <strong>tidyverse</strong> works with all data objects, its fundamental object type is the tibble. Tibbles are essentially a special variant of <a href="">data frames</a> that have desirable properties for printing and joining. To illustrate comparisons between tibbles and regular data frames, let’s bring in the county data we downloaded above but using the base R function <code>read.csv()</code></p>
+<p>Although the <strong>tidyverse</strong> works with all data objects, its fundamental object type is the tibble. Tibbles are essentially a special variant of <a href="https://geo200cn.github.io/getting_started.html#Data_Frames">data frames</a> that have desirable properties for printing and joining. To illustrate comparisons between tibbles and regular data frames, let’s bring in the county data we downloaded above but using the base R function <code>read.csv()</code></p>
 <pre class="r"><code>neighborhoods.df &lt;- read.csv(&quot;https://raw.githubusercontent.com/geo200cn/data/master/week2data.csv&quot;)</code></pre>
 <p>The object <em>neighborhoods.df</em> is a regular data frame. The first difference between regular data frames and tibbles is how the dataset “looks.” First, the tibble.</p>
 <pre class="r"><code>neighborhoods</code></pre>
@@ -530,7 +530,7 @@ h2.title {
 </p>
 <p>In practice, most of the data files you will download will contain variables you don’t need. It is easier to work with a smaller dataset as it reduces clutter and clears up memory space, which is important if you are executing complex tasks on a large number of observations. Use the command <code>select()</code> to keep variables by name. Visually, we are doing the following (taken from the RStudio <a href="http://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf">cheatsheet</a>)</p>
 <center>
-<p><img src="/Users/noli/Documents/UCD/teaching/CRD%20230/Lab/crd230.github.io/subsetcols.png" /></p>
+<p><img src="subsetcols.png" /></p>
 </center>
 <p>Let’s keep <em>County</em>, <em>GEOID</em>, and <em>hisp</em>, <em>nhwhite</em>, <em>nhblk</em> and <em>tpopr</em> from the <em>neighborhoods</em> dataset.</p>
 <pre class="r"><code>select(neighborhoods, County, GEOID, hisp, nhwhite, nhblk, tpopr)</code></pre>
@@ -562,7 +562,7 @@ neighborhoods</code></pre>
 </p>
 <p>The <code>mutate()</code> function allows you to create new variables within your dataset. This is important when you need to transform variables in some way - for example, calculating a ratio or adding two variables together. Visually, you are doing this</p>
 <center>
-<p><img src="/Users/noli/Documents/UCD/teaching/CRD%20230/Lab/crd230.github.io/mutate.png" /></p>
+<p><img src="mutate.png" /></p>
 </center>
 <p>You can use the <code>mutate()</code> command to generate as many new variables as you would like. For example, let’s construct three new variables in <em>neighborhoods</em> - the percent of residents who are non-Hispanic white, non-Hispanic black, and Hispanic. Name these variables <em>pwhite</em>, <em>pblack</em>, and <em>phisp</em>, respectively.</p>
 <pre class="r"><code>mutate(neighborhoods, pwhite = nhwhite/tpopr, pblack = nhblk/tpopr, 
