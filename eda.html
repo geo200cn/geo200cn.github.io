@@ -595,7 +595,7 @@ neighborhoods</code></pre>
 <pre class="r"><code>filter(neighborhoods, pwhite &lt; 0.5)</code></pre>
 <p>Both lines of code do not include neighborhoods that have a percent white equal to 0.5. We include it by using the less than or equal operator <code>&lt;=</code> or greater than or equal operator <code>&gt;=</code>.</p>
 <pre class="r"><code>filter(neighborhoods, pwhite &lt;= 0.5)</code></pre>
-<p>In addition to comparison operators, filtering may also utilize logical operators that make multiple selections. There are three basic logical operators: <code>&amp;</code> (and), <code>|</code> is (or), and <code>!</code> is (not). We can keep neighborhoods with <em>phisp</em> greater than 0.5 <strong>and</strong> <em>tpopr</em> greater than 5000 percent using <code>&amp;</code>.</p>
+<p>In addition to comparison operators, filtering may also utilize logical operators that make multiple selections. There are three basic logical operators: <code>&amp;</code> (and), <code>|</code> is (or), and <code>!</code> is (not). We can keep neighborhoods with <em>phisp</em> greater than 0.5 <strong>and</strong> <em>tpopr</em> greater than 5000 using <code>&amp;</code>.</p>
 <pre class="r"><code>filter(neighborhoods, phisp &gt; 0.5 &amp; tpopr &gt; 5000)</code></pre>
 <p>Use <code>|</code> to keep neighborhoods in Sacramento <strong>or</strong> Yolo</p>
 <pre class="r"><code>filter(neighborhoods, County == &quot;Sacramento&quot; | County == &quot;Yolo&quot;)</code></pre>

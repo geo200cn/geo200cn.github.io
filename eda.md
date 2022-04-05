@@ -347,7 +347,7 @@ Both lines of code do not include neighborhoods that have a percent white equal 
 filter(neighborhoods, pwhite <= 0.5)
 ```
 
-In addition to comparison operators, filtering may also utilize logical operators that make multiple selections.  There are three basic logical operators: `&` (and), `|` is (or), and `!` is (not).  We can keep neighborhoods with *phisp* greater than 0.5 **and** *tpopr* greater than 5000 percent using `&`.
+In addition to comparison operators, filtering may also utilize logical operators that make multiple selections.  There are three basic logical operators: `&` (and), `|` is (or), and `!` is (not).  We can keep neighborhoods with *phisp* greater than 0.5 **and** *tpopr* greater than 5000 using `&`.
 
 
 ```r
