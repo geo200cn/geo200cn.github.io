@@ -1,5 +1,5 @@
 ---
-title: "Exploratory Data Analyysis"
+title: "Exploratory Data Analysis"
 subtitle: <h4 style="font-style:normal">GEO 200CN - Quantitative Geography</h4>
 author: <h4 style="font-style:normal">Professor Noli Brazil</h4>
 date: <h4 style="font-style:normal">April 4, 2022</h4>
@@ -250,6 +250,62 @@ neighborhoods
 ```
 
 We used the function `ifelse()` to create *mhisp* - the function tells R that if the condition `phisp > 0.5` is met, the tract's value for the variable *mhisp* will be "Majority", otherwise it will be "Not Majority".
+
+
+<div style="margin-bottom:25px;">
+</div>
+### **Filtering**
+\
+
+Filtering means selecting rows/observations based on their values.  To filter in R, use the command `filter()`.  Visually, filtering rows looks like.
+
+<center>
+![](/Users/noli/Documents/UCD/teaching/GEO 200CN/lab/geo200cn.github.io/subsetrows.png)
+
+</center>
+
+The first argument in the parentheses of this command is the name of the data frame. The second and any subsequent arguments (separated by commas) are the expressions that filter the data frame. For example, we can select Sacramento county
+
+```{r, results="hide"}
+filter(neighborhoods, County == "Sacramento")
+```
+
+The double equal operator `==` means equal to.  We can also explicitly exclude cases and keep everything else by using the not equal operator `!=`.  The following code *excludes* Sacramento county.
+
+```{r, results="hide"}
+filter(neighborhoods, County != "Sacramento")
+```
+
+
+What about filtering if a neighborhood has a value greater than a specified value?  For example, neighborhoods with a percent white greater than 0.5 (50%). 
+
+```{r, results="hide"}
+filter(neighborhoods, pwhite > 0.5)
+```
+
+What about less than 0.5 (50%)?
+
+```{r, results="hide"}
+filter(neighborhoods, pwhite < 0.5)
+```
+
+Both lines of code do not include neighborhoods that have a percent white equal to 0.5.  We include it by using the less than or equal operator `<=` or greater than or equal operator `>=`.
+
+```{r, results="hide"}
+filter(neighborhoods, pwhite <= 0.5)
+```
+
+In addition to comparison operators, filtering may also utilize logical operators that make multiple selections.  There are three basic logical operators: `&` (and), `|` is (or), and `!` is (not).  We can keep neighborhoods with *phisp* greater than 0.5 **and** *tpopr* greater than 5000 percent using `&`.
+
+```{r, results="hide"}
+filter(neighborhoods, phisp > 0.5 & tpopr > 5000)
+```
+
+Use `|` to keep neighborhoods in Sacramento **or** Yolo
+
+```{r, results="hide"}
+filter(neighborhoods, County == "Sacramento" | County == "Yolo")
+```
 
 <div style="margin-bottom:25px;">
 </div>

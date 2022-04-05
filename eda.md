@@ -1,5 +1,5 @@
 ---
-title: "Exploratory Data Analyysis"
+title: "Exploratory Data Analysis"
 subtitle: <h4 style="font-style:normal">GEO 200CN - Quantitative Geography</h4>
 author: <h4 style="font-style:normal">Professor Noli Brazil</h4>
 date: <h4 style="font-style:normal">April 4, 2022</h4>
@@ -297,6 +297,69 @@ neighborhoods
 ```
 
 We used the function `ifelse()` to create *mhisp* - the function tells R that if the condition `phisp > 0.5` is met, the tract's value for the variable *mhisp* will be "Majority", otherwise it will be "Not Majority".
+
+
+<div style="margin-bottom:25px;">
+</div>
+### **Filtering**
+\
+
+Filtering means selecting rows/observations based on their values.  To filter in R, use the command `filter()`.  Visually, filtering rows looks like.
+
+<center>
+![](/Users/noli/Documents/UCD/teaching/GEO 200CN/lab/geo200cn.github.io/subsetrows.png)
+
+</center>
+
+The first argument in the parentheses of this command is the name of the data frame. The second and any subsequent arguments (separated by commas) are the expressions that filter the data frame. For example, we can select Sacramento county
+
+
+```r
+filter(neighborhoods, County == "Sacramento")
+```
+
+The double equal operator `==` means equal to.  We can also explicitly exclude cases and keep everything else by using the not equal operator `!=`.  The following code *excludes* Sacramento county.
+
+
+```r
+filter(neighborhoods, County != "Sacramento")
+```
+
+
+What about filtering if a neighborhood has a value greater than a specified value?  For example, neighborhoods with a percent white greater than 0.5 (50%). 
+
+
+```r
+filter(neighborhoods, pwhite > 0.5)
+```
+
+What about less than 0.5 (50%)?
+
+
+```r
+filter(neighborhoods, pwhite < 0.5)
+```
+
+Both lines of code do not include neighborhoods that have a percent white equal to 0.5.  We include it by using the less than or equal operator `<=` or greater than or equal operator `>=`.
+
+
+```r
+filter(neighborhoods, pwhite <= 0.5)
+```
+
+In addition to comparison operators, filtering may also utilize logical operators that make multiple selections.  There are three basic logical operators: `&` (and), `|` is (or), and `!` is (not).  We can keep neighborhoods with *phisp* greater than 0.5 **and** *tpopr* greater than 5000 percent using `&`.
+
+
+```r
+filter(neighborhoods, phisp > 0.5 & tpopr > 5000)
+```
+
+Use `|` to keep neighborhoods in Sacramento **or** Yolo
+
+
+```r
+filter(neighborhoods, County == "Sacramento" | County == "Yolo")
+```
 
 <div style="margin-bottom:25px;">
 </div>
@@ -853,7 +916,7 @@ Instead of tables and summary statistics, you might want to summarize your data 
 plot(neighces$phisp~neighces$Poverty)
 ```
 
-![](eda_files/figure-html/unnamed-chunk-40-1.png)<!-- -->
+![](eda_files/figure-html/unnamed-chunk-47-1.png)<!-- -->
 
 The **tidyverse**'s data visualization package is **ggplot2**. The graphing function is `ggplot()` and it takes on the basic template
 
@@ -882,7 +945,7 @@ You first start out with the base layer.  It represents the empty ggplot layer d
 ggplot(neighces)
 ```
 
-![](eda_files/figure-html/unnamed-chunk-41-1.png)<!-- -->
+![](eda_files/figure-html/unnamed-chunk-48-1.png)<!-- -->
 
 We haven’t told `ggplot()` what type of geometric object(s) we want to plot, nor how the variables should be mapped to the geometric objects, so we just have a blank plot. We have geoms to paint the blank canvas.
 
@@ -906,7 +969,7 @@ ggplot(neighces) +
 ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 ```
 
-![](eda_files/figure-html/unnamed-chunk-42-1.png)<!-- -->
+![](eda_files/figure-html/unnamed-chunk-49-1.png)<!-- -->
 
 Because a single variable is plotted on the x-axis, we specify `x = in aes()` but not a `y =`. The `xlab()` function, which is an example of a `<OPTIONS>()` function, allows you to relabel the title of the x-axis (`ylab()` is for the y-axis). The message before the plot tells us that we can use the `bins =` argument to change the number of bins used to produce the histogram. You can increase the number of bins to make the bins narrower and thus get a finer grain of detail. Or you can decrease the number of bins to get a broader visual summary of the shape of the variable’s distribution. Try changing the number of bins and see what you get.
 
@@ -925,7 +988,7 @@ ggplot(neighces) +
   ylab("PM 2.5") 
 ```
 
-![](eda_files/figure-html/unnamed-chunk-43-1.png)<!-- -->
+![](eda_files/figure-html/unnamed-chunk-50-1.png)<!-- -->
 
 Plots with both a histogram and density line can be created:
 
@@ -940,7 +1003,7 @@ ggplot(neighces, aes(x=PM2.5)) +
 ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 ```
 
-![](eda_files/figure-html/unnamed-chunk-44-1.png)<!-- -->
+![](eda_files/figure-html/unnamed-chunk-51-1.png)<!-- -->
 
 `alpha =` controls the transparency and `fill =` controls for the color of the plot.
 
@@ -958,7 +1021,7 @@ ggplot(neighces) +
   ylab("PM 2.5") 
 ```
 
-![](eda_files/figure-html/unnamed-chunk-45-1.png)<!-- -->
+![](eda_files/figure-html/unnamed-chunk-52-1.png)<!-- -->
 
 The top, middle and bottom of the box represent the 75th, 50th, and 25th percentiles, respectively.  The points outside the whiskers represent outliers. Outliers are defined as having values that are either larger than the 75th percentile plus 1.5 times the IQR or smaller than the 25th percentile minus 1.5 times the IQR. 
 
@@ -972,7 +1035,7 @@ ggplot(neighces) +
     xlab("Hispanic population") 
 ```
 
-![](eda_files/figure-html/unnamed-chunk-46-1.png)<!-- -->
+![](eda_files/figure-html/unnamed-chunk-53-1.png)<!-- -->
 
 
 <div style="margin-bottom:25px;">
@@ -994,7 +1057,7 @@ neighces %>%
     ylab("Proportion") 
 ```
 
-![](eda_files/figure-html/unnamed-chunk-47-1.png)<!-- -->
+![](eda_files/figure-html/unnamed-chunk-54-1.png)<!-- -->
 
 We didn’t need to specify `data = <DATA>` in `ggplot()` because it was piped in. Within `aes()`, we specified the categorical variable *oppzone* on the x-axis and then the proportion of neighborhoods freq on the y-axis. The argument `stat = "identity"` tells `ggplot()` to plot the exact value listed for the variable *freq*.
 
@@ -1014,7 +1077,7 @@ ggplot(neighces) +
     ylab("Proportion Hispanic")
 ```
 
-![](eda_files/figure-html/unnamed-chunk-48-1.png)<!-- -->
+![](eda_files/figure-html/unnamed-chunk-55-1.png)<!-- -->
 
 What does scatter plot suggest about the relationship between the two variables?
 
@@ -1030,7 +1093,7 @@ ggplot(neighces) +
       facet_wrap(~County) 
 ```
 
-![](eda_files/figure-html/unnamed-chunk-49-1.png)<!-- -->
+![](eda_files/figure-html/unnamed-chunk-56-1.png)<!-- -->
 
 
 <div style="margin-bottom:25px;">
@@ -1050,7 +1113,7 @@ ggplot() +
   coord_flip()
 ```
 
-![](eda_files/figure-html/unnamed-chunk-50-1.png)<!-- -->
+![](eda_files/figure-html/unnamed-chunk-57-1.png)<!-- -->
 
 `coord_flip()` flips the x and y axes (take it out and see how ugly the plot is).
 
@@ -1067,7 +1130,7 @@ ggplot() +
   xlab("PM 2.5")
 ```
 
-![](eda_files/figure-html/unnamed-chunk-51-1.png)<!-- -->
+![](eda_files/figure-html/unnamed-chunk-58-1.png)<!-- -->
 
 `ggplot()` has many additional functions and features that allow you to adjust the the aesthetic features of your plot.  For example, we can add additional text to your plot to enhance its readability.  To illustrate this, let's create a scatterplot of mean PM 2.5 and mean poverty rate for each county, but indicate the county corresponding to each point on the plot.  We do this by adding the `geom_text()` function.
 
@@ -1084,7 +1147,7 @@ ggplot() +
   xlab("PM 2.5")
 ```
 
-![](eda_files/figure-html/unnamed-chunk-52-1.png)<!-- -->
+![](eda_files/figure-html/unnamed-chunk-59-1.png)<!-- -->
 
 
 `ggplot()` is a powerful function, and you can make a lot of really visually captivating graphs. You can change colors, add text labels, layer different plots on top of one another or side by side. You can also make maps with the function, which we'll cover a few labs from now.  You can also make your graphs really "pretty" and professional looking by altering graphing features using `<OPTIONS()`, including colors, labels, titles and axes.  For a list of `ggplot()` functions that alter various features of a graph, check out [Chapter 22 in RDS](http://r4ds.had.co.nz/graphics-for-communication.html).  

@@ -11,7 +11,7 @@
 
 
 
-<title>Exploratory Data Analyysis</title>
+<title>Exploratory Data Analysis</title>
 
 <script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -370,7 +370,7 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Exploratory Data Analyysis</h1>
+<h1 class="title toc-ignore">Exploratory Data Analysis</h1>
 <h3 class="subtitle"><h4 style="font-style:normal">
 GEO 200CN - Quantitative Geography
 </h4></h3>
@@ -573,6 +573,32 @@ neighborhoods</code></pre>
               mhisp = ifelse(phisp &gt; 0.5, &quot;Majority&quot;,&quot;Not Majority&quot;))
 neighborhoods</code></pre>
 <p>We used the function <code>ifelse()</code> to create <em>mhisp</em> - the function tells R that if the condition <code>phisp &gt; 0.5</code> is met, the tract’s value for the variable <em>mhisp</em> will be “Majority”, otherwise it will be “Not Majority”.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="filtering" class="section level3">
+<h3><strong>Filtering</strong></h3>
+<p><br />
+</p>
+<p>Filtering means selecting rows/observations based on their values. To filter in R, use the command <code>filter()</code>. Visually, filtering rows looks like.</p>
+<center>
+<p><img src="subsetrows.png" /></p>
+</center>
+<p>The first argument in the parentheses of this command is the name of the data frame. The second and any subsequent arguments (separated by commas) are the expressions that filter the data frame. For example, we can select Sacramento county</p>
+<pre class="r"><code>filter(neighborhoods, County == &quot;Sacramento&quot;)</code></pre>
+<p>The double equal operator <code>==</code> means equal to. We can also explicitly exclude cases and keep everything else by using the not equal operator <code>!=</code>. The following code <em>excludes</em> Sacramento county.</p>
+<pre class="r"><code>filter(neighborhoods, County != &quot;Sacramento&quot;)</code></pre>
+<p>What about filtering if a neighborhood has a value greater than a specified value? For example, neighborhoods with a percent white greater than 0.5 (50%).</p>
+<pre class="r"><code>filter(neighborhoods, pwhite &gt; 0.5)</code></pre>
+<p>What about less than 0.5 (50%)?</p>
+<pre class="r"><code>filter(neighborhoods, pwhite &lt; 0.5)</code></pre>
+<p>Both lines of code do not include neighborhoods that have a percent white equal to 0.5. We include it by using the less than or equal operator <code>&lt;=</code> or greater than or equal operator <code>&gt;=</code>.</p>
+<pre class="r"><code>filter(neighborhoods, pwhite &lt;= 0.5)</code></pre>
+<p>In addition to comparison operators, filtering may also utilize logical operators that make multiple selections. There are three basic logical operators: <code>&amp;</code> (and), <code>|</code> is (or), and <code>!</code> is (not). We can keep neighborhoods with <em>phisp</em> greater than 0.5 <strong>and</strong> <em>tpopr</em> greater than 5000 percent using <code>&amp;</code>.</p>
+<pre class="r"><code>filter(neighborhoods, phisp &gt; 0.5 &amp; tpopr &gt; 5000)</code></pre>
+<p>Use <code>|</code> to keep neighborhoods in Sacramento <strong>or</strong> Yolo</p>
+<pre class="r"><code>filter(neighborhoods, County == &quot;Sacramento&quot; | County == &quot;Yolo&quot;)</code></pre>
 <div style="margin-bottom:25px;">
 
 </div>
@@ -910,7 +936,7 @@ getmode &lt;- function(v) {
 </p>
 <p>Instead of tables and summary statistics, you might want to summarize your data using plots. The base R function for plotting is <code>plot()</code>. We can create a scatterplot (more on this later) of proportion and Hispanic and the poverty rate by typing in the following</p>
 <pre class="r"><code>plot(neighces$phisp~neighces$Poverty)</code></pre>
-<p><img src="eda_files/figure-html/unnamed-chunk-40-1.png" /><!-- --></p>
+<p><img src="eda_files/figure-html/unnamed-chunk-47-1.png" /><!-- --></p>
 <p>The <strong>tidyverse</strong>’s data visualization package is <strong>ggplot2</strong>. The graphing function is <code>ggplot()</code> and it takes on the basic template</p>
 <p><br></p>
 <pre><code>ggplot(data = &lt;DATA&gt;) +
@@ -925,7 +951,7 @@ getmode &lt;- function(v) {
 <p>The basic idea is that a ggplot graphic layers geometric objects (circles, lines, etc), themes, and scales on top of data.</p>
 <p>You first start out with the base layer. It represents the empty ggplot layer defined by the <code>ggplot()</code> function.</p>
 <pre class="r"><code>ggplot(neighces)</code></pre>
-<p><img src="eda_files/figure-html/unnamed-chunk-41-1.png" /><!-- --></p>
+<p><img src="eda_files/figure-html/unnamed-chunk-48-1.png" /><!-- --></p>
 <p>We haven’t told <code>ggplot()</code> what type of geometric object(s) we want to plot, nor how the variables should be mapped to the geometric objects, so we just have a blank plot. We have geoms to paint the blank canvas.</p>
 <p>From here, we add a “geom” layer to the ggplot object. Layers are added to ggplot objects using <code>+</code>, instead of <code>%&gt;%</code>, since you are not explicitly piping an object into each subsequent layer, but adding layers on top of one another. Each geom is associated with a specific type of graph.</p>
 <div style="margin-bottom:25px;">
@@ -940,7 +966,7 @@ getmode &lt;- function(v) {
   geom_histogram(mapping = aes(x=PM2.5)) +
   xlab(&quot;PM 2.5&quot;) </code></pre>
 <pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
-<p><img src="eda_files/figure-html/unnamed-chunk-42-1.png" /><!-- --></p>
+<p><img src="eda_files/figure-html/unnamed-chunk-49-1.png" /><!-- --></p>
 <p>Because a single variable is plotted on the x-axis, we specify <code>x = in aes()</code> but not a <code>y =</code>. The <code>xlab()</code> function, which is an example of a <code>&lt;OPTIONS&gt;()</code> function, allows you to relabel the title of the x-axis (<code>ylab()</code> is for the y-axis). The message before the plot tells us that we can use the <code>bins =</code> argument to change the number of bins used to produce the histogram. You can increase the number of bins to make the bins narrower and thus get a finer grain of detail. Or you can decrease the number of bins to get a broader visual summary of the shape of the variable’s distribution. Try changing the number of bins and see what you get.</p>
 <div style="margin-bottom:25px;">
 
@@ -954,13 +980,13 @@ getmode &lt;- function(v) {
 <pre class="r"><code>ggplot(neighces) + 
   geom_density(mapping = aes(x=PM2.5)) +
   ylab(&quot;PM 2.5&quot;) </code></pre>
-<p><img src="eda_files/figure-html/unnamed-chunk-43-1.png" /><!-- --></p>
+<p><img src="eda_files/figure-html/unnamed-chunk-50-1.png" /><!-- --></p>
 <p>Plots with both a histogram and density line can be created:</p>
 <pre class="r"><code>ggplot(neighces, aes(x=PM2.5)) + 
  geom_histogram(aes(y=..density..), colour=&quot;black&quot;, fill=&quot;white&quot;)+
  geom_density(alpha=.2, fill=&quot;blue&quot;) </code></pre>
 <pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
-<p><img src="eda_files/figure-html/unnamed-chunk-44-1.png" /><!-- --></p>
+<p><img src="eda_files/figure-html/unnamed-chunk-51-1.png" /><!-- --></p>
 <p><code>alpha =</code> controls the transparency and <code>fill =</code> controls for the color of the plot.</p>
 <div style="margin-bottom:25px;">
 
@@ -974,14 +1000,14 @@ getmode &lt;- function(v) {
 <pre class="r"><code>ggplot(neighces) + 
   geom_boxplot(mapping = aes(y=PM2.5)) +
   ylab(&quot;PM 2.5&quot;) </code></pre>
-<p><img src="eda_files/figure-html/unnamed-chunk-45-1.png" /><!-- --></p>
+<p><img src="eda_files/figure-html/unnamed-chunk-52-1.png" /><!-- --></p>
 <p>The top, middle and bottom of the box represent the 75th, 50th, and 25th percentiles, respectively. The points outside the whiskers represent outliers. Outliers are defined as having values that are either larger than the 75th percentile plus 1.5 times the IQR or smaller than the 25th percentile minus 1.5 times the IQR.</p>
 <p>We can also use the boxplot to examine the relationship between a categorical and numeric variable. Let’s examine the distribution of PM 2.5 by majority vs. non majority Hispanic. Because we are examining the association between two variables, we need to specify <em>x</em> and <em>y</em> variables within <code>aes()</code></p>
 <pre class="r"><code>ggplot(neighces) + 
   geom_boxplot(mapping = aes(x = mhisp, y=PM2.5)) +
   ylab(&quot;PM 2.5&quot;) +
     xlab(&quot;Hispanic population&quot;) </code></pre>
-<p><img src="eda_files/figure-html/unnamed-chunk-46-1.png" /><!-- --></p>
+<p><img src="eda_files/figure-html/unnamed-chunk-53-1.png" /><!-- --></p>
 <div style="margin-bottom:25px;">
 
 </div>
@@ -999,7 +1025,7 @@ getmode &lt;- function(v) {
   geom_bar(mapping=aes(x=disadvantage, y=freq),stat=&quot;identity&quot;) +
     xlab(&quot;Disadvantaged neighborhood&quot;) +
     ylab(&quot;Proportion&quot;) </code></pre>
-<p><img src="eda_files/figure-html/unnamed-chunk-47-1.png" /><!-- --></p>
+<p><img src="eda_files/figure-html/unnamed-chunk-54-1.png" /><!-- --></p>
 <p>We didn’t need to specify <code>data = &lt;DATA&gt;</code> in <code>ggplot()</code> because it was piped in. Within <code>aes()</code>, we specified the categorical variable <em>oppzone</em> on the x-axis and then the proportion of neighborhoods freq on the y-axis. The argument <code>stat = "identity"</code> tells <code>ggplot()</code> to plot the exact value listed for the variable <em>freq</em>.</p>
 <div style="margin-bottom:25px;">
 
@@ -1015,7 +1041,7 @@ getmode &lt;- function(v) {
                              y = phisp)) +
     xlab(&quot;Poverty&quot;) +
     ylab(&quot;Proportion Hispanic&quot;)</code></pre>
-<p><img src="eda_files/figure-html/unnamed-chunk-48-1.png" /><!-- --></p>
+<p><img src="eda_files/figure-html/unnamed-chunk-55-1.png" /><!-- --></p>
 <p>What does scatter plot suggest about the relationship between the two variables?</p>
 <p>You can add the <code>facet_wrap()</code> function to create a scatterplot for each county.</p>
 <pre class="r"><code>ggplot(neighces) +
@@ -1024,7 +1050,7 @@ getmode &lt;- function(v) {
     xlab(&quot;Poverty&quot;) +
     ylab(&quot;Proportion Hispanic&quot;) +
       facet_wrap(~County) </code></pre>
-<p><img src="eda_files/figure-html/unnamed-chunk-49-1.png" /><!-- --></p>
+<p><img src="eda_files/figure-html/unnamed-chunk-56-1.png" /><!-- --></p>
 <div style="margin-bottom:25px;">
 
 </div>
@@ -1040,7 +1066,7 @@ getmode &lt;- function(v) {
 ggplot() + 
   geom_point(aes(x=County, y=Mean)) +
   coord_flip()</code></pre>
-<p><img src="eda_files/figure-html/unnamed-chunk-50-1.png" /><!-- --></p>
+<p><img src="eda_files/figure-html/unnamed-chunk-57-1.png" /><!-- --></p>
 <p><code>coord_flip()</code> flips the x and y axes (take it out and see how ugly the plot is).</p>
 <p>The default ordering of the y-axis is alphabetical. We can reorder the counties based on highest to lowest in mean PM 2.5.</p>
 <pre class="r"><code>neighces %&gt;%
@@ -1050,7 +1076,7 @@ ggplot() +
   geom_point(aes(x=Mean, y=reorder(County,Mean))) +
   ylab(&quot;County&quot;) +
   xlab(&quot;PM 2.5&quot;)</code></pre>
-<p><img src="eda_files/figure-html/unnamed-chunk-51-1.png" /><!-- --></p>
+<p><img src="eda_files/figure-html/unnamed-chunk-58-1.png" /><!-- --></p>
 <p><code>ggplot()</code> has many additional functions and features that allow you to adjust the the aesthetic features of your plot. For example, we can add additional text to your plot to enhance its readability. To illustrate this, let’s create a scatterplot of mean PM 2.5 and mean poverty rate for each county, but indicate the county corresponding to each point on the plot. We do this by adding the <code>geom_text()</code> function.</p>
 <pre class="r"><code>neighces %&gt;%
   group_by(County) %&gt;%
@@ -1061,7 +1087,7 @@ ggplot() +
   geom_text(aes(x=MeanPM, y=MeanPov, label = County)) +
   ylab(&quot;County&quot;) +
   xlab(&quot;PM 2.5&quot;)</code></pre>
-<p><img src="eda_files/figure-html/unnamed-chunk-52-1.png" /><!-- --></p>
+<p><img src="eda_files/figure-html/unnamed-chunk-59-1.png" /><!-- --></p>
 <p><code>ggplot()</code> is a powerful function, and you can make a lot of really visually captivating graphs. You can change colors, add text labels, layer different plots on top of one another or side by side. You can also make maps with the function, which we’ll cover a few labs from now. You can also make your graphs really “pretty” and professional looking by altering graphing features using <code>&lt;OPTIONS()</code>, including colors, labels, titles and axes. For a list of <code>ggplot()</code> functions that alter various features of a graph, check out <a href="http://r4ds.had.co.nz/graphics-for-communication.html">Chapter 22 in RDS</a>.</p>
 <p>And here’s your <strong>ggplot2</strong> badge. Wear it with pride!</p>
 <center>
