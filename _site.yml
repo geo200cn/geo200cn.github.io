@@ -15,6 +15,10 @@ navbar:
           href: getting_started.html
         - text: "Exploratory Data Analysis"
           href: eda.html
+        - text: "Statistical Inference"
+          href: central.html
+        - text: "Hypothesis Testing"
+          href: hypothesis.html
     - text: "R Tips"
       href: tips.html
 
