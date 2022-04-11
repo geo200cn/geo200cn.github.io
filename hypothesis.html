@@ -319,12 +319,42 @@ div.tocify {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="index.html">GEO 200CN: Winter 2020</a>
+      <a class="navbar-brand" href="index.html">GEO 200CN: Spring 2022</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
   <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="syllabus.html">Syllabus</a>
+</li>
+<li>
+  <a href="hw_guidelines.html">Assignment Guidelines</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Labs
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="getting_started.html">Getting Started</a>
+    </li>
+    <li>
+      <a href="eda.html">Exploratory Data Analysis</a>
+    </li>
+    <li>
+      <a href="central.html">Statistical Inference</a>
+    </li>
+    <li>
+      <a href="hypothesis.html">Hypothesis Testing</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="tips.html">R Tips</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -353,6 +383,9 @@ GEO 200CN - Quantitative Geography
 <h4 class="author"><h4 style="font-style:normal">
 Professor Noli Brazil
 </h4></h4>
+<h4 class="date"><h4 style="font-style:normal">
+April 13, 2022
+</h4></h4>
 
 </div>
 
@@ -364,7 +397,6 @@ padding: 10px;
 border: 1px solid black;
 margin-left: 25px;
 border-radius: 5px;
-font-style: italic;
 }
 
 .figure {
@@ -390,6 +422,204 @@ h2.title {
 </style>
 <p><br />
 </p>
+<p>In this lab guide, we’ll make statistical inferences about the significance of particular data values within a hypothesis testing framework. We will follow the material presented in this week’s lecture and handout.</p>
+<p>The objectives of the guide are as follows</p>
+<ol style="list-style-type: decimal">
+<li>Make inferences about the mean of one group</li>
+<li>Make inferences about mean comparisons between two groups</li>
+</ol>
+<p>We’ll use two data sets in this guide. The first contains current and forecasted climate values in Oregon. The second contains property values for buildings in Manhattan, New York City.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+<div id="loading-packages" class="section level2">
+<h2><strong>Loading packages</strong></h2>
+<p><br />
+</p>
+<p>We’ll be using one package in this lab - <strong>tidyverse</strong>. Load it in using <code>library()</code>.</p>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="dependent-samples" class="section level2">
+<h2><strong>Dependent samples</strong></h2>
+<p><br />
+</p>
+<p>Dependent sample hypothesis tests - also known as one-sample tests - typically examine differences in the mean over time for the same sample. Let’s bring in a data set that contains climate values (January and July temperature and precipitation) simulated by a regional climate model for present, and for potential future conditions when the concentration of carbon dioxide in the atmosphere has doubled, for a set of model grid points that cover Oregon. The variables named <em>TJan1x</em>, <em>TJul1x</em>, <em>PJan1x</em> and <em>PJul1x</em> are the simulated present values of temperature (T) and precipitation (P), while the variables with <em>2x</em> in their names are those for the doubled CO2 (carbon dioxide) scenarios that are intended to describe the climate of the next century. Read in the data set directly using <code>read_csv()</code></p>
+<pre class="r"><code>orsim &lt;- read_csv(&quot;https://raw.githubusercontent.com/geo200cn/data/master/orsim.csv&quot;)</code></pre>
+<p>The data is also located on Canvas in the Lab and Assignments Week 3 folder.</p>
+<p>The research question is: How would a doubling of carbon dioxide in the atmosphere affect temperature over Oregon? From what we already know about the greenhouse effect, atmospheric change, and basic climatology, we can suspect that the temperatures will increase with an increase in carbon dioxide. The question is, are the simulated temperatures for the enhanced greenhouse-situation significantly higher than those for present?</p>
+<p>Before running any tests, let’s just look at the distribution of our two variables <em>TJan2x</em> and <em>TJan1x</em>. First, the mean difference.</p>
+<pre class="r"><code>mean(orsim$TJan2x) - mean(orsim$TJan1x)</code></pre>
+<pre><code>## [1] 4.089474</code></pre>
+<p>Then histograms of each variable.</p>
+<pre class="r"><code>ggplot(orsim) + 
+  geom_histogram(mapping = aes(x=TJan1x))</code></pre>
+<p><img src="hypothesis_files/figure-html/unnamed-chunk-4-1.png" /><!-- --></p>
+<pre class="r"><code>ggplot(orsim) + 
+  geom_histogram(mapping = aes(x=TJan2x))</code></pre>
+<p><img src="hypothesis_files/figure-html/unnamed-chunk-4-2.png" /><!-- --></p>
+<p>Remember what CLT says?</p>
+<p>Let’s do a side-by-side comparison using a boxplot using the function <code>boxplot()</code>. Do the groups visually differ?</p>
+<pre class="r"><code>boxplot(orsim$TJan1x, orsim$TJan2x)</code></pre>
+<p><img src="hypothesis_files/figure-html/unnamed-chunk-5-1.png" /><!-- --></p>
+<p>Descriptively, it looks like an increase in the mean temperature from present to future. But, let’s formally test it since we now have the tools to do so. Remember the steps in hypothesis testing outlined in lecture and the handout.</p>
+<p><br></p>
+<div class="line-block"><strong>1. State the null and alternative hypotheses</strong></div>
+<p><br></p>
+<p>The null hypothesis is that there is no change or a decrease in temperature. The alternative hypothesis is that there is an increase in temperature.</p>
+<p><br></p>
+<div class="line-block"><strong>2. Choose a level of error <span class="math inline"><em>α</em></span>.</strong></div>
+<p><br></p>
+<p>We should not be fixated too much with threshold cutoffs, but the standard <span class="math inline"><em>α</em></span> is 0.05.</p>
+<p><br></p>
+<div class="line-block"><strong>3. Identify a test statistic.</strong></div>
+<p><br></p>
+<p>We’ll use the standard <em>t</em> statistic, which will allow us to conduct a <em>t</em>-test.</p>
+<p><br></p>
+<div class="line-block"><strong>4. Compute the test statistic</strong></div>
+<p><br></p>
+<p>We’re computing a difference of means for paired observations, so this is a one-sample hypothesis test.</p>
+<p>First, let’s calculate the difference between <em>TJan2x</em> and <em>TJan1x</em> and save it back in our data frame.</p>
+<pre class="r"><code>orsim &lt;- orsim %&gt;%
+        mutate(diff = TJan2x - TJan1x)</code></pre>
+<p>Next, we calculate the standard error <span class="math inline"><em>s</em></span>. The function <code>length()</code> gives you the total number of observations in the dataset.</p>
+<pre class="r"><code>n &lt;- length(orsim$diff)
+s &lt;-  sqrt(var(orsim$diff)) #formula from page 374</code></pre>
+<p>Next, the <em>t</em> statistic</p>
+<pre class="r"><code>t1 = mean(orsim$diff)/(s/sqrt(n))  #formula on page 386
+t1</code></pre>
+<pre><code>## [1] 192.6058</code></pre>
+<p><br></p>
+<div class="line-block"><strong>5. Calculate the p-value</strong>. We can calculate the p-value by mapping our <em>t</em> statistic onto the <em>t</em>-distribution. In R, this is done using the function <code>pt()</code>.</div>
+<p><br></p>
+<pre class="r"><code>pt(t1, n-1, lower=FALSE)</code></pre>
+<pre><code>## [1] 2.141518e-144</code></pre>
+<p>There is actually a canned function, <code>t.test()</code>, that you can use to run the <em>t</em>-test.</p>
+<pre class="r"><code>t.test(orsim$TJan2x, orsim$TJan1x, paired = TRUE, alternative=&quot;greater&quot;, conf.level =.95)</code></pre>
+<pre><code>## 
+##  Paired t-test
+## 
+## data:  orsim$TJan2x and orsim$TJan1x
+## t = 192.61, df = 113, p-value &lt; 2.2e-16
+## alternative hypothesis: true difference in means is greater than 0
+## 95 percent confidence interval:
+##  4.054261      Inf
+## sample estimates:
+## mean of the differences 
+##                4.089474</code></pre>
+<p>similarly because this is basically a one-sample test</p>
+<pre class="r"><code>t.test(orsim$diff, mu = 0, alternative=&quot;greater&quot;, conf.level =.95)</code></pre>
+<pre><code>## 
+##  One Sample t-test
+## 
+## data:  orsim$diff
+## t = 192.61, df = 113, p-value &lt; 2.2e-16
+## alternative hypothesis: true mean is greater than 0
+## 95 percent confidence interval:
+##  4.054261      Inf
+## sample estimates:
+## mean of x 
+##  4.089474</code></pre>
+<p><br></p>
+<div class="line-block"><strong>6. Reject or fail to reject the null hypothesis</strong>.</div>
+<p><br></p>
+<p>Let’s have you complete this step.</p>
+<p class="comment">
+<strong>Question 1</strong>: What is your conclusion regarding the difference between the present and simulated future January mean temperature over Oregon?
+</p>
+<p class="comment">
+<strong>Question 2</strong>: How would you change the null and alternative hypotheses to make this a two-sided test? What is the p-value of this two-sided test?
+</p>
+<p class="comment">
+<strong>Question 3</strong>: For January precipitation (<em>PJan1x</em> and <em>PJan2x</em>) test the hypothesis that <em>PJan1x</em> is less than <em>PJan2x</em>. Use a <em>t</em>-test with a 5% or 95% significance level. State the null and alternative hypotheses. Interpret your results.
+</p>
+<p><br></p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="independent-samples" class="section level2">
+<h2><strong>Independent samples</strong></h2>
+<p><br />
+</p>
+<p>To demonstrate independent samples or two-sample hypothesis testing, let’s bring in the data set <em>manhattan_buildings.csv</em>, which includes information about every building in Manhattan, over 40,000 buildings (wow!). Read in the data set directly using <code>read_csv()</code></p>
+<pre class="r"><code>MN&lt;-read_csv(&quot;https://raw.githubusercontent.com/geo200cn/data/master/manhattan_buildings.csv&quot;)</code></pre>
+<p>I’ve also uploaded this data on Canvas in the Week 3 Assignments and Lab folder.</p>
+<p>In the next lab you will start exploring spatial data in R. Although <em>MN</em> is not spatialized, it does have spatial information, longitude and latitude, which allows us to crudely plot it using our friend <code>ggplot()</code>.</p>
+<pre class="r"><code>##Map all of the buildings in Manhattan
+ggplot(MN) +
+    geom_point(mapping = aes(x = XCoord, 
+                             y = YCoord)) +
+    xlab(&quot;Longitude&quot;) +
+    ylab(&quot;Latitude&quot;)</code></pre>
+<p><img src="hypothesis_files/figure-html/unnamed-chunk-13-1.png" /><!-- --></p>
+<p>The research question is: Are property values higher for buildings located in historic districts? Historic neighborhoods are areas where the buildings have historical importance not because of their individual significance but because as a collection they represent the architectural sensibilities of a particular time period. They have tremendous historical and architectural value. But do they also carry greater financial value?</p>
+<p>Before answering this question, we need to be able to identify buildings in historic districts. It looks like the variable <em>HD</em> gives us which district a building is located in</p>
+<pre class="r"><code>summary(MN$HD)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##  0.0000  0.0000  0.0000  0.2531  1.0000  1.0000</code></pre>
+<p>A variable that is coded 0,1 to refer to absence or presence, respectively, is sometimes called a dummy variable or an indicator variable. Although a dummy looks like a numeric, it is in fact a qualitative or categorical variable. Since <em>HD</em> captures whether a building is in or out of a historic district, we should tell R that the numbers in the column are a code for historic districts, and we do this by creating a factor, or categorical variable, using <code>as.factor()</code>. A factor is a nominal (categorical) variable with a set of known possible values called levels.</p>
+<pre class="r"><code>MN &lt;- MN %&gt;%
+      mutate(HD = as.factor(HD)) </code></pre>
+<p>Now we can draw a very crude map of buildings in historic districts.</p>
+<pre class="r"><code>ggplot(MN) +
+    geom_point(mapping = aes(x = XCoord, 
+                             y = YCoord, col = HD)) +
+    xlab(&quot;Longitude&quot;) +
+    ylab(&quot;Latitude&quot;)</code></pre>
+<p><img src="hypothesis_files/figure-html/unnamed-chunk-16-1.png" /><!-- --></p>
+<p>Finally, split the “MN” object into two tables, one for the historic buildings (<em>inHD</em>) and one for the buildings outside a historic district (<em>outHD</em>). We want to compare the mean property values for each these groups.</p>
+<pre class="r"><code>inHD &lt;- MN %&gt;%
+  filter(HD == 1)
+
+outHD &lt;- MN %&gt;%
+  filter(HD == 0)</code></pre>
+<p>Our goal is to explore the effect of historic districts on property values in Manhattan. We want to find out if the designation of historic district has any effect on building property values. First, let’s create boxplots of property values to see if there is a visual difference between the two groups.</p>
+<pre class="r"><code>ggplot(MN) + 
+  geom_boxplot(mapping = aes(x = HD, y=AssessTot)) +
+  ylab(&quot;Assessment Value&quot;) +
+    xlab(&quot;In Historic District&quot;) </code></pre>
+<p><img src="hypothesis_files/figure-html/unnamed-chunk-18-1.png" /><!-- --></p>
+<p>Next, we’ll use the function <code>t.test()</code> to run the hypothesis test. In this case, <code>x =</code> is the data being tested, <code>y =</code> is the comparison group (used for a two sample test).</p>
+<p><br></p>
+<p class="comment">
+<strong>Question 4</strong>: Run the appropriate <em>t</em>-test using a 5% (or 95%) significance level to compare the mean property values of buildings in historic districts and those not in historic districts based on the research question. State the null and alternative hypotheses. Briefly summarize your results.
+</p>
+<p><br></p>
+<p>Location is an important component of a property’s value. To test the impact of a historic district designation we should revise our test to examine only buildings that have similar locations. One way to do this is to identify buildings that are close to but outside of historic districts. Each building in the database has a block number. Let’s revise our dataset so that it only includes buildings which are on the same block as a historic district but outside of the district boundaries.</p>
+<pre class="r"><code>##Select buildings on the same block as a historic district
+##Get a list of all blocks that contain historic buildings
+blocks &lt;- inHD$Block 
+
+#display the first 5 rows of blocks
+head(blocks)</code></pre>
+<pre><code>## [1]  7 72 73 29  7 29</code></pre>
+<pre class="r"><code>##Select all buildings (from MN) that are on the same block as historic buildings
+##The line below selects all rows where the block column contains values in our list of blocks
+##Save the result as a new object
+HDB &lt;- MN %&gt;%
+      filter(Block %in% blocks) 
+
+HDB_out &lt;- HDB %&gt;%
+          filter(HD == 0)
+
+HDB_in &lt;- HDB %&gt;%
+          filter(HD == 1)</code></pre>
+<p>Now we have two files that contain buildings on blocks with historic districts, one file describes buildings in the district and the other describes those outside the district boundaries. But, we need one more correction: size. The size of the building is an important determinant of its value. The variable <em>AssessSqFt</em> is the assessed value per square foot. We want to run a <em>t</em>-test to compare the mean property values per square footage of buildings in historic districts and those not in historic districts (for those in the same blocks).</p>
+<p><br></p>
+<p class="comment">
+<strong>Question 5</strong>: Based on our research question, run the appropriate <em>t</em>-test (using a 5% or 95% significance level) to compare the mean property values per square footage of buildings in historic districts and those not in historic districts. State the null and alternative hypotheses. Summarize your results.
+</p>
+<p class="comment">
+<strong>Question 6</strong>: Calculate the effect size <em>r</em>. Does it represent a substantial effect?
+</p>
+<p><br></p>
+<hr />
+<p><a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>.</p>
+<p>Website created and maintained by <a href="https://nbrazil.faculty.ucdavis.edu/">Noli Brazil</a></p>
+</div>
 
 
 

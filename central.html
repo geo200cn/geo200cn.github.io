@@ -11,7 +11,7 @@
 
 
 
-<title>Sampling, Central Limit Theorem and Confidence Intervals</title>
+<title>Statistical Inference</title>
 
 <script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -319,12 +319,42 @@ div.tocify {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="index.html">GEO 200CN: Winter 2020</a>
+      <a class="navbar-brand" href="index.html">GEO 200CN: Spring 2022</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
   <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="syllabus.html">Syllabus</a>
+</li>
+<li>
+  <a href="hw_guidelines.html">Assignment Guidelines</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Labs
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="getting_started.html">Getting Started</a>
+    </li>
+    <li>
+      <a href="eda.html">Exploratory Data Analysis</a>
+    </li>
+    <li>
+      <a href="central.html">Statistical Inference</a>
+    </li>
+    <li>
+      <a href="hypothesis.html">Hypothesis Testing</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="tips.html">R Tips</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -346,12 +376,15 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Sampling, Central Limit Theorem and Confidence Intervals</h1>
+<h1 class="title toc-ignore">Statistical Inference</h1>
 <h3 class="subtitle"><h4 style="font-style:normal">
 GEO 200CN - Quantitative Geography
 </h4></h3>
 <h4 class="author"><h4 style="font-style:normal">
 Professor Noli Brazil
+</h4></h4>
+<h4 class="date"><h4 style="font-style:normal">
+April 11, 2022
 </h4></h4>
 
 </div>
@@ -364,7 +397,6 @@ padding: 10px;
 border: 1px solid black;
 margin-left: 25px;
 border-radius: 5px;
-font-style: italic;
 }
 
 .figure {
@@ -390,6 +422,155 @@ h2.title {
 </style>
 <p><br />
 </p>
+<p>In this guide, we’ll demonstrate the concepts we learned in this week’s lecture and handout on statistical inference with real data. This will help ground the theorems, abstract equations and images of red balls from lecture. The objectives of the guide are as follows</p>
+<ol style="list-style-type: decimal">
+<li>Learn about estimating population parameters using sampling statistics</li>
+<li>Understand the implications of the Central Limit Theorem using real data</li>
+<li>Learn about uncertainty and confidence intervals</li>
+</ol>
+<div style="margin-bottom:25px;">
+
+</div>
+<div id="installing-and-loading-packages" class="section level2">
+<h2><strong>Installing and loading packages</strong></h2>
+<p><br />
+</p>
+<p>We’ll be working with one new package in this lab, <strong>infer</strong>. Install the package if you have not already done so.</p>
+<pre class="r"><code>install.packages(&quot;infer&quot;)</code></pre>
+<p>Next, we need to load this package as well as our new best friend <strong>tidyverse</strong>.</p>
+<pre class="r"><code>library(infer)
+library(tidyverse)</code></pre>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="population" class="section level2">
+<h2><strong>Population</strong></h2>
+<p><br />
+</p>
+<p>Our goal is to estimate the average age of a population from a sample. I uploaded onto GitHub a csv file containing the ages of a population of 1,000 residents. The data are also located on Canvas in the Lab and Assignments Week 3 folder. Let’s bring the population into R.</p>
+<pre class="r"><code>data &lt;- read_csv(&quot;https://raw.githubusercontent.com/geo200cn/data/master/ages.csv&quot;)</code></pre>
+<p>The object <em>data</em> contains the population. Because we have a Census, we know the true population parameters. So, we know the population mean</p>
+<pre class="r"><code>mean(data$age)</code></pre>
+<pre><code>## [1] 54.004</code></pre>
+<p>and population standard deviation</p>
+<pre class="r"><code>sd(data$age)</code></pre>
+<pre><code>## [1] 17.41066</code></pre>
+<p>Let’s say we don’t know the ages of every person in the population. Let’s also say we don’t have the resources to conduct a Census. So, we turn to sampling.</p>
+<p><br></p>
+<p class="comment">
+<strong>Question 1</strong>: Create a histogram of <em>age</em>. Does it look normal? Does it matter when you are trying to make inferences about the population mean using a sample?
+</p>
+<p><br></p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="sample" class="section level2">
+<h2><strong>Sample</strong></h2>
+<p><br />
+</p>
+<p>We take a sample of size 3 from the population. We can do it the base R way by using <code>sample()</code></p>
+<pre class="r"><code>set.seed(1234)
+sample_ageb &lt;- sample(data$age, 3, replace=TRUE)</code></pre>
+<p>Or we can go the tidy R route using <code>sample_n()</code></p>
+<pre class="r"><code>#compare sample_n with sample_frac.  what&#39;s the difference?
+sample_aget &lt;- sample_n(data, 3, replace = TRUE)</code></pre>
+<p>A note about sampling in R: When you work with using random values, the results will be different each time you run some code (that is the point); but sometimes it is desirable to recreate exactly the same random sequence. The function <code>set.seed()</code> allows you to do that (after all, in computers we can only create pseudo-random values). So, by plugging in <code>set.seed(1234)</code> before we ran the sampling functions above, we can replicate the results at a later time.</p>
+<p>Mean age of the sample</p>
+<pre class="r"><code>mean(sample_aget$age)</code></pre>
+<pre><code>## [1] 66</code></pre>
+<p>Standard deviation of age of the sample</p>
+<pre class="r"><code>sd(sample_aget$age)</code></pre>
+<pre><code>## [1] 8.544004</code></pre>
+<p>But this is only for one sample. We can randomly sample 3 people 10 times. We can do this using the <code>replicate()</code> function.</p>
+<pre class="r"><code>sim_results_repl &lt;-replicate(10, sample(data$age, 3, replace=TRUE))</code></pre>
+<p>Or we can use the tidy friendly function <code>rep_sample_n()</code>, which is a part of the <strong>infer</strong> package we installed earlier.</p>
+<pre class="r"><code>sim_results_repl10 &lt;-rep_sample_n(data, 3, replace = TRUE, reps = 10)</code></pre>
+<p>What does the histogram of each of these size 3 samples look like? Use <code>ggplot()</code> which we learned about in the exploratory data analysis <a href="https://geo200cn.github.io/eda.html#Data_visualization">lab</a>.</p>
+<pre class="r"><code>ggplot(sim_results_repl10, aes(x=age))+
+  geom_histogram(color=&quot;white&quot;)+
+  facet_wrap(~replicate)+
+  theme_classic()</code></pre>
+<p><img src="central_files/figure-html/unnamed-chunk-12-1.png" /><!-- --></p>
+<p>The function <code>facet_wrap()</code> allows us to create a histogram for each <em>replicate</em> or sample.</p>
+<p>Notice, all of the samples do not have the same looking histogram. This is because of random sampling error. All of the samples are coming from the same distribution, but random chance makes each sample a little bit different.</p>
+<p>Now let’s look at the mean of the samples.</p>
+<pre class="r"><code>sample_means &lt;- sim_results_repl10 %&gt;%
+                group_by(replicate) %&gt;%
+                summarise(means=mean(age))
+sample_means</code></pre>
+<pre><code>## # A tibble: 10 × 2
+##    replicate means
+##        &lt;int&gt; &lt;dbl&gt;
+##  1         1  49  
+##  2         2  45  
+##  3         3  67.7
+##  4         4  73  
+##  5         5  52.7
+##  6         6  37.3
+##  7         7  42.3
+##  8         8  58.3
+##  9         9  39  
+## 10        10  37.7</code></pre>
+<p>A histogram gives a visual depiction of the distribution</p>
+<pre class="r"><code>ggplot(sample_means, aes(x=means))+
+  geom_histogram(color=&quot;white&quot;)+
+  theme_classic()</code></pre>
+<p><img src="central_files/figure-html/unnamed-chunk-14-1.png" /><!-- --></p>
+<p>This is the distribution of the sample means, also known as the sampling distribution. It doesn’t look like much. That’s because we only took 10 samples.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="central-limit-theorem" class="section level2">
+<h2><strong>Central Limit Theorem</strong></h2>
+<p><br />
+</p>
+<p>The histogram of 10 sample means looks kind of lonely. Let’s give them some more friends. How about we repeat our sample of 3 one thousand times instead of just 10?</p>
+<pre class="r"><code>#sample of 3 one thousand times
+sim_results_repl1000 &lt;-rep_sample_n(data, 3, replace = TRUE, reps = 1000)
+
+#sample means
+sample_means1000 &lt;- sim_results_repl1000 %&gt;%
+                group_by(replicate) %&gt;%
+                summarise(means=mean(age))
+
+#plot of 1,000 sample means
+ggplot(sample_means1000, aes(x=means))+
+  geom_histogram(color=&quot;white&quot;)+
+  theme_classic()</code></pre>
+<p><img src="central_files/figure-html/unnamed-chunk-15-1.png" /><!-- --></p>
+<p>Does it look normally distributed?</p>
+<p><br></p>
+<p class="comment">
+<strong>Question 2</strong>: Obtain sample sizes of <em>200</em> one thousand times and show a histogram of the 1,000 means. According to CLT, what happens to the histogram, mean and standard deviation of the sample means when you increase <em>n</em> (the sample size)? Does your histogram show this?
+</p>
+<p><br></p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="confidence-intervals" class="section level2">
+<h2><strong>Confidence Intervals</strong></h2>
+<p><br />
+</p>
+<p>The CLT is cool. And its coolness gives us the ability to map our estimate from a single sample onto a normal distribution in order to measure the uncertainty of an estimate. Return for a moment to the question that first motivated this lab: based on a sample, what can we infer about the population? Based only on a single sample, the best estimate of the mean age would be the sample mean. That serves as a good point estimate but it would be useful to also communicate how uncertain we are of that estimate. This can be captured by using a confidence interval.</p>
+<p>We can calculate a 95% confidence interval for a sample mean by adding and subtracting 1.96 standard errors to the point estimate</p>
+<p>Let’s take a sample of size 200.</p>
+<pre class="r"><code>sample_age200 &lt;- sample_n(data, 200, replace = TRUE)</code></pre>
+<p><br></p>
+<p class="comment">
+<strong>Question 3</strong>: Calculate the lower and upper boundary of the confidence interval. Interpret the values.
+</p>
+<p class="comment">
+<strong>Question 4</strong>: Let’s say you constructed the confidence intervals for all 1,000 samples of size 200 (You don’t have to do this in R to answer this question). What proportion of these intervals would you expect to capture the true population mean?
+</p>
+<p><br></p>
+<hr />
+<p><a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>.</p>
+<p>Website created and maintained by <a href="https://nbrazil.faculty.ucdavis.edu/">Noli Brazil</a></p>
+</div>
 
 
 
