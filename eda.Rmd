@@ -8,8 +8,9 @@ output:
     toc: true
     toc_depth: 4
     toc_float: true
-    theme: yeti
+    theme: cosmo
     code_folding: show
+    self_contained: false
 ---
 
 

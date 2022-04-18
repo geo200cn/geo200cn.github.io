@@ -19,6 +19,8 @@ navbar:
           href: central.html
         - text: "Hypothesis Testing"
           href: hypothesis.html
+        - text: "Intro to Spatial Data"
+          href: introspatial.html
     - text: "R Tips"
       href: tips.html
 

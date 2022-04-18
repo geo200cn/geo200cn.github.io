@@ -6,10 +6,11 @@ date: <h4 style="font-style:normal">April 13, 2022</h4>
 output: 
   html_document:
     toc: true
-    toc_depth: 3
+    toc_depth: 4
     toc_float: true
-    theme: yeti
+    theme: cosmo
     code_folding: show
+    self_contained: false
 ---
 
 
