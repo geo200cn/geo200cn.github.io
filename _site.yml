@@ -21,6 +21,10 @@ navbar:
           href: hypothesis.html
         - text: "Intro to Spatial Data"
           href: introspatial.html
+        - text: "Point Pattern Analysis"
+          href: pointpatterns.html
+        - text: "Spatial Autocorrelation"
+          href: spatialautocorrelation.html
     - text: "R Tips"
       href: tips.html
 
