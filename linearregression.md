@@ -52,9 +52,7 @@ h2.title {
 
 
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message = FALSE)
-```
+
 
 
 Linear regression is the workhorse of applied statistics. Its robustness and easy interpretation are but two of the many reasons that it is often the first and frequently the last stop on the way to characterizing empirical relationships among observed variables. We will start with covering the functions and tools to run simple linear regression models in R, closely following this week's handout and lecture. The objectives of this lab are as follows
@@ -71,13 +69,15 @@ To help us accomplish these learning objectives, we will examine the association
 
 We'll be using a couple of new packages in this lab.  First, you'll need to install them.  The code below checks if you've already installed these packages before.  If you haven't, it will install them.
 
-```{r eval = FALSE}
+
+```r
 install.packages(c("broom", "gridExtra", "classInt"))
 ```
 
 Load these packages and others we will need for this lab.
 
-```{r warning=FALSE, message=FALSE}
+
+```r
 library(tidyverse)
 library(gridExtra)
 library(broom)
@@ -114,7 +114,8 @@ Our research question in this lab is: What ecological characteristics are associ
 
 Download the csv file *zctanyccovid.csv* and the shapefile (zipped) *zctanyc.shp* located on Canvas in the Lab and Assignments Week 6 folder.  Read in the New York City zipcode csv file using the `read_csv()` function.
 
-```{r warning=FALSE, message=FALSE}
+
+```r
 zctanyc <- read_csv("zctanyccovid.csv")
 ```
 
@@ -122,7 +123,8 @@ COVID-19 case data were downloaded from the [NYC Department of Health and Mental
 
 Next bring in the New York City zipcode shape file using `st_read()`
 
-```{r warning=FALSE, message=FALSE, results = "hide"}
+
+```r
 zctanyc.sf <- st_read("zctanyc.shp")
 ```
 
@@ -135,13 +137,15 @@ Your first instinct as a Geographer when given new data is to map. MAP, Map, map
 
 First, we need to join the zipcode data *zctanyc* to the **sf** object *zctanyc.sf* using `left_join()`
 
-```{r}
+
+```r
 zctanyc.sf <- left_join(zctanyc.sf, zctanyc, by = "GEOID")
 ```
 
 We can now map our main variable of interest, COVID-19 cases per 1,000 residents (*covidrate*). I use `ggplot()`, but you can load in **tmap** if you like `tm_shape()` more.
 
-```{r}
+
+```r
 ggplot(zctanyc.sf) +
   geom_sf(aes(fill = covidrate)) +
   scale_fill_gradient(low= "white", high = "red",  name ="") + 
@@ -151,9 +155,12 @@ ggplot(zctanyc.sf) +
     panel.background = element_blank())
 ```
 
+![](linearregression_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
+
 Let's visually compare this map to the independent variable we will examine, percent black (*pblk*).  
 
-```{r}
+
+```r
 ggplot(zctanyc.sf) +
   geom_sf(aes(fill = pblk)) +
   scale_fill_gradient(low= "white", high = "red",  name ="") + 
@@ -162,6 +169,8 @@ ggplot(zctanyc.sf) +
     axis.ticks =  element_blank(),
     panel.background = element_blank())
 ```
+
+![](linearregression_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
 
 Do you detect any patterns?
 
@@ -172,19 +181,37 @@ Do you detect any patterns?
 
 We are interested in understanding the ecological characteristics associated with zipcode level COVID-19 cases per 1,000 residents (*covidrate*). Let's examine its association with neighborhood percent black *pblk*.  One of the first steps in conducting a data analysis is to plot the two variables to detect whether a relationship exists.  Because COVID-19 rates and percent black are numeric variables, we can construct a scatter plot to examine the relationship, which we covered in [Week 2](https://geo200cn.github.io/eda.html#Scatterplot). Let's use our reliable friend `ggplot()` again.
 
-```{r}
+
+```r
 ggplot(zctanyc) +
     geom_point(mapping = aes(x = pblk, y = covidrate)) +
     xlab("Percent black") +
     ylab("COVID-19 cases per 1,000")
 ```
 
+![](linearregression_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
+
 The relationship is not super clear. The next step is to calculate the correlation between variables to get a numerical summary of the relationship, which we also covered in [Week 2](https://geo200cn.github.io/eda.html#Bivariate_statistics).  A picture and a numerical summary is a good combination.
 
 Use the function `cor.test()` to calculate the Pearson correlation between COVID-19 case rates and median household income.
 
-```{r}
+
+```r
 cor.test(zctanyc$covidrate, zctanyc$pblk) 
+```
+
+```
+## 
+## 	Pearson's product-moment correlation
+## 
+## data:  zctanyc$covidrate and zctanyc$pblk
+## t = 4.7144, df = 175, p-value = 4.929e-06
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  0.1980004 0.4604006
+## sample estimates:
+##       cor 
+## 0.3356969
 ```
 
 The correlation ranges from -1 to 0 to 1, with -1 indicating perfect negative correlation and 1 indicating perfect positive correlation. The function conducts a hypothesis test.  What is the test statistic, alternative and null hypotheses? The correlation is 0.34 with a p-value near 0.  What does this suggest about the relationship between the two variables?
@@ -206,7 +233,8 @@ We will designate COVID-19 rates as the dependent variable.  We will examine its
 
 We use the function `lm()` to run a regression of COVID-19 case rates on percent black.
 
-```{r warning=FALSE, message=FALSE}
+
+```r
 lm1 <- lm(covidrate ~ pblk, data = zctanyc)
 ```
 
@@ -214,39 +242,90 @@ The first argument in `lm()` is the outcome. This is followed by the `~` operato
 
 “Printing” the object gives a very short summary
 
-```{r}
+
+```r
 lm1
+```
+
+```
+## 
+## Call:
+## lm(formula = covidrate ~ pblk, data = zctanyc)
+## 
+## Coefficients:
+## (Intercept)         pblk  
+##    15.58486      0.09636
 ```
 
 `names()` function reveals what’s contained in the *lm1* object.
 
-```{r}
+
+```r
 names(lm1)
+```
+
+```
+##  [1] "coefficients"  "residuals"     "effects"       "rank"         
+##  [5] "fitted.values" "assign"        "qr"            "df.residual"  
+##  [9] "xlevels"       "call"          "terms"         "model"
 ```
 
 We find out we can extract neat things like the residuals
 
-```{r results = "hide"}
+
+```r
 lm1$residuals
 ```
 
 Also the fitted values
 
-```{r results = "hide"}
+
+```r
 lm1$fitted.values
 ```
 
 
 The `summary()` function provides more detailed results
 
-```{r}
+
+```r
 summary(lm1)
+```
+
+```
+## 
+## Call:
+## lm(formula = covidrate ~ pblk, data = zctanyc)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -12.0235  -5.2758  -0.1771   4.4919  17.8935 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)    
+## (Intercept) 15.58486    0.63189  24.664  < 2e-16 ***
+## pblk         0.09636    0.02044   4.714 4.93e-06 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 6.464 on 175 degrees of freedom
+## Multiple R-squared:  0.1127,	Adjusted R-squared:  0.1076 
+## F-statistic: 22.23 on 1 and 175 DF,  p-value: 4.929e-06
 ```
 
 You can also create a *tidy* table of regression results using the `tidy()` function, which is a part of the **broom** package
 
-```{r}
+
+```r
 tidy(lm1)
+```
+
+```
+## # A tibble: 2 × 5
+##   term        estimate std.error statistic  p.value
+##   <chr>          <dbl>     <dbl>     <dbl>    <dbl>
+## 1 (Intercept)  15.6       0.632      24.7  7.60e-59
+## 2 pblk          0.0964    0.0204      4.71 4.93e- 6
 ```
 
 
@@ -272,9 +351,31 @@ tidy(lm1)
 
 The variables *pblk* is quantitative or numeric.  Let's examine a qualitative independent variable.  First, let's examine the variable *poor*, which categorizes the zipcode as a poor (poverty rate greater than 30%) and nonpoor (poverty rate less than or equal to 30%) neighborhood.  It's qualitative because the values are "Poor" and "Nonpoor".  In regression lingo, this is also known as a dummy variable where "Yes" is coded as 1 and "No" is coded as 0.
 
-```{r}
+
+```r
 lm2 <- lm(covidrate ~  poor, data = zctanyc)
 summary(lm2)
+```
+
+```
+## 
+## Call:
+## lm(formula = covidrate ~ poor, data = zctanyc)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -13.3951  -5.2474  -0.4543   4.6464  17.7834 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)  17.1249     0.5373  31.874   <2e-16 ***
+## poorPoor      3.5874     1.6848   2.129   0.0346 *  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 6.775 on 175 degrees of freedom
+## Multiple R-squared:  0.02525,	Adjusted R-squared:  0.01968 
+## F-statistic: 4.534 on 1 and 175 DF,  p-value: 0.03463
 ```
 
 <br>
@@ -286,9 +387,34 @@ summary(lm2)
 Next, let's examine a multi-categorical variable.  Here, instead of two categories, we have multiple.  Let's examine the variable *borough*, which identifies the New York City Borough (Bronx, Brooklyn, Manhattan, Queens and Staten Island) the zipcode is located. It's qualitative because the values are the names of the 5 boroughs. 
 
 
-```{r}
+
+```r
 lm3 <- lm(covidrate ~  borough, data = zctanyc)
 summary(lm3)
+```
+
+```
+## 
+## Call:
+## lm(formula = covidrate ~ borough, data = zctanyc)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -13.6669  -3.2796  -0.0014   3.2316  14.5503 
+## 
+## Coefficients:
+##                      Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)            23.754      1.019  23.316  < 2e-16 ***
+## boroughBrooklyn        -8.645      1.319  -6.555 6.23e-10 ***
+## boroughManhattan      -13.058      1.287 -10.148  < 2e-16 ***
+## boroughQueens          -3.396      1.219  -2.786  0.00593 ** 
+## boroughStaten Island   -2.897      1.664  -1.742  0.08338 .  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 5.094 on 172 degrees of freedom
+## Multiple R-squared:  0.4584,	Adjusted R-squared:  0.4458 
+## F-statistic: 36.39 on 4 and 172 DF,  p-value: < 2.2e-16
 ```
 
 <br>
@@ -305,11 +431,33 @@ summary(lm3)
 
 So far, we've asked you to interpret the coefficients in terms of how they characterize the relationship between the dependent and independent variables.  We have not asked you, however, to make any statistical inferences regarding the significance of the coefficients (e.g. is the coefficient statistically significant from 0). Let's get a summary of our regression results and make some inferences.
 
-```{r}
+
+```r
 #eliminate scientific notation
 options(scipen=999)
 
 summary(lm1)
+```
+
+```
+## 
+## Call:
+## lm(formula = covidrate ~ pblk, data = zctanyc)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -12.0235  -5.2758  -0.1771   4.4919  17.8935 
+## 
+## Coefficients:
+##             Estimate Std. Error t value             Pr(>|t|)    
+## (Intercept) 15.58486    0.63189  24.664 < 0.0000000000000002 ***
+## pblk         0.09636    0.02044   4.714           0.00000493 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 6.464 on 175 degrees of freedom
+## Multiple R-squared:  0.1127,	Adjusted R-squared:  0.1076 
+## F-statistic: 22.23 on 1 and 175 DF,  p-value: 0.000004929
 ```
 
 What is this output showing?
@@ -328,8 +476,33 @@ What is this output showing?
 
 Let's look at our regression summary for *lm3*
 
-```{r}
+
+```r
 summary(lm3)
+```
+
+```
+## 
+## Call:
+## lm(formula = covidrate ~ borough, data = zctanyc)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -13.6669  -3.2796  -0.0014   3.2316  14.5503 
+## 
+## Coefficients:
+##                      Estimate Std. Error t value             Pr(>|t|)    
+## (Intercept)            23.754      1.019  23.316 < 0.0000000000000002 ***
+## boroughBrooklyn        -8.645      1.319  -6.555       0.000000000623 ***
+## boroughManhattan      -13.058      1.287 -10.148 < 0.0000000000000002 ***
+## boroughQueens          -3.396      1.219  -2.786              0.00593 ** 
+## boroughStaten Island   -2.897      1.664  -1.742              0.08338 .  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 5.094 on 172 degrees of freedom
+## Multiple R-squared:  0.4584,	Adjusted R-squared:  0.4458 
+## F-statistic: 36.39 on 4 and 172 DF,  p-value: < 0.00000000000000022
 ```
 
 <br>
@@ -345,8 +518,30 @@ summary(lm3)
 
 The Handout goes through measures of best fit, emphasizing that it is important that we assess how well this line fits the actual data.  The most popular measure is the coefficient of determination, also known as $R^2$. The measure relies on the residual and model sum of squares. We don't need to calculate the value by hand, as it is conveniently given to us when you use the `summary()` function.  Let's go back to the model *lm1*
 
-```{r}
+
+```r
 summary(lm1)
+```
+
+```
+## 
+## Call:
+## lm(formula = covidrate ~ pblk, data = zctanyc)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -12.0235  -5.2758  -0.1771   4.4919  17.8935 
+## 
+## Coefficients:
+##             Estimate Std. Error t value             Pr(>|t|)    
+## (Intercept) 15.58486    0.63189  24.664 < 0.0000000000000002 ***
+## pblk         0.09636    0.02044   4.714           0.00000493 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 6.464 on 175 degrees of freedom
+## Multiple R-squared:  0.1127,	Adjusted R-squared:  0.1076 
+## F-statistic: 22.23 on 1 and 175 DF,  p-value: 0.000004929
 ```
 
 "Multiple R-squared" gives the value $R^2$ of 0.113.

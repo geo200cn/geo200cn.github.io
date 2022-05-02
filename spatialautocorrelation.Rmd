@@ -538,10 +538,16 @@ Another popular measure of local spatial autocorrelation is the local Moran's I,
 
 
 ```{r message = FALSE, warning = FALSE}
-locali<-localmoran(sac.tracts$evrate, sacw, p.adjust.method="bonferroni")
+locali<-localmoran(sac.tracts$evrate, sacw)
 ```
 
-The argument `p.adjust.method="bonferroni"` adjusts for the multiple testing problem that OSU describes on page 224. The resulting object is a matrix with 5 columns - the local statistic, the expectation of the local statistic, the variance, the Z score (deviation of the local statistic from the expectation divided by the standard deviation), and the p-value. Save the local statistic and the Z-score into our sf object *sac.tracts* for mapping purposes
+The resulting object is a matrix with 5 columns - the local statistic, the expectation of the local statistic, the variance, the Z score (deviation of the local statistic from the expectation divided by the standard deviation), and the p-value.  You can use the function `p.adjustSP()` to adjust for for the multiple testing problem that OSU describes on page 224. Save the adjusted p-values back into the *locali*.
+
+```{r}
+locali[,5] <- p.adjustSP(locali[,5], sacb, method = "bonferroni")
+```
+
+Save the local statistic and the Z-score into our sf object *sac.tracts* for mapping purposes
 
 
 ```{r message = FALSE, warning = FALSE}

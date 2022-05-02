@@ -52,9 +52,7 @@ h2.title {
 
 
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message = FALSE)
-```
+
 
 
 We're in the second leg of our journey into linear regression.  In this lab, we go through the R functions for running regression diagnostics and multiple linear regression. The objectives of this lab are as follows
@@ -74,13 +72,15 @@ To help us accomplish these learning objectives, we will continue examining the 
 
 We'll be using a couple of new packages in this lab.  First, you'll need to install them if you have not already done so.
 
-```{r eval = FALSE}
+
+```r
 install.packages(c("GGally", "lmtest", "car"))
 ```
 
 Load these packages and others we will need for this lab.
 
-```{r warning=FALSE, message=FALSE}
+
+```r
 library(MASS)
 library(tidyverse)
 library(GGally)
@@ -99,7 +99,8 @@ library(sf)
 
 Download the csv file *zctanyccovid.csv* located on Canvas in the Lab and Assignments Week 6 folder.  Read in the New York City zipcode csv file using the `read_csv()` function.
 
-```{r warning=FALSE, message=FALSE}
+
+```r
 zctanyc <- read_csv("zctanyccovid.csv")
 ```
 
@@ -114,7 +115,8 @@ This week's Handout outlines the core assumptions that need to be met in order t
 
 Let's also create a fake dataset that meets the OLS assumptions to act as a point of comparison along the way. We'll call this the *goodreg* model.
 
-```{r}
+
+```r
 set.seed(08544)
 x <-rnorm(5000, mean = 7, sd = 1.56)# just some normally distributed data
 
@@ -127,11 +129,33 @@ goodreg <- lm(y ~ x)
 summary(goodreg)
 ```
 
+```
+## 
+## Call:
+## lm(formula = y ~ x)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -3.7188 -0.6658  0.0158  0.6944  3.5102 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(>|t|)    
+## (Intercept) 12.033221   0.064450  186.71   <2e-16 ***
+## x           -0.402152   0.008986  -44.75   <2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.9932 on 4998 degrees of freedom
+## Multiple R-squared:  0.2861,	Adjusted R-squared:  0.2859 
+## F-statistic:  2003 on 1 and 4998 DF,  p-value: < 2.2e-16
+```
+
 To be clear, we know the exact functional form of this model, all OLS assumptions should be met, and therefore this model should pass all diagnostics.
 
 In the last lab guide, we ran a simple regression model using ordinary least squares (OLS) to estimate the relationship between COVID-19 cases per 1,000 residents and percent black at the zip code level. Let's run this model using `lm()` and save its results in an object named *lm1*. Our dependent variable is *covidrate* and the independent variable is *pblk*.
 
-```{r}
+
+```r
 #eliminate scientific notation
 options(scipen=999)
 
@@ -147,7 +171,8 @@ lm1 <- lm(covidrate ~ pblk, data = zctanyc)
 
 We can rely on several tools for testing the errors are normally distributed assumption.   The first is a histogram of residuals.   We can extract the residuals from an *lm* object using the function `resid()`. We will need to use the residuals for other diagnostics, so let's save them into the *zctanyc*  data frame under the variable *resid* using the `mutate()` function.
 
-```{r}
+
+```r
 zctanyc <- zctanyc %>%
             mutate(resid = resid(lm1))
 ```
@@ -156,54 +181,72 @@ The order of the tracts in`resid(lm1)` is the same as the order of the tracts in
 
 Now, we create a histogram of residuals using our best bud `ggplot()`
 
-```{r}
+
+```r
 zctanyc %>%
   ggplot() + 
   geom_histogram(mapping = (aes(x=resid))) + 
   xlab("Absolute Residuals")
 ```
 
+![](linearregression2_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
+
 
 We're trying to see if its shape is that of a normal distribution (bell curve). This is a histogram of absolute residuals. To get a histogram of standardized residuals use the function `stdres()`, where the main argument is our model results *lm1*
 
-```{r warning = FALSE}
+
+```r
 zctanyc %>%
   ggplot() + 
   geom_histogram((aes(x=stdres(lm1)))) + 
   xlab("Standardized Residuals")
 ```
 
+![](linearregression2_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
+
 You can also plot a histogram of the studentized residuals using the function `rstudent()`
 
-```{r warning = FALSE}
+
+```r
 zctanyc %>% ggplot() + 
   geom_histogram((aes(x=rstudent(lm1)))) + 
   xlab("Studentized Residuals")
 ```
 
+![](linearregression2_files/figure-html/unnamed-chunk-9-1.png)<!-- -->
+
 For comparison, the following is what the residuals from our simulated good data look like 
 
-```{r}
+
+```r
 ggplot() + geom_histogram(aes(x = stdres(goodreg))) +
   xlab("Standardized Residuals") +
   ggtitle("Distribution of Residuals - Simulated Data")
 ```
 
+![](linearregression2_files/figure-html/unnamed-chunk-10-1.png)<!-- -->
+
 
 You can also examine a normal probability plot, also known as a Q-Q plot, to check error normality. Use the function `qqnorm()` and just plug in the model residuals. The function `qqline()` adds the line for what normally distributed data should theoretically follow.
 
 
-```{r}
+
+```r
 qqnorm(zctanyc$resid)
 qqline(zctanyc$resid,col="red")
 ```
 
+![](linearregression2_files/figure-html/unnamed-chunk-11-1.png)<!-- -->
+
 In short, if the points of the plot do not closely follow a straight line, this would suggest that the data do not come from a normal distribution.  What does the Q-Q plot look like for our good model?
 
-```{r}
+
+```r
 qqnorm(stdres(goodreg))
 qqline(stdres(goodreg),col="red")
 ```
+
+![](linearregression2_files/figure-html/unnamed-chunk-12-1.png)<!-- -->
 
 <br>
 
@@ -213,14 +256,32 @@ qqline(stdres(goodreg),col="red")
 
 Histograms and Q-Q plots give a nice visual presentation of the residual distribution, however if we are interested in formal hypothesis testing, there are a number of options available. A commonly used test is the Shapiro–Wilk test, which is implemented in R using the function `shapiro.test()`. The null is that the data are normally distributed.  Our good model *goodreg* should not reject the null
 
-```{r}
+
+```r
 shapiro.test(resid(goodreg))
+```
+
+```
+## 
+## 	Shapiro-Wilk normality test
+## 
+## data:  resid(goodreg)
+## W = 0.9994, p-value = 0.1026
 ```
 
 What about our simple linear regression model?
 
-```{r}
+
+```r
 shapiro.test(resid(lm1))
+```
+
+```
+## 
+## 	Shapiro-Wilk normality test
+## 
+## data:  resid(lm1)
+## W = 0.97764, p-value = 0.006004
 ```
 
 What's the conclusion?
@@ -245,7 +306,8 @@ You can use a plot of the residuals against the fitted values for checking both 
 
 We know what diagnostic plots should like when we have good data. But what about for bad data? Below is an example of some bad data that breaks the linearity assumption. Don't worry too much about the intricacies of the code - were just trying creating simulated data that is deliberately not normal so you can see what nonlinearity looks like in the context of the diagnostic tools we've been running.
 
-```{r}
+
+```r
 set.seed(42)
 sim_3 = function(sample_size = 500) {
   x = runif(n = sample_size) * 5
@@ -259,11 +321,14 @@ badreg = lm(y ~ x, data = sim_data_3)
 
 Here is the residual vs fitted values plot for *badreg*
 
-```{r}
+
+```r
 plot(fitted(badreg), resid(badreg), col = "grey", pch = 20,
      xlab = "Fitted", ylab = "Residuals", main = "Data from Bad Model")
 abline(h = 0, col = "darkorange", lwd = 2)
 ```
+
+![](linearregression2_files/figure-html/unnamed-chunk-16-1.png)<!-- -->
 
 
 <div style="margin-bottom:25px;">
@@ -297,16 +362,61 @@ Confounding can have serious consequences on your results.  For example, conside
 
 Going back to our case study of New York City let's say we ran a simple linear regression of COVID-19 rates on percent unemployment
 
-```{r}
+
+```r
 summary(lm(covidrate ~  punemp, data = zctanyc))
+```
+
+```
+## 
+## Call:
+## lm(formula = covidrate ~ punemp, data = zctanyc)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -11.970  -5.625  -0.926   4.463  17.840 
+## 
+## Coefficients:
+##             Estimate Std. Error t value             Pr(>|t|)    
+## (Intercept)  12.8605     1.2641  10.174 < 0.0000000000000002 ***
+## punemp        0.8267     0.2078   3.978             0.000101 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 6.571 on 175 degrees of freedom
+## Multiple R-squared:  0.08294,	Adjusted R-squared:  0.0777 
+## F-statistic: 15.83 on 1 and 175 DF,  p-value: 0.0001015
 ```
 
 We would conclude that a one percentage point increase in percent unemployment in a neighborhood is associated with an increase of 0.8267 COVID-19 cases per 1,000 residents. The results also show that the coefficient has a p-value of 0.000101, which indicates that the *punemp* coefficient is statistically significant at the 0.001 level. This means that the probability that the association between *punemp* and *covidrate* is due to chance is less than 100*0.001 = 0.1 percent.  In other words, the probability of seeing the association 0.8267 just by chance if the null hypothesis is true is 0.1 percent.
 
 But, when you include percent black, you get
 
-```{r}
+
+```r
 summary(lm(covidrate ~  pblk + punemp, data = zctanyc))
+```
+
+```
+## 
+## Call:
+## lm(formula = covidrate ~ pblk + punemp, data = zctanyc)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -11.5354  -5.0580  -0.7489   4.3570  17.7511 
+## 
+## Coefficients:
+##             Estimate Std. Error t value            Pr(>|t|)    
+## (Intercept) 13.69444    1.26782  10.802 <0.0000000000000002 ***
+## pblk         0.07294    0.02448   2.980              0.0033 ** 
+## punemp       0.42024    0.24478   1.717              0.0878 .  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 6.428 on 174 degrees of freedom
+## Multiple R-squared:  0.1275,	Adjusted R-squared:  0.1174 
+## F-statistic: 12.71 on 2 and 174 DF,  p-value: 0.000007044
 ```
 
 And just like that, [gone](https://www.imdb.com/title/tt2267998/). 
@@ -337,8 +447,18 @@ What are the effects of multicollinearity? Mainly you will get blown up standard
 
 What to do? First, run a correlation matrix for all your proposed independent variables.  Let's say we wanted to run a OLS model including *pblk*, *phisp*, *medincome*, *totp*, and *p65old* as independent variables. One way of obtaining a correlation matrix is to use the `cor()` function.  We use the function `select()` to keep the variables we need from *zctanyc*. We use the `round()` function to round up the correlation values to two significant digits after the decimal point.
 
-```{r}
+
+```r
 round(cor(dplyr::select(zctanyc, pblk, phisp, medincome, totp, p65old)),2)
+```
+
+```
+##            pblk phisp medincome  totp p65old
+## pblk       1.00 -0.01     -0.36  0.17  -0.13
+## phisp     -0.01  1.00     -0.57  0.28  -0.33
+## medincome -0.36 -0.57      1.00 -0.47   0.01
+## totp       0.17  0.28     -0.47  1.00  -0.08
+## p65old    -0.13 -0.33      0.01 -0.08   1.00
 ```
 
 Any correlation that is high is worth flagging.  In this case, we see a few pairwise correlations greater than 0.5 that might be worth keeping in mind.
@@ -351,7 +471,8 @@ You can also run your regression and then detect multicollinearity in your resul
 
 A formal and likely the most common indicator of multicollinearity is the Variance Inflation Factor (VIF). Use the function `vif()` in the **car** package to get the VIFs for each variable.  Let's check the VIFs for the proposed model.  First, run the model and save it into *lm2*. 
 
-```{r}
+
+```r
 lm2 <- lm(covidrate ~  pblk + phisp +  medincome +totp + p65old, data = zctanyc)
 ```
 
@@ -374,16 +495,66 @@ Y and the values of Y predicted by the multiple regression model. Therefore, lar
 
 $R^2$ is located in the summary of the regression model. Let's run a regression of COVID rates on percent black and percent unemployment and save the results in an object called *lm3*.
 
-```{r}
+
+```r
 lm3 <- lm(covidrate ~  pblk + punemp, data = zctanyc)
 summary(lm3)          
+```
+
+```
+## 
+## Call:
+## lm(formula = covidrate ~ pblk + punemp, data = zctanyc)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -11.5354  -5.0580  -0.7489   4.3570  17.7511 
+## 
+## Coefficients:
+##             Estimate Std. Error t value            Pr(>|t|)    
+## (Intercept) 13.69444    1.26782  10.802 <0.0000000000000002 ***
+## pblk         0.07294    0.02448   2.980              0.0033 ** 
+## punemp       0.42024    0.24478   1.717              0.0878 .  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 6.428 on 174 degrees of freedom
+## Multiple R-squared:  0.1275,	Adjusted R-squared:  0.1174 
+## F-statistic: 12.71 on 2 and 174 DF,  p-value: 0.000007044
 ```
 
 
 Let's compare the model fit to the model we ran earlier that contained more variables 
 
-```{r}
+
+```r
 summary(lm2) 
+```
+
+```
+## 
+## Call:
+## lm(formula = covidrate ~ pblk + phisp + medincome + totp + p65old, 
+##     data = zctanyc)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -10.5625  -4.2955  -0.8762   3.7455  15.4670 
+## 
+## Coefficients:
+##                Estimate  Std. Error t value  Pr(>|t|)    
+## (Intercept) 12.57451167  3.21496495   3.911  0.000132 ***
+## pblk         0.09056056  0.02013347   4.498 0.0000126 ***
+## phisp        0.12825817  0.03007490   4.265 0.0000331 ***
+## medincome   -0.00004588  0.00001737  -2.642  0.009012 ** 
+## totp        -0.00004357  0.00001757  -2.480  0.014097 *  
+## p65old       0.36634418  0.09276337   3.949  0.000114 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 5.48 on 171 degrees of freedom
+## Multiple R-squared:  0.3767,	Adjusted R-squared:  0.3585 
+## F-statistic: 20.67 on 5 and 171 DF,  p-value: 0.0000000000000004017
 ```
 
 <br>

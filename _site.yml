@@ -25,6 +25,10 @@ navbar:
           href: pointpatterns.html
         - text: "Spatial Autocorrelation"
           href: spatialautocorrelation.html
+        - text: "Linear Regression I"
+          href: linearregression.html
+        - text: "Linear Regression II"
+          href: linearregression2.html
     - text: "R Tips"
       href: tips.html
 
