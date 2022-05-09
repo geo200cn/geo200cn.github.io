@@ -51,9 +51,7 @@ h2.title {
 \
 
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message = FALSE)
-```
+
 
 
 In this lab guide, we formally incorporate spatial dependency between units of observations in a regression framework.  We will be closely following this week's handout and lecture on Spatial Regression. The objectives of this lab are as follows
@@ -71,13 +69,15 @@ To help us accomplish these learning objectives, we will continue examining the 
 
 We’ll be using one new package in this lab, **spatialreg**, which contains the functions we need to perform spatial regression models in R. First, install the package if you have not already done so.
  
-```{r warning = FALSE, message = FALSE, eval = FALSE}
+
+```r
 install.packages("spatialreg")
 ```
 
 Then load it and the other packages we'll be using in this lab.
 
-```{r warning = FALSE, message = FALSE}
+
+```r
 library(tidyverse)
 library(sf)
 library(spdep)
@@ -105,7 +105,8 @@ Our research questions in this lab is: What ecological characteristics are assoc
 
 We will bring in a shape file containing COVID-19 cases per 1,000 residents and demographic and socioeconomic characteristics for New York city zip codes. I zipped up the file and uploaded it onto Github.  Set your working directory to an appropriate folder and use the following code to download and unzip the file.  I also uploaded the file in Canvas in the Lab and Assignments Week 7 folder.
 
-```{r eval = FALSE}
+
+```r
 #insert the pathway to the folder you want your data stored into
 setwd("insert your pathway here")
 #downloads file into your working directory 
@@ -114,14 +115,12 @@ download.file(url = "https://raw.githubusercontent.com/geo200cn/data/master/zcta
 unzip(zipfile = "zctanyccovidwk7.zip")
 ```
 
-```{r warning = FALSE, message = FALSE, echo=FALSE}
-download.file(url = "https://raw.githubusercontent.com/geo200cn/data/master/zctanyccovidwk7.zip", destfile = "zctanyccovidwk7.zip")
-unzip(zipfile = "zctanyccovidwk7.zip")
-```
+
 
 Bring in the New York City zip code shape file into R using `st_read()`
 
-```{r warning=FALSE, message=FALSE, results = "hide"}
+
+```r
 zctanyc <- st_read("zctanyccovidwk7.shp")
 ```
 
@@ -134,7 +133,8 @@ COVID-19 case data were downloaded from the [NYC Department of Health and Mental
 
 We're interested in examining the zip code characteristics associated with the number of COVID-19 cases per 1,000 residents.  We should first run through the various exploratory data analysis tools we went through [several weeks ago](https://geo200cn.github.io/eda.html) to get a feel for the data. We would then run a standard multiple linear regression model, which we should always do first before running any type of spatial regression model. Let's run the regression model we left off with in the last lab guide.  Our dependent variable is *covidrate* and our independent variables are percent black *pblk*, percent Hispanic *phisp*, median household income *medincome*, total population *totp*, and percent of residents 65 years old and older *p65old*. Use the function `lm()`.  Save the results in an object named *fit.ols*.
 
-```{r}
+
+```r
 #eliminate scientific notation
 options(scipen=999)
 
@@ -143,8 +143,35 @@ fit.ols <- lm(covidrate ~  pblk + phisp +  medincome +totp + p65old, data = zcta
 
 What are the results? Use `summary()`
 
-```{r}
+
+```r
 summary(fit.ols)
+```
+
+```
+## 
+## Call:
+## lm(formula = covidrate ~ pblk + phisp + medincome + totp + p65old, 
+##     data = zctanyc)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -10.5625  -4.2955  -0.8762   3.7455  15.4670 
+## 
+## Coefficients:
+##                Estimate  Std. Error t value  Pr(>|t|)    
+## (Intercept) 12.57451167  3.21496495   3.911  0.000132 ***
+## pblk         0.09056056  0.02013347   4.498 0.0000126 ***
+## phisp        0.12825817  0.03007490   4.265 0.0000331 ***
+## medincome   -0.00004588  0.00001737  -2.642  0.009012 ** 
+## totp        -0.00004357  0.00001757  -2.480  0.014097 *  
+## p65old       0.36634418  0.09276337   3.949  0.000114 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 5.48 on 171 degrees of freedom
+## Multiple R-squared:  0.3767,	Adjusted R-squared:  0.3585 
+## F-statistic: 20.67 on 5 and 171 DF,  p-value: 0.0000000000000004017
 ```
 
 After running the standard linear regression model, use the various diagnostic tools we learned [last week](https://geo200cn.github.io/linearregression2.html) to test for the OLS assumptions and detect for multicollinearity.
@@ -165,7 +192,8 @@ The next step is to conduct an Exploratory Spatial Data Analysis (ESDA) to gain 
 The first step in ESDA is to map your dependent variable.  Map the COVID-19 case rates
 
 
-```{r warning = FALSE, message = FALSE}
+
+```r
 tm_shape(zctanyc, unit = "mi") +
   tm_polygons(col = "covidrate", style = "quantile",palette = "Blues", 
               border.alpha = 0, title = "") +
@@ -173,24 +201,30 @@ tm_shape(zctanyc, unit = "mi") +
   tm_layout(main.title = "COVID-19 cases per 1,000 residents by NYC zip codes",  main.title.size = 0.95, frame = FALSE, legend.outside = TRUE)
 ```
 
+![](spatialreg_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
+
 
 Does it look like our dependent variable exhibits spatial autocorrelation?
 
 Next, you'll want to map the residuals from your OLS regression model. To extract the residuals from *fit.ols*, use the `resid()` function.  Save it back into *zctanyc*.
 
-```{r}
+
+```r
 zctanyc <- mutate(zctanyc, olsresid = resid(fit.ols))
 ```
 
 Next, map the residuals
 
-```{r warning = FALSE, message = FALSE}
+
+```r
 tm_shape(zctanyc, unit = "mi") +
   tm_polygons(col = "olsresid", style = "quantile",palette = "Reds", 
               border.alpha = 0, title = "", midpoint = 0) +
   tm_scale_bar(breaks = c(0, 2.5, 5), text.size = 1, position = c("right", "bottom")) +
   tm_layout(main.title = "Residuals from linear regression",  main.title.size = 0.95, frame = FALSE, legend.outside = TRUE)
 ```
+
+![](spatialreg_files/figure-html/unnamed-chunk-10-1.png)<!-- -->
 
 Looks spatially clustered. 
 
@@ -209,7 +243,8 @@ We need to create a neighbor object and its associated spatial weights matrix. Y
 
 Neighbor relationships in R are represented by neighbor *nb* objects.  An *nb* object identifies the neighbors for each feature in the dataset.  We use the command `poly2nb()` from the **spdep** package to create a contiguity-based neighbor object.  Let's specify Queen connectivity.  
 
-```{r}
+
+```r
 nycb<-poly2nb(zctanyc, queen=T)
 ```
 
@@ -217,7 +252,8 @@ The other two neighbor types we discussed in the spatial autocorrelation lab inc
 
 The next step is to assign weights to each neighbor relationship. The weight determines *how much* each neighbor counts.  You will need to employ the `nb2listw()` command. Let's create a weights object *nycw* for our Queen contiguity defined neighbor object *nycb*.  We might have zero neighbor zip codes, so include the `zero.policy = TRUE` argument. 
 
-```{r}
+
+```r
 nycw<-nb2listw(nycb, style="W", zero.policy = TRUE)
 ```
 
@@ -231,10 +267,13 @@ Here, style = "W" indicates that the weights for each spatial unit are standardi
 
 We’ve now defined what we mean by neighbor by creating an *nb* object and the influence of each neighbor by creating a spatial weights matrix.  Now we can examine the Moran scatter plot for the dependent variable *covidrate*.
 
-```{r}
+
+```r
 moran.plot(zctanyc$covidrate, listw=nycw, xlab="Standardized COVID-19 Case Rate", ylab="Standardized Lagged COVID-19 Case Rate",
 main=c("Moran Scatterplot for COVID-19 case rates", "in New York"), zero.policy = TRUE )
 ```
+
+![](spatialreg_files/figure-html/unnamed-chunk-13-1.png)<!-- -->
 
 Does it look like there is an association? Yes.
 
@@ -266,7 +305,8 @@ Based on the exploratory mapping, Moran scatter plot, and the Moran's I, there a
 
 A spatial lag model (SLM) can be estimated in R using the command `lagsarlm()`, which is in the **spatialreg** package.   Fit the SLM
 
-```{r warning = FALSE}
+
+```r
 fit.lag<-lagsarlm(covidrate ~  pblk + phisp +  medincome +totp + p65old, data = zctanyc, listw = nycw, zero.policy=TRUE) 
 ```
 
@@ -274,14 +314,63 @@ The only difference between the code for `lm()` and `lagsarlm()` is the argument
 
 Let's calculate the Moran's I on the model's residuals
 
-```{r}
+
+```r
 moran.mc(resid(fit.lag), nycw, nsim=999, zero.policy=TRUE)
+```
+
+```
+## 
+## 	Monte-Carlo simulation of Moran I
+## 
+## data:  resid(fit.lag) 
+## weights: nycw  
+## number of simulations + 1: 1000 
+## 
+## statistic = 0.023944, observed rank = 729, p-value = 0.271
+## alternative hypothesis: greater
 ```
 
 A summary of results
 
-```{r}
+
+```r
 summary(fit.lag)
+```
+
+```
+## 
+## Call:lagsarlm(formula = covidrate ~ pblk + phisp + medincome + totp + 
+##     p65old, data = zctanyc, listw = nycw, zero.policy = TRUE)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -7.70893 -2.21115 -0.51621  2.03252 12.76569 
+## 
+## Type: lag 
+## Regions with no neighbours included:
+##  59 
+## Coefficients: (asymptotic standard errors) 
+##                 Estimate   Std. Error z value Pr(>|z|)
+## (Intercept)  2.181482373  2.056079141  1.0610 0.288694
+## pblk         0.040057707  0.013213379  3.0316 0.002433
+## phisp        0.062861580  0.020085387  3.1297 0.001750
+## medincome   -0.000014023  0.000010870 -1.2900 0.197057
+## totp        -0.000023471  0.000010986 -2.1365 0.032641
+## p65old       0.186119523  0.059389122  3.1339 0.001725
+## 
+## Rho: 0.70864, LR test value: 132.91, p-value: < 0.000000000000000222
+## Asymptotic standard error: 0.046717
+##     z-value: 15.169, p-value: < 0.000000000000000222
+## Wald statistic: 230.09, p-value: < 0.000000000000000222
+## 
+## Log likelihood: -482.7463 for lag model
+## ML residual variance (sigma squared): 11.661, (sigma: 3.4148)
+## Number of observations: 177 
+## Number of parameters estimated: 8 
+## AIC: 981.49, (AIC for lm: 1112.4)
+## LM test for residual autocorrelation
+## test value: 0.54636, p-value: 0.45981
 ```
 
 The results are formatted in a similar way as the OLS results. The major difference is the inclusion of the results for the spatial lag coefficient labelled "Rho".  R provides different ways to test the statistical significance of Rho depending on the null distribution. Right next to Rho, R shows the LR test value and its associated p-value. Below Rho is the test statistic "z-value" and its associated p-value, which are based on the standard normal distribution. Finally, R shows the Wald statistic and its associated p-value.  To be clear, all are testing the statistical significance of the spatial lag term (null hypothesis is Rho is equal to 0).
@@ -297,15 +386,63 @@ The results are formatted in a similar way as the OLS results. The major differe
 
 As described in lecture, we'll need to estimate the direct and indirect effects to get the total effects of each variable on the outcome.  To do this, use the function `impacts()`.  You need to include the lag model object, the spatial weights matrix, and the number of Monte Carlo simulations to obtain simulated distributions of the impacts (this used primarily for getting the standard errors for statistical inference).
 
-```{r}
+
+```r
 fit.lag.effects <- impacts(fit.lag, listw = nycw, R = 999)
 fit.lag.effects
 ```
 
+```
+## Impact measures (lag, exact):
+##                   Direct       Indirect          Total
+## pblk       0.04856330610  0.08892199157  0.13748529767
+## phisp      0.07620920924  0.13954310786  0.21575231710
+## medincome -0.00001700018 -0.00003112824 -0.00004812842
+## totp      -0.00002845456 -0.00005210181 -0.00008055636
+## p65old     0.22563896245  0.41315691883  0.63879588128
+```
+
 To get the standard errors, you use the `summary()` function and ask it to report the test statistic (*Z*) and the associated p-values.
 
-```{r}
+
+```r
 summary(fit.lag.effects, zstats = TRUE, short = TRUE)
+```
+
+```
+## Impact measures (lag, exact):
+##                   Direct       Indirect          Total
+## pblk       0.04856330610  0.08892199157  0.13748529767
+## phisp      0.07620920924  0.13954310786  0.21575231710
+## medincome -0.00001700018 -0.00003112824 -0.00004812842
+## totp      -0.00002845456 -0.00005210181 -0.00008055636
+## p65old     0.22563896245  0.41315691883  0.63879588128
+## ========================================================
+## Simulation results ( variance matrix):
+## ========================================================
+## Simulated standard errors
+##                  Direct      Indirect         Total
+## pblk      0.01557869964 0.03119251231 0.04494148517
+## phisp     0.02297539656 0.04582889942 0.06559027606
+## medincome 0.00001301256 0.00002563818 0.00003825134
+## totp      0.00001351677 0.00002896489 0.00004166174
+## p65old    0.07339886572 0.15549607666 0.22024836038
+## 
+## Simulated z-values:
+##              Direct  Indirect     Total
+## pblk       3.074927  2.839278  3.036561
+## phisp      3.314189  3.071947  3.307331
+## medincome -1.315059 -1.245481 -1.282156
+## totp      -2.095123 -1.839402 -1.958568
+## p65old     3.082009  2.711698  2.941563
+## 
+## Simulated p-values:
+##           Direct     Indirect  Total     
+## pblk      0.00210554 0.0045216 0.00239293
+## phisp     0.00091909 0.0021267 0.00094189
+## medincome 0.18848993 0.2129549 0.19978809
+## totp      0.03616010 0.0658561 0.05016337
+## p65old    0.00205609 0.0066939 0.00326560
 ```
 
 <br>
@@ -325,22 +462,70 @@ The spatial error model (SEM) incorporates spatial dependence in the errors. If 
 
 We can estimate a  spatial error model in R using the command `errorsarlm()` also in the **spatialreg** package.
 
-```{r}
+
+```r
 fit.err<-errorsarlm(covidrate ~  pblk + phisp +  medincome +totp + p65old, data = zctanyc, listw = nycw, zero.policy=TRUE) 
 ```
 
 And the Moran's I of the residuals
 
-```{r}
+
+```r
 moran.mc(resid(fit.err), nycw, nsim=999, zero.policy=TRUE)
+```
+
+```
+## 
+## 	Monte-Carlo simulation of Moran I
+## 
+## data:  resid(fit.err) 
+## weights: nycw  
+## number of simulations + 1: 1000 
+## 
+## statistic = -0.04723, observed rank = 201, p-value = 0.799
+## alternative hypothesis: greater
 ```
 
 [Are the residuals spatially autocorrelated?](https://www.youtube.com/watch?v=GM-e46xdcUo)
 
 A summary of the model
 
-```{r}
+
+```r
 summary(fit.err)
+```
+
+```
+## 
+## Call:errorsarlm(formula = covidrate ~ pblk + phisp + medincome + totp + 
+##     p65old, data = zctanyc, listw = nycw, zero.policy = TRUE)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -7.2334 -1.9737 -0.3498  1.6442 13.4324 
+## 
+## Type: error 
+## Regions with no neighbours included:
+##  59 
+## Coefficients: (asymptotic standard errors) 
+##                 Estimate   Std. Error z value    Pr(>|z|)
+## (Intercept) 12.226926447  2.689463319  4.5462 0.000005461
+## pblk         0.061604533  0.022419247  2.7478    0.005999
+## phisp        0.122124864  0.029625877  4.1222 0.000037521
+## medincome   -0.000019168  0.000014531 -1.3191    0.187120
+## totp        -0.000020288  0.000011160 -1.8180    0.069068
+## p65old       0.188907342  0.070122943  2.6939    0.007061
+## 
+## Lambda: 0.78837, LR test value: 136.64, p-value: < 0.000000000000000222
+## Asymptotic standard error: 0.042485
+##     z-value: 18.556, p-value: < 0.000000000000000222
+## Wald statistic: 344.34, p-value: < 0.000000000000000222
+## 
+## Log likelihood: -480.8819 for error model
+## ML residual variance (sigma squared): 10.804, (sigma: 3.287)
+## Number of observations: 177 
+## Number of parameters estimated: 8 
+## AIC: 977.76, (AIC for lm: 1112.4)
 ```
 
 <br>
@@ -405,8 +590,61 @@ Although it is important to run these tests, whether SLM or SEM is most appropri
 To run the LM tests in R, use the `lm.LMtests()` command in the **spatialreg** package.  The argument `test = "all"` runs all the tests.  You should look at *LMerr* (Spatial Error), *LMlag* (Spatial Lag), *RLMerr* (Robust Spatial Error) and *RLMlag* (Robust Spatial Lag).
 
 
-```{r}
+
+```r
 lm.LMtests(fit.ols, listw = nycw, test = "all", zero.policy=TRUE)
+```
+
+```
+## 
+## 	Lagrange multiplier diagnostics for spatial dependence
+## 
+## data:  
+## model: lm(formula = covidrate ~ pblk + phisp + medincome + totp +
+## p65old, data = zctanyc)
+## weights: nycw
+## 
+## LMerr = 139.96, df = 1, p-value < 0.00000000000000022
+## 
+## 
+## 	Lagrange multiplier diagnostics for spatial dependence
+## 
+## data:  
+## model: lm(formula = covidrate ~ pblk + phisp + medincome + totp +
+## p65old, data = zctanyc)
+## weights: nycw
+## 
+## LMlag = 137.42, df = 1, p-value < 0.00000000000000022
+## 
+## 
+## 	Lagrange multiplier diagnostics for spatial dependence
+## 
+## data:  
+## model: lm(formula = covidrate ~ pblk + phisp + medincome + totp +
+## p65old, data = zctanyc)
+## weights: nycw
+## 
+## RLMerr = 11.124, df = 1, p-value = 0.0008521
+## 
+## 
+## 	Lagrange multiplier diagnostics for spatial dependence
+## 
+## data:  
+## model: lm(formula = covidrate ~ pblk + phisp + medincome + totp +
+## p65old, data = zctanyc)
+## weights: nycw
+## 
+## RLMlag = 8.5867, df = 1, p-value = 0.003386
+## 
+## 
+## 	Lagrange multiplier diagnostics for spatial dependence
+## 
+## data:  
+## model: lm(formula = covidrate ~ pblk + phisp + medincome + totp +
+## p65old, data = zctanyc)
+## weights: nycw
+## 
+## SARMA = 148.55, df = 2, p-value < 0.00000000000000022
 ```
 
 
