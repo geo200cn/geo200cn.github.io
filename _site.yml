@@ -29,6 +29,10 @@ navbar:
           href: linearregression.html
         - text: "Linear Regression II"
           href: linearregression2.html
+        - text: "Spatial Regression"
+          href: spatialreg.html
+        - text: "Spatial Heterogeneity"
+          href: spatialheterogeneity.html
     - text: "R Tips"
       href: tips.html
 
