@@ -1,0 +1,400 @@
+---
+title: "Logistic Regression"
+subtitle: <h4 style="font-style:normal">GEO 200CN - Quantitative Geography</h4>
+author: <h4 style="font-style:normal">Professor Noli Brazil</h4>
+date: <h4 style="font-style:normal">May 16, 2022</h4>
+output: 
+  html_document:
+    toc: true
+    toc_depth: 4
+    toc_float: true
+    theme: cosmo
+    code_folding: show
+    self_contained: false
+---
+
+
+<style>
+p.comment {
+background-color: #DBDBDB;
+padding: 10px;
+border: 1px solid black;
+margin-left: 25px;
+border-radius: 5px;
+}
+
+.figure {
+   margin-top: 20px;
+   margin-bottom: 20px;
+}
+
+h1.title {
+  font-weight: bold;
+  font-family: Arial;  
+}
+
+h2.title {
+  font-family: Arial;  
+}
+
+</style>
+
+
+<style type="text/css">
+#TOC {
+  font-size: 13px;
+  font-family: Arial;
+}
+</style>
+
+
+\
+
+
+
+
+
+In this lab guide you will learn how to run a logistic regression model, which differs from the linear regression methods we learned in [Week](https://geo200cn.github.io/linearregression.html) [6](https://geo200cn.github.io/linearregression2.html) in that the outcome here is binary.  To help us accomplish this learning objective, we will examine the association between individual health status and a set of demographic and socioeconomic characteristics from the [Behavioral Risk Factor Surveillance System](https://www.cdc.gov/brfss/index.html) (BRFSS), an annual survey conducted by the Centers for Disease Control and Prevention that collects state data about U.S. residents regarding their health-related risk behaviors, chronic health conditions, and use of preventive services. 
+
+<div style="margin-bottom:25px;">
+</div>
+## **Installing and loading packages**
+\
+
+We introduce one new package in today's lab
+
+
+```r
+install.package("lmtest")
+```
+
+Load this package along with others we need. 
+
+
+```r
+library(tidyverse)
+library(lmtest)
+```
+
+
+
+<div style="margin-bottom:25px;">
+</div>
+## **Why logistic regression?**
+\
+
+
+The reasons why you run a logistic regression are the same as the reasons for [running a regular linear regression](https://geo200cn.github.io/linearregression.html#Why_linear_regression).  However, there is one additional important motivation: we want to model the relationship between a set of independent variables and a *binary* outcome.
+
+In many situations in your work as a Geographer, your outcome will be of a qualitative nature. When we speak of qualitative outcomes, we generally are concerned with the observation of:
+
+* A particular classification
+    + Invasive species or not; urban or not
+* A particular behavior 
+    + Migrated or not; fire ignition
+* A transition 
+    + Riverbank erosion; employed to unemployed;
+* A threshold characteristic 
+    + Income below poverty level; concentrations exceeding a particular anthropogenic pollution threshold
+
+In general, each of these outcomes would be coded as a binary variable (1 or 0).   You can use a linear regression to model a binary outcome, but you'll typically break the assumption of homescedastic residuals and you may get predictions outside of 1 or 0. That's why you'll need to turn to logistic regression to model the relationship.
+
+
+<div style="margin-bottom:25px;">
+</div>
+## **Bring in the data**
+\
+
+
+
+Download the file *brfss16.csv* from Canvas in the Lab and Assignments Week 8 folder.  Bring in the file in
+
+
+
+```r
+brfss16 <- read_csv("brfss16.csv")
+```
+
+The data contain individuals as units of observations.  The main goal of the analysis is to examine characteristics that are associated with self-reported bad health, where bad health is an indicator of whether the respondent reported "yes" to the question: "In general, would you say that in general your health is Fair/Poor?"  Our dependent variable is *badhealth* and our independent variables are age *agec*, gender *male*, educational attainment *educ*, race/ethnicity *race_eth*, whether the individual indicates they *smoke*, employment status *employ*, marital status *marst*, body mass index *bmi* and income *inc*.  A record layout of the data can be found [here](https://raw.githubusercontent.com/geo200cn/data/master/brfss16RL.txt)
+
+Our research question is: What individual characteristics predict self-reported bad health among U.S. adults? We are classifying people into bad health (Y = 1) and not bad health (Y = 0) categories. 
+
+<div style="margin-bottom:25px;">
+</div>
+## **Simple Logistic Regression**
+\
+
+
+We first examine the distribution of our binary dependent variable *badhealth*.  We create a bar chart showing the distribution of the poor health indicator.
+
+
+
+```r
+brfss16 %>%
+  group_by(badhealth) %>%
+  summarize (n = n()) %>%
+  mutate(freq = n / sum(n))  %>%
+  ggplot() +
+    geom_bar(mapping=aes(x=badhealth, y=freq),stat="identity") +
+    xlab("reported fair/poor heath")
+```
+
+![](logistic_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
+
+
+Let's now run a logistic regression model.  We'll start simple, regressing *badhealth* on BMI. Instead of using the function `lm()` to run a logistic regression model as we did when running linear regression models, we will use the function `glm()`, which stands for Generalized Linear Models.  `glm()` is similar to `lm()`, but gives us the option of a variety of families to use in fitting the model (the shape that we hypothesis represents the shape of *f* that defines the relationship between Y and X).  
+
+We specify  a family by using the argument `family =`. If we wanted a standard linear regression, which assumes a normal distribution, `family` will equal `gaussian` (fancy word for normal).  For a list of `glm` families, check the help documentation `? glm`. We use `family = binomial` for a logistic regression.  
+
+
+```r
+logit1.fit <- glm(badhealth ~ bmi, family = binomial, data = brfss16)
+```
+
+
+
+We can summarize the modelling results using `summary()`.  The resulting output is very similar to the output from `lm()`.
+
+
+```r
+summary(logit1.fit)
+```
+
+```
+## 
+## Call:
+## glm(formula = badhealth ~ bmi, family = binomial, data = brfss16)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -2.3613  -0.6505  -0.5836  -0.5129   2.2744  
+## 
+## Coefficients:
+##               Estimate Std. Error z value Pr(>|z|)    
+## (Intercept) -3.2376333  0.0194056 -166.84   <2e-16 ***
+## bmi          0.0606889  0.0006407   94.72   <2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 352201  on 367872  degrees of freedom
+## Residual deviance: 343284  on 367871  degrees of freedom
+## AIC: 343288
+## 
+## Number of Fisher Scoring iterations: 4
+```
+
+<br>
+
+<p class="comment">**Question 1**: What is the interpretation of the bmi slope coefficient?</p>
+
+<br>
+
+
+Let’s compare our results to those from an OLS regression model.  An OLS for a binary response variable is known as a linear probability model. We use `glm()` again, but this time use the (default) Gaussian distribution.
+
+
+```r
+ols.fit <-glm(badhealth ~ bmi, family = gaussian, data = brfss16)
+```
+
+and a summary
+
+
+```r
+summary(ols.fit)
+```
+
+```
+## 
+## Call:
+## glm(formula = badhealth ~ bmi, family = gaussian, data = brfss16)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -0.8942  -0.1984  -0.1586  -0.1122   0.9789  
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(>|t|)    
+## (Intercept) -0.1006501  0.0029346  -34.30   <2e-16 ***
+## bmi          0.0101271  0.0001016   99.63   <2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for gaussian family taken to be 0.1467352)
+## 
+##     Null deviance: 55436  on 367872  degrees of freedom
+## Residual deviance: 53980  on 367871  degrees of freedom
+## AIC: 337988
+## 
+## Number of Fisher Scoring iterations: 2
+```
+
+<br>
+
+<p class="comment">**Question 2**: What is the interpretation of the bmi slope coefficient in ols.fit?</p>
+
+<br>
+
+
+You can create a plot like the one showed in Handout 7 (right hand plot) by predicting the probability of reporting bad health for given values of BMI.  The minimum and maximum BMI for our data set are 12.09 and 85.82, so let's predict bad health for BMI between 10 to 90 using the `predict()` function. 
+
+
+```r
+pfit1 <- predict(logit1.fit, bmi = c(10:90))
+```
+
+In predicting using a regression model, you can either predict health status for the 367,873 individuals in the original data set or predict for a new set of individuals.  In the code above, we are predicting for a new set of observations - individuals with BMIs between 10 and 90 - i.e. 10, 11, 12, 13 ... 88, 89, and 90.
+
+Let's get a summary of our predicted values
+
+
+```r
+summary(pfit1)
+```
+
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##  -2.508  -1.782  -1.583  -1.527  -1.342   2.807
+```
+
+We get values ranging from -2.5 to 2.8.  But, these are not probabilities.  Remember, the response variable is modelled as a logit, so R will give us logits in return.  To convert the logit to a probability, use the argument `type = "response"` inside `predict()`
+
+
+```r
+pfit1 <- predict(logit1.fit, data.frame(bmi = c(10:90)), type = "response")
+summary(pfit1)
+```
+
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+## 0.06719 0.19514 0.44938 0.46522 0.73314 0.90242
+```
+
+The predicted probability of bad health ranges from 6.7% to 90.2%. 
+
+<br>
+
+<p class="comment">**Question 3**: Create a plot similar to the one shown in Handout 7 (right hand plot) showing the predicted probabilities from logit1.fit and the observed data. </p>
+
+<p class="comment">**Question 4**: Create a plot similar to the one shown in Handout 7 (left hand plot) showing the predicted probabilities from ols.fit and the observed data. </p>
+
+<br>
+
+
+<div style="margin-bottom:25px;">
+</div>
+## **Multiple Logistic Regression**
+\
+
+We now move to the multiple regression framework by adding more than one independent variable.  Let's add smoking status *smoke*, which is a categorical variable.
+
+
+```r
+logit2.fit <- glm(badhealth ~ bmi + smoke, family = binomial, data = brfss16)
+summary(logit2.fit)
+```
+
+```
+## 
+## Call:
+## glm(formula = badhealth ~ bmi + smoke, family = binomial, data = brfss16)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -2.4224  -0.6653  -0.5404  -0.4425   2.4310  
+## 
+## Coefficients:
+##                    Estimate Std. Error z value Pr(>|z|)    
+## (Intercept)      -2.6334490  0.0207067 -127.18   <2e-16 ***
+## bmi               0.0630172  0.0006512   96.77   <2e-16 ***
+## smokeFormer      -0.5081764  0.0120615  -42.13   <2e-16 ***
+## smokeNeverSmoked -1.0254624  0.0114775  -89.35   <2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 352201  on 367872  degrees of freedom
+## Residual deviance: 335009  on 367869  degrees of freedom
+## AIC: 335017
+## 
+## Number of Fisher Scoring iterations: 4
+```
+  
+Let's calculate the predicted probability of reporting Fair/Poor health at each value of smoking status, holding the BMI at its mean.  We need to create a data frame containing the values for *smoke* and *bmi* that we want to predict for.  What are the categories of *smoke*?
+
+
+```r
+table(brfss16$smoke)
+```
+
+```
+## 
+##     Current      Former NeverSmoked 
+##       56396      108574      202903
+```
+
+Let's save these categories in a vector.
+
+
+```r
+smoke <- c("Current", "Former", "NeverSmoked")
+```
+
+Now you need to create a data frame containing the vector *smoke* we created above as one column and the overall mean of *bmi* as another column (name the column *bmi* because it needs to match the variable name used in the prediction model). So you should have a 3 x 2 data frame. Then plug this data frame into the `predict()` function following what we did earlier.
+
+<br>
+
+<p class="comment">**Question 5**: What is the difference in the probability of reporting Fair/Poor health between a current smoker ("Current") and a never smoker ("NeverSmoked") holding BMI at its mean? </p>
+
+<br>
+
+Handout 7 goes through the various ways we can interpret logistic regression coefficients.  We already went through a few above.  What about the odds ratio interpretation?
+
+<br>
+
+<p class="comment">**Question 6**: Convert the logit2.fit coefficients to interpret them as the change in the odds ratio with a one unit increase in the independent variables. For a one unit increase in BMI, the odds of reporting Fair/Poor health (versus not reporting Fair/Poor health) increase by a factor of what amount? </p>
+
+<br>
+
+<div style="margin-bottom:25px;">
+</div>
+## **Goodness of fit**
+\
+
+The Handout goes through measures of best fit for a logistic regression model. Fortunately, some of these measures are reported in the model summary.  Let's run a multiple logistic regression model adding more variables to the model. Below, we've added race/ethnicity, age, sex, educational attainment, income, and employment status.
+
+
+
+```r
+logit3.fit<- glm(badhealth ~ bmi + race_eth + agec + male + smoke + educ + inc + employ , family = binomial, data = brfss16)
+```
+
+How does this model compare to one that also includes marital status?
+
+
+```r
+logit4.fit<- glm(badhealth ~ bmi + race_eth + agec + male + smoke + educ + inc + employ + marst , family = binomial, data = brfss16)
+```
+
+Executing `summary()` on these results will give us some but not all of the fit measures discussed in the handout. The likelihood ratio test can be run using the function `lrtest()`, which is part of the **lmtest** package.  The function allows you compare the fit between two different models.
+
+<br>
+
+<p class="comment">**Question 7**: What are the null and alternative hypotheses for the Likelihood ratio test? </p>
+
+<p class="comment">**Question 8**: Based on the fit measures discussed in the handout, which model, logit3.fit and logit4.fit, provides the best fit? Explain why.  </p>
+
+<br>
+
+
+You're [done!](https://www.youtube.com/watch?v=nfWlot6h_JM)
+
+***
+
+<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>.
+
+
+Website created and maintained by [Noli Brazil](https://nbrazil.faculty.ucdavis.edu/)
