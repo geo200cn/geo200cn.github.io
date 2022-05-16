@@ -33,6 +33,10 @@ navbar:
           href: spatialreg.html
         - text: "Spatial Heterogeneity"
           href: spatialheterogeneity.html
+        - text: "Logistic Regression"
+          href: logistic.html
+        - text: "Prediction Modelling"
+          href: prediction.html
     - text: "R Tips"
       href: tips.html
 

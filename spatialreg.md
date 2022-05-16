@@ -327,7 +327,7 @@ moran.mc(resid(fit.lag), nycw, nsim=999, zero.policy=TRUE)
 ## weights: nycw  
 ## number of simulations + 1: 1000 
 ## 
-## statistic = 0.023944, observed rank = 729, p-value = 0.271
+## statistic = 0.023944, observed rank = 721, p-value = 0.279
 ## alternative hypothesis: greater
 ```
 
@@ -422,27 +422,27 @@ summary(fit.lag.effects, zstats = TRUE, short = TRUE)
 ## ========================================================
 ## Simulated standard errors
 ##                  Direct      Indirect         Total
-## pblk      0.01557869964 0.03119251231 0.04494148517
-## phisp     0.02297539656 0.04582889942 0.06559027606
-## medincome 0.00001301256 0.00002563818 0.00003825134
-## totp      0.00001351677 0.00002896489 0.00004166174
-## p65old    0.07339886572 0.15549607666 0.22024836038
+## pblk      0.01581155972 0.03254381464 0.04648223185
+## phisp     0.02442686379 0.04993203336 0.07139145991
+## medincome 0.00001358352 0.00002636417 0.00003956425
+## totp      0.00001278610 0.00002692259 0.00003888459
+## p65old    0.07223095992 0.16212022855 0.22603784401
 ## 
 ## Simulated z-values:
 ##              Direct  Indirect     Total
-## pblk       3.074927  2.839278  3.036561
-## phisp      3.314189  3.071947  3.307331
-## medincome -1.315059 -1.245481 -1.282156
-## totp      -2.095123 -1.839402 -1.958568
-## p65old     3.082009  2.711698  2.941563
+## pblk       3.095736  2.799949  3.013397
+## phisp      3.133689  2.848108  3.064204
+## medincome -1.227569 -1.176457 -1.205407
+## totp      -2.225004 -1.983218 -2.104754
+## p65old     3.185361  2.664797  2.929152
 ## 
 ## Simulated p-values:
-##           Direct     Indirect  Total     
-## pblk      0.00210554 0.0045216 0.00239293
-## phisp     0.00091909 0.0021267 0.00094189
-## medincome 0.18848993 0.2129549 0.19978809
-## totp      0.03616010 0.0658561 0.05016337
-## p65old    0.00205609 0.0066939 0.00326560
+##           Direct    Indirect  Total    
+## pblk      0.0019633 0.0051111 0.0025834
+## phisp     0.0017262 0.0043980 0.0021825
+## medincome 0.2196089 0.2394124 0.2280464
+## totp      0.0260810 0.0473431 0.0353127
+## p65old    0.0014457 0.0077035 0.0033989
 ```
 
 <br>
@@ -482,7 +482,7 @@ moran.mc(resid(fit.err), nycw, nsim=999, zero.policy=TRUE)
 ## weights: nycw  
 ## number of simulations + 1: 1000 
 ## 
-## statistic = -0.04723, observed rank = 201, p-value = 0.799
+## statistic = -0.04723, observed rank = 205, p-value = 0.795
 ## alternative hypothesis: greater
 ```
 
