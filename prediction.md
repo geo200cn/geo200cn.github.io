@@ -113,7 +113,7 @@ The file contains the average monthly temperature in Celsius. We need to do some
 
 
 ```r
-ca.temp <- mutate(ca.temp, temp = rowMeans(select(ca.temp, JAN:DEC)))
+ca.temp <- mutate(ca.temp, temp = rowMeans(dplyr::select(ca.temp, JAN:DEC)))
 ```
 
 Let's map the stations. We have longitude and latitude. First, we need to convert *ca.temp* into a spatial **sf** object. Here, we use the function `st_as_sf()` and use an appropriate coordinate reference system.

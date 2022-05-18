@@ -484,7 +484,7 @@ library(tidyverse)</code></pre>
 <p>Next, bring in the California temperature dataset <em>temperature.csv</em></p>
 <pre class="r"><code>ca.temp &lt;- read_csv(&quot;temperature.csv&quot;)</code></pre>
 <p>The file contains the average monthly temperature in Celsius. We need to do some data prep before we can start using this data set. Let’s take mean monthly temperature, which will be our response variable.</p>
-<pre class="r"><code>ca.temp &lt;- mutate(ca.temp, temp = rowMeans(select(ca.temp, JAN:DEC)))</code></pre>
+<pre class="r"><code>ca.temp &lt;- mutate(ca.temp, temp = rowMeans(dplyr::select(ca.temp, JAN:DEC)))</code></pre>
 <p>Let’s map the stations. We have longitude and latitude. First, we need to convert <em>ca.temp</em> into a spatial <strong>sf</strong> object. Here, we use the function <code>st_as_sf()</code> and use an appropriate coordinate reference system.</p>
 <pre class="r"><code>ca.temp.sf &lt;- st_as_sf(ca.temp, coords = c(&quot;LONG&quot;, &quot;LAT&quot;), crs =&quot;+proj=longlat +datum=NAD83 +ellps=GRS80&quot;)</code></pre>
 <p>Let’s then bring in a California counties layer.</p>
