@@ -50,9 +50,7 @@ h2.title {
 
 \
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message = FALSE)
-```
+
 
 In the last lab guide, we went through deterministic methods for interpolating spatial data. In this lab guide, we go through probabilistic or geostatistical spatial interpolation methods. We'll focus on two popular geostatistical procedures: trend surface analysis and Kriging. This lab guide closely follows OSU Ch. 10. The objectives of this lab are as follows
 
@@ -70,7 +68,8 @@ To help us accomplish these learning objectives, we will use California Air Poll
 
 No new packages this lab. Load all necessary packages using `library()`.
 
-```{r warning=FALSE, message=FALSE}
+
+```r
 library(sf)
 library(sp)
 library(gstat)
@@ -89,39 +88,55 @@ library(raster)
 
 We will use the [airqual dataset](https://ww3.arb.ca.gov/html/ds.htm) to interpolate ozone levels for California (averages for 1980-2009). Download the  file *kriging.zip* from Canvas in the Lab and Assignments Week 9 folder. It contains all the files that will be used in this guide. Bring in the file *airqual.csv*, which contains ozone levels (among many other variables, which we will not use) for control points scattered throughout California.
 
-```{r}
+
+```r
 x <- read_csv("airqual.csv")
 ```
 
 We'll need to prepare the data to get it ready. The variable we are interpolating is *OZDLYAV* (unit is parts per billion).  To get easier numbers to read, we multiply *OZDLYAV* by 1000
 
-```{r}
+
+```r
 x <- x %>%
       mutate(OZDLYAV = OZDLYAV * 1000)
 ```
 
 At the moment, the data are in a tibble or data frame. 
 
-```{r}
+
+```r
 class(x)
+```
+
+```
+## [1] "spec_tbl_df" "tbl_df"      "tbl"         "data.frame"
 ```
 
 We need to create a *SpatialPointsDataFrame* to use the **gstat** kriging functions. This mean we will be primarily using [**sp**](https://geo200cn.github.io/introspatial.html#Spatial_Data) functions in this lab.  To convert it to a *SpatialPointsDataFrame*, we must first specify which of the columns contain the coordinates of the data. We do this by using the function `coordinates()`.
 
-```{r}
+
+```r
 coordinates(x) <- ~LONGITUDE + LATITUDE
 class(x)
 ```
 
+```
+## [1] "SpatialPointsDataFrame"
+## attr(,"package")
+## [1] "sp"
+```
+
 Next, we need to establish the Coordinate Reference System (CRS).  
 
-```{r}
+
+```r
 proj4string(x) <- CRS('+proj=longlat +datum=NAD83')
 ```
 
 Then reproject to a more appropriate CRS, such as Teale Albers. Note the `units=km`, which is needed to fit the variogram.
 
-```{r}
+
+```r
 TA <- CRS("+proj=aea +lat_1=34 +lat_2=40.5 +lat_0=0 +lon_0=-120 +x_0=0 +y_0=-4000000 +datum=NAD83 +units=km +ellps=GRS80")
 aq <- spTransform(x, TA)
 ```
@@ -129,34 +144,41 @@ aq <- spTransform(x, TA)
 
 Next, we need to create a template raster to interpolate to. We will interpolate across California, so bring in the file *counties.shp* as an **sp** object.
 
-```{r results = "hide"}
+
+```r
 cageo <- shapefile("counties.shp")
 ```
 
 Reproject to have the same CRS as *TA*.
 
-```{r}
+
+```r
 ca <- spTransform(cageo, TA)
 ```
 
 Let's plot the points on CA to see what we got.
 
-```{r}
+
+```r
 plot(ca, border='gray')
 points(aq, cex=.5, col='red')
 ```
 
+![](kriging_files/figure-html/unnamed-chunk-10-1.png)<!-- -->
+
 Coerce the *SpatialPolygonsDataFrame* of California, *ca*, to a raster using the function `raster()`.  
 
 
-```{r}
+
+```r
 r <- raster(ca)
 res(r) <- 10  # 10 km if your CRS's units are in km
 ```
 
 We need one more step. Go from raster to a *SpatialGrid* object (a different representation of the same idea) using the `as()` function.
 
-```{r}
+
+```r
 g <- as(r, 'SpatialGrid')
 ```
 
@@ -169,39 +191,75 @@ We're now ready to interpolate!
 
 OSU begins Chapter 10 discussing trend surface analysis.  Trend surface modeling is basically a regression of the variable you want to interpolate on the spatial coordinates of your observed locations.  We've already done regression before!  So, trend surface analysis in regression lingo characterizes the outcome as the variable we want to interpolate *OZDLYAV*, and the independent variables as the X (longitude) and Y (latitude) coordinates.  This is equation 10.3 in OSU and the book calls it a linear trend surface. Let's run the model using our friend `lm()` (you can also use our other compadre `glm()`). 
  
-```{r}
+
+```r
 lm.1 <- lm(OZDLYAV~LONGITUDE + LATITUDE, data=aq)
 ```
 
 And here is a summary.
 
-```{r}
+
+```r
 summary(lm.1)
+```
+
+```
+## 
+## Call:
+## lm(formula = OZDLYAV ~ LONGITUDE + LATITUDE, data = aq)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -24.714  -5.343  -1.279   3.941  45.058 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(>|t|)    
+## (Intercept) 32.883735   0.672214  48.919  < 2e-16 ***
+## LONGITUDE    0.044224   0.004008  11.034  < 2e-16 ***
+## LATITUDE     0.018565   0.003012   6.164 1.58e-09 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 8.851 on 449 degrees of freedom
+## Multiple R-squared:  0.2523,	Adjusted R-squared:  0.2489 
+## F-statistic: 75.74 on 2 and 449 DF,  p-value: < 2.2e-16
 ```
 
 
 Let's use this model to interpolate across California. Were interpolating across the California grid *g*.  To predict, you need to have the same right hand side variable names, *LONGITUDE* and *LATITUDE*, designating the coordinates in *g*.  However, the coordinates in *g* are named
 
-```{r}
+
+```r
 coordnames(g)
+```
+
+```
+## [1] "s1" "s2"
 ```
 
 Change it
 
-```{r}
+
+```r
 coordnames(g) <- c("LONGITUDE", "LATITUDE")
 coordnames(g)
 ```
 
+```
+## [1] "LONGITUDE" "LATITUDE"
+```
+
 Now we can interpolate.  We use the function `predict()` to get interpolated values from *lm.1*, and save the predictions with the spatial grid *g* as a *SpatialGridDataFrame*.
 
-```{r}
+
+```r
 dat.1st <- SpatialGridDataFrame(g, data.frame(var1.pred = predict(lm.1, newdata=g))) 
 ```
 
 And let's map using `tm_shape()`
 
-```{r}
+
+```r
 # Clip the interpolated raster to CA
 r   <- raster(dat.1st)
 r.m <- mask(r, ca)
@@ -214,17 +272,21 @@ tm_shape(r.m) +
   tm_legend(legend.outside=TRUE)
 ```
 
+![](kriging_files/figure-html/unnamed-chunk-18-1.png)<!-- -->
+
 
 Let's try another trend. The second order surface polynomial (aka quadratic polynomial) is a parabolic surface whose equation is given by the one shown on page 286 in OSU.
 
 
-```{r}
+
+```r
 lm.2 <- lm(OZDLYAV~LONGITUDE + LATITUDE + I(LONGITUDE*LONGITUDE) + I(LATITUDE*LATITUDE) + I(LONGITUDE*LATITUDE), data=aq)
 ```
 
 Interpolate this across California's grid and map.
 
-```{r}
+
+```r
 # Use the regression model output to interpolate the surface
 dat.2nd <- SpatialGridDataFrame(g, data.frame(var1.pred = predict(lm.2, newdata=g))) 
 
@@ -238,8 +300,9 @@ tm_shape(r.m2) +
             title="Predicted ozone") +
   tm_shape(aq) + tm_dots(size=0.1) +
   tm_legend(legend.outside=TRUE)
-
 ```
+
+![](kriging_files/figure-html/unnamed-chunk-20-1.png)<!-- -->
 
 This interpolation picks up a slight curvature in the east-west trend.
 
@@ -267,7 +330,8 @@ This step involves estimating the (semi) variogram. The variogram is the foundat
 
 First, let's create a variogram cloud.  A variogram cloud characterizes the spatial autocorrelation across a surface that we have sampled at a set of control points.   The variogram cloud is obtained by plotting all possible squared differences of observation pairs against their separation distance. As any point in the variogram cloud refers to a pair of points in the data set, the variogram cloud is used to point us to areas with unusual high or low variability.  We use the `variogram()` function, which calculates the sample variogram.  Here, we set the lag *h* to be 20 km.
  
-```{r}
+
+```r
 vcloud <- variogram(OZDLYAV~1, locations=aq, width=20, cloud = TRUE)
 ```
 
@@ -275,16 +339,22 @@ The first argument `OZDLYAV~1` specifies the response variable (what you are int
 
 We then plot the cloud, getting a plot like Figure 10.7 in OSU.
 
-```{r}
+
+```r
 plot(vcloud)
 ```
 
+![](kriging_files/figure-html/unnamed-chunk-22-1.png)<!-- -->
+
 The variogram cloud gives us some insight, but need to simplify it a bit.  This is when we turn to the sample variogram. The sample variogram is estimated using the function `variogram()` but without the argument `cloud = TRUE`. 
 
-```{r}
+
+```r
 v.o <- variogram(OZDLYAV~1, locations=aq, width=20)
 plot(v.o)
 ```
+
+![](kriging_files/figure-html/unnamed-chunk-23-1.png)<!-- -->
 
 The variogram plot is nothing but a plot of averages of semivariogram cloud values over distance intervals.  It is like Figure 10.9 in OSU.
 
@@ -307,47 +377,85 @@ You also need to establish the theoretical function that determines the influenc
 
 We use the `fit.variogram()` function to fit a model variogram. The first argument specifies the empirical or sample variogram. The second argument is the model, with parameters, to be fit to the sample variogram. The model specifies the sill `psill =`, the range `range =`, the nugget `nugget =` and the theoretical model `model =`.  Plug in the values we eyeballed from the sample variogram as starting points for the model. `fit.variogram` will help optimize the fit of the model using an iterative weighted OLS method. 
 
-```{r}
+
+```r
 fve.o <- fit.variogram(v.o, model = vgm(psill = 100, model = "Exp", range = 150, nugget = 30))
 ```
 
 Here are the actual parameters that R used to fit the model 
 
-```{r}
+
+```r
 fve.o
+```
+
+```
+##   model    psill    range
+## 1   Nug 21.96589  0.00000
+## 2   Exp 85.52938 72.31329
 ```
 
 With the sample and fit variogram, one can plot them together to see how well the fit was:
 
-```{r}
+
+```r
 plot(variogramLine(fve.o, 400), type='l', ylim=c(0,120), col='blue', main = 'Exponential variogram model')
 points(v.o[,2:3], pch=20, col='red')
 ```
 
+![](kriging_files/figure-html/unnamed-chunk-26-1.png)<!-- -->
+
 Here's another way to plot the variogram and the model.
 
-```{r}
+
+```r
 plot(v.o, fve.o, main = 'Exponential variogram model')
 ```
+
+![](kriging_files/figure-html/unnamed-chunk-27-1.png)<!-- -->
 
 
 Let's try a different function (spherical instead of exponential)
 
-```{r}
+
+```r
 fvs.o <- fit.variogram(v.o, model = vgm(psill = 100, model = "Sph", range = 150, nugget = 30))
 fvs.o
+```
+
+```
+##   model    psill   range
+## 1   Nug 25.59723   0.000
+## 2   Sph 72.69835 136.131
+```
+
+```r
 plot(variogramLine(fvs.o, 400), type='l', ylim=c(0,120) ,col='blue', lwd=2, main = 'Spherical variogram model')
 points(v.o[,2:3], pch=20, col='red')
 ```
 
+![](kriging_files/figure-html/unnamed-chunk-28-1.png)<!-- -->
+
 Both look pretty good in this case. What about Gaussian?
 
-```{r}
+
+```r
 fvg.o <- fit.variogram(v.o, model = vgm(psill = 100, model = "Gau", range = 150, nugget = 30))
 fvg.o
+```
+
+```
+##   model    psill    range
+## 1   Nug 32.45995  0.00000
+## 2   Gau 63.75329 58.51846
+```
+
+```r
 plot(variogramLine(fvg.o, 400), type='l', ylim=c(0,120) ,col='blue', lwd=2, main = 'Gaussian variogram model')
 points(v.o[,2:3], pch=20, col='red')
 ```
+
+![](kriging_files/figure-html/unnamed-chunk-29-1.png)<!-- -->
 
 
 <div style="margin-bottom:25px;">
@@ -357,7 +465,8 @@ points(v.o[,2:3], pch=20, col='red')
 
 Once we have determined an appropriate variogram model we can interpolate across California. Ordinary kriging is an interpolation method that uses weighted averages of all,or a defined set of neighboring observations.  To Krig, you always need to establish the fitted variogram, because the variogram establishes the weights in the interpolation.  See OSU pages 302-306 if you are interested in seeing the math of how Ordinary Kriging is done. To employ Kriging in R, use the function `gstat()`. 
 
-```{r}
+
+```r
 k.o <- gstat(formula = OZDLYAV~1, locations = aq, model=fve.o)
 ```
 
@@ -365,13 +474,19 @@ The first argument is our interpolation formula, second are our observed points,
 
 Next, we need to predict or interpolate for our grid *g*. 
 
-```{r}
+
+```r
 kp.o <- predict(k.o, g)
+```
+
+```
+## [using ordinary kriging]
 ```
 
 Let's plot the predicted values.
 
-```{r}
+
+```r
 # Convert kriged surface to a raster object for clipping
 ok.o <- raster(kp.o)
 ok.o <- mask(ok.o, ca)
@@ -382,9 +497,12 @@ tm_shape(ok.o) +
   tm_legend(legend.outside=TRUE)
 ```
 
+![](kriging_files/figure-html/unnamed-chunk-32-1.png)<!-- -->
+
 How good are our predictions? We run 5-fold cross-validation to estimate the test prediction error. First, we establish the `RMSE()` function we created [last lab guide](https://geo200cn.github.io/interpolation.html#mean_model).
 
-```{r}
+
+```r
 RMSE <- function(observed, predicted) {
   sqrt(mean((predicted - observed)^2, na.rm=TRUE))
 }
@@ -392,7 +510,8 @@ RMSE <- function(observed, predicted) {
 
 Then run 5-fold cross validation using the same for loop from [last lab guide](https://geo200cn.github.io/interpolation#mean_model.html#proximity_polygons)
 
-```{r}
+
+```r
 set.seed(1234)
 kf <- kfold(nrow(aq))
 rmseok <- rep(NA, 5)
@@ -409,8 +528,13 @@ for (k in 1:5) {
 What is our 5-fold root mean squared error?
 
 
-```{r}
+
+```r
 mean(rmseok)
+```
+
+```
+## [1] 6.933593
 ```
 
 
@@ -423,33 +547,44 @@ While in Ordinary Kriging it is assumed that the mean is constant across the ent
 
 Following the same sequence as above in ordinary kriging , we get the empirical or sample variogram.
 
-```{r}
+
+```r
 v.u <- variogram(OZDLYAV~LONGITUDE + LATITUDE, locations=aq, width=20)
 plot(v.u)
 ```
 
+![](kriging_files/figure-html/unnamed-chunk-36-1.png)<!-- -->
+
 Sill looks like 75 (ish), range is 90 (ish), and nugget is 30 (ish).  We now get the variogram model using the exponential function.
 
-```{r}
+
+```r
 fve.u <- fit.variogram(v.u, model = vgm(psill = 75, model = "Exp", range = 90, nugget = 30))
 ```
 
 Now, we  krige
 
-```{r}
+
+```r
 k.u <- gstat(formula = OZDLYAV~LONGITUDE + LATITUDE, locations = aq, model=fve.u)
 ```
 
 Predict
 
-```{r}
+
+```r
 kp.u <- predict(k.u, g)
+```
+
+```
+## [using universal kriging]
 ```
 
 
 Plot the predictions to see what they look like
 
-```{r}
+
+```r
 # Convert kriged surface to a raster object for clipping
 ok.u <- raster(kp.u)
 ok.u <- mask(ok.u, ca)
@@ -461,9 +596,12 @@ tm_shape(ok.u) +
   tm_legend(legend.outside=TRUE)
 ```
 
+![](kriging_files/figure-html/unnamed-chunk-40-1.png)<!-- -->
+
 And the 5-fold RMSE is
 
-```{r}
+
+```r
 rmseuk <- rep(NA, 5)
 for (k in 1:5) {
   test <- aq[kf == k, ]
@@ -473,6 +611,10 @@ for (k in 1:5) {
   rmseuk[k] <- RMSE(test$OZDLYAV, p)
 }
 mean(rmseuk)
+```
+
+```
+## [1] 7.084023
 ```
 
 
@@ -485,37 +627,59 @@ Kriging is one of the most common interpolation methods in a Geographer's toolki
 
 You must be tired of running models on California. Let's predict precipitation for the great state of Texas! Bring in the files *precip* and *texas*.  
 
-```{r results = "hide"}
+
+```r
 P <- readOGR("precip.shp")
 TX <- readOGR("texas.shp")
 ```
 
 Note the classes 
 
-```{r}
+
+```r
 class(P)
+```
+
+```
+## [1] "SpatialPointsDataFrame"
+## attr(,"package")
+## [1] "sp"
+```
+
+```r
 class(TX)
+```
+
+```
+## [1] "SpatialPolygonsDataFrame"
+## attr(,"package")
+## [1] "sp"
 ```
 
 You will be interpolating the variable *Precip_in* in the *P* data set, which is average precipitation in inches for several meteorological sites in Texas.  Let's map the samples cases.
 
 
-```{r}
+
+```r
 plot(TX, border='gray')
 points(P, cex=.5, col='red')
 ```
 
+![](kriging_files/figure-html/unnamed-chunk-44-1.png)<!-- -->
+
 
 We need to add geographic coordinates to *P* to do our interpolating
 
-```{r}
+
+```r
 P$X <- coordinates(P)[,1]
 P$Y <- coordinates(P)[,2]
 ```
 
 We also need to convert *TX* to a raster and then from it create a *SpatialGrid* object.
 
-```{r}
+
+```r
 r <- raster(TX)
 res(r) <- 10
 g <- as(r, 'SpatialGrid')
@@ -523,7 +687,8 @@ g <- as(r, 'SpatialGrid')
 
 Finally, we make sure the coordinate variable names for the grid *g* are the same as those in *P*.
 
-```{r}
+
+```r
 coordnames(g) <- c("X", "Y")
 ```
 

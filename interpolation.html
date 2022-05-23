@@ -16,7 +16,7 @@
 <script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="site_libs/bootstrap-3.3.5/css/yeti.min.css" rel="stylesheet" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
@@ -319,12 +319,75 @@ div.tocify {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="index.html">GEO 200CN: Winter 2020</a>
+      <a class="navbar-brand" href="index.html">GEO 200CN: Spring 2022</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
   <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="syllabus.html">Syllabus</a>
+</li>
+<li>
+  <a href="hw_guidelines.html">Assignment Guidelines</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Labs
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="getting_started.html">Getting Started</a>
+    </li>
+    <li>
+      <a href="eda.html">Exploratory Data Analysis</a>
+    </li>
+    <li>
+      <a href="central.html">Statistical Inference</a>
+    </li>
+    <li>
+      <a href="hypothesis.html">Hypothesis Testing</a>
+    </li>
+    <li>
+      <a href="introspatial.html">Intro to Spatial Data</a>
+    </li>
+    <li>
+      <a href="pointpatterns.html">Point Pattern Analysis</a>
+    </li>
+    <li>
+      <a href="spatialautocorrelation.html">Spatial Autocorrelation</a>
+    </li>
+    <li>
+      <a href="linearregression.html">Linear Regression I</a>
+    </li>
+    <li>
+      <a href="linearregression2.html">Linear Regression II</a>
+    </li>
+    <li>
+      <a href="spatialreg.html">Spatial Regression</a>
+    </li>
+    <li>
+      <a href="spatialheterogeneity.html">Spatial Heterogeneity</a>
+    </li>
+    <li>
+      <a href="logistic.html">Logistic Regression</a>
+    </li>
+    <li>
+      <a href="prediction.html">Prediction Modelling</a>
+    </li>
+    <li>
+      <a href="interpolation.html">Spatial Interpolation</a>
+    </li>
+    <li>
+      <a href="kriging.html">Kriging</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="tips.html">R Tips</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -354,7 +417,7 @@ GEO 200CN - Quantitative Geography
 Professor Noli Brazil
 </h4></h4>
 <h4 class="date"><h4 style="font-style:normal">
-Spring 2020
+May 23, 2022
 </h4></h4>
 
 </div>
@@ -367,7 +430,6 @@ padding: 10px;
 border: 1px solid black;
 margin-left: 25px;
 border-radius: 5px;
-font-style: italic;
 }
 
 .figure {
@@ -393,6 +455,256 @@ h2.title {
 </style>
 <p><br />
 </p>
+<p>Spatial interpolation is the prediction of exact values of attributes at unsampled locations from measurements made at control points in the same study area. In this lab guide, we will learn how to run the deterministic spatial interpolation methods described in OSU Ch. 9. The objectives of this lab are as follows</p>
+<ol style="list-style-type: decimal">
+<li>Learn how to interpolate values using proximity polygons</li>
+<li>Learn how to interpolate values using nearest neighbor local spatial average</li>
+<li>Learn how to interpolate values using inverse distance weighted</li>
+</ol>
+<p>To help us accomplish these learning objectives, we will use precipitation data from weather stations in California. Our goal is to create a raster surface of California total precipitation values. Note that much of this lab guide has been adapted from rspatial.org.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+<div id="installing-and-loading-packages" class="section level2">
+<h2><strong>Installing and loading packages</strong></h2>
+<p><br />
+</p>
+<p>We’ll be using one new package in this lab. First, install the package if you haven’t already.</p>
+<pre class="r"><code>install.packages(&quot;gstat&quot;)</code></pre>
+<p>Second, load all necessary packages.</p>
+<pre class="r"><code>library(sp)
+library(sf)
+library(tidyverse)
+library(rgdal)
+library(dismo)
+library(gstat)</code></pre>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="bringing-in-the-data" class="section level2">
+<h2><strong>Bringing in the data</strong></h2>
+<p><br />
+</p>
+<p>To demonstrate spatial interpolation we’ll be relying on a dataset containing monthly temperature data for weather stations in California. Download the file <em>interpolation.zip</em> from Canvas. It contains all the files that will be used in this guide. The data are also located on Canvas in the Lab and Assignments Week 9 folder. Bring in the dataset <em>precipitation.csv</em></p>
+<pre class="r"><code>d &lt;- read_csv(&quot;precipitation.csv&quot;)
+glimpse(d)</code></pre>
+<pre><code>## Rows: 456
+## Columns: 17
+## $ ID   &lt;chr&gt; &quot;ID741&quot;, &quot;ID743&quot;, &quot;ID744&quot;, &quot;ID753&quot;, &quot;ID754&quot;, &quot;ID758&quot;, &quot;ID760&quot;, &quot;I…
+## $ NAME &lt;chr&gt; &quot;DEATH VALLEY&quot;, &quot;THERMAL/FAA AIRPORT&quot;, &quot;BRAWLEY 2SW&quot;, &quot;IMPERIAL/F…
+## $ LAT  &lt;dbl&gt; 36.47, 33.63, 32.96, 32.83, 33.28, 32.82, 32.76, 33.74, 34.42, 34…
+## $ LONG &lt;dbl&gt; -116.87, -116.17, -115.55, -115.57, -115.51, -115.67, -115.56, -1…
+## $ ALT  &lt;dbl&gt; -59, -34, -31, -18, -18, -13, -9, -6, 2, 2, 3, 3, 3, 3, 4, 4, 4, …
+## $ JAN  &lt;dbl&gt; 7.4, 9.2, 11.3, 10.6, 9.0, 9.8, 9.0, 16.7, 106.3, 89.5, 67.7, 16.…
+## $ FEB  &lt;dbl&gt; 9.5, 6.9, 8.3, 7.0, 8.0, 1.6, 7.0, 12.1, 107.1, 88.3, 65.0, 13.0,…
+## $ MAR  &lt;dbl&gt; 7.5, 7.9, 7.6, 6.1, 9.0, 3.7, 5.0, 9.2, 72.9, 72.4, 49.6, 8.0, 47…
+## $ APR  &lt;dbl&gt; 3.4, 1.8, 2.0, 2.5, 3.0, 3.0, 1.0, 2.2, 32.1, 30.1, 22.5, 3.0, 17…
+## $ MAY  &lt;dbl&gt; 1.7, 1.6, 0.8, 0.2, 0.0, 0.4, 1.0, 1.3, 7.6, 2.0, 4.3, 1.0, 1.9, …
+## $ JUN  &lt;dbl&gt; 1.0, 0.4, 0.1, 0.0, 1.0, 0.0, 0.0, 0.2, 2.2, 1.1, 1.3, 0.0, 0.7, …
+## $ JUL  &lt;dbl&gt; 3.7, 1.9, 1.9, 2.4, 8.0, 3.0, 2.0, 3.5, 0.6, 0.6, 0.4, 3.0, 0.3, …
+## $ AUG  &lt;dbl&gt; 2.8, 3.4, 9.2, 2.6, 9.0, 10.8, 9.0, 6.5, 0.6, 0.5, 1.7, 7.0, 0.3,…
+## $ SEP  &lt;dbl&gt; 4.3, 5.3, 6.5, 8.3, 7.0, 0.2, 8.0, 6.4, 5.3, 1.4, 6.2, 8.0, 1.6, …
+## $ OCT  &lt;dbl&gt; 2.2, 2.0, 5.0, 5.4, 8.0, 0.0, 8.0, 3.8, 11.4, 11.6, 6.0, 5.0, 4.4…
+## $ NOV  &lt;dbl&gt; 4.7, 6.3, 4.8, 7.7, 7.0, 3.3, 7.0, 7.3, 47.8, 45.3, 33.6, 6.0, 40…
+## $ DEC  &lt;dbl&gt; 3.9, 5.5, 9.7, 7.3, 9.0, 1.4, 11.0, 7.4, 63.7, 58.0, 42.5, 13.0, …</code></pre>
+<p>We have monthly precipitation levels for 456 weather stations in California. Rather than monthly levels, we’ll be interpolating annual precipitation levels. So, we add up the 12 months using <code>sum()</code> and <code>c_across()</code> to create the year total variable <em>prec</em>. Plot to see what the distribution looks like.</p>
+<pre class="r"><code>d &lt;- d %&gt;% 
+  group_by(ID) %&gt;%
+  mutate(prec = sum(c_across(JAN:DEC))) %&gt;%
+  ungroup()</code></pre>
+<p>Plot <em>prec</em></p>
+<pre class="r"><code>plot(sort(d$prec), ylab=&#39;Annual precipitation (mm)&#39;, las=1, xlab=&#39;Stations&#39;)</code></pre>
+<p><img src="interpolation_files/figure-html/unnamed-chunk-5-1.png" /><!-- --></p>
+<p>Next, let’s map the annual levels. Bring in a California county layer.</p>
+<pre class="r"><code>CA &lt;- st_read(&quot;counties.shp&quot;)</code></pre>
+<p>And then map the stations by levels of total precipitation. We’ll first need to make spatial points out of the station data.</p>
+<pre class="r"><code>dsp &lt;- st_as_sf(d, coords = c(&quot;LONG&quot;, &quot;LAT&quot;), crs =&quot;+proj=longlat +datum=NAD83 +ellps=GRS80&quot;)</code></pre>
+<p>Then mapify</p>
+<pre class="r"><code># define groups for mapping
+cuts &lt;- c(0,200,300,500,1000,3000)
+# set up a palette of interpolated colors
+blues &lt;- colorRampPalette(c(&#39;yellow&#39;, &#39;orange&#39;, &#39;blue&#39;, &#39;dark blue&#39;))
+
+ggplot(data = CA) +geom_sf() +
+          geom_sf(data = dsp, aes(color = prec)) +
+      scale_colour_gradientn(breaks = cuts, colours = blues(5), name =&quot;Precipitation&quot;) + 
+    theme( axis.text =  element_blank(),
+    axis.ticks =  element_blank(),
+    panel.background = element_blank())</code></pre>
+<p><img src="interpolation_files/figure-html/unnamed-chunk-8-1.png" /><!-- --></p>
+<p>Transform longitude/latitude to planar coordinates, using the commonly used coordinate reference system for California (“Teale Albers”) to assure that our interpolation results will align with other data sets we have.</p>
+<pre class="r"><code>TA &lt;- CRS(&quot;+proj=aea +lat_1=34 +lat_2=40.5 +lat_0=0 +lon_0=-120 +x_0=0 +y_0=-4000000 +datum=NAD83 +units=m +ellps=GRS80 +towgs84=0,0,0&quot;)
+
+dta &lt;- st_transform(dsp, crs = TA)
+cata &lt;- st_transform(CA, crs = TA)</code></pre>
+<p>Finally, we need to turn the objects <em>dta</em> and <em>cata</em> into an <strong>sp</strong> object in order to run the spatial interpolation functions in the following sections.</p>
+<pre class="r"><code>dta &lt;- as(dta, &quot;Spatial&quot;)
+cata &lt;- as(cata, &quot;Spatial&quot;)</code></pre>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="mean-model" class="section level2">
+<h2><strong>Mean model</strong></h2>
+<p><br />
+</p>
+<p>Our goal is to interpolate (estimate for unsampled locations) the station precipitation values across California. The simplest way would be to use the mean of all observed values. This is described on page 253 in OSU. It’s not a great interpolator because it does not take into account anything spatial. We’ll consider it a “Null-model” that we can compare other more refined approaches to. We’ll use the Root Mean Square Error (RMSE) as evaluation statistic. We created a nifty RMSE function in a prior lab. Let’s bring it back here.</p>
+<pre class="r"><code>RMSE &lt;- function(observed, predicted) {
+  sqrt(mean((predicted - observed)^2, na.rm=TRUE))
+}</code></pre>
+<p>Get the RMSE for the Null-model</p>
+<pre class="r"><code>null &lt;- RMSE(mean(dsp$prec), dsp$prec)
+null</code></pre>
+<pre><code>## [1] 435.3217</code></pre>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="proximity-polygons" class="section level2">
+<h2><strong>Proximity polygons</strong></h2>
+<p><br />
+</p>
+<p>OSU’s first spatial interpolator is proximity polygons, which is described on page 254. Another term for this is “nearest neighbour” interpolation. We use the function <code>vornoi()</code> to create the polygons surrounding the control points.</p>
+<pre class="r"><code>v &lt;- voronoi(dta)
+plot(v)</code></pre>
+<p><img src="interpolation_files/figure-html/unnamed-chunk-13-1.png" /><!-- --></p>
+<p>Looks weird. Let’s confine this to California. Map using the <strong>sp</strong> friendly <code>spplot()</code>.</p>
+<pre class="r"><code>ca &lt;- aggregate(cata)
+vca &lt;- raster::intersect(v, ca)
+spplot(vca, &#39;prec&#39;, col.regions=rev(get_col_regions()))</code></pre>
+<p><img src="interpolation_files/figure-html/unnamed-chunk-14-1.png" /><!-- --></p>
+<p>Much better. These are polygons. Our ultimate goal is to create a continuous raster surface of precipitation values. We learned about raster data in a <a href="https://geo200cn.github.io/introspatial.html#Raster_Data">prior lab</a>. We can ‘rasterize’ the results like this.</p>
+<pre class="r"><code>r &lt;- raster(cata, res=10000)
+vr &lt;- rasterize(vca, r, &#39;prec&#39;)
+plot(vr)</code></pre>
+<p><img src="interpolation_files/figure-html/unnamed-chunk-15-1.png" /><!-- --></p>
+<p>How good is the proximity polygon model? We evaluate the RMSE using 5-fold cross validation. We’ll use a for loop to run through the folds.</p>
+<pre class="r"><code>#insert comment
+set.seed(5132015)
+#insert comment
+kf &lt;- kfold(nrow(dta))
+#insert comment
+rmsepp &lt;- rep(NA, 5)
+#insert comment
+for (k in 1:5) {
+  #insert comment
+  test &lt;- dta[kf == k, ]
+  #insert comment
+  train &lt;- dta[kf != k, ]
+  #insert comment
+  v &lt;- voronoi(train)
+  #insert comment
+  p &lt;- extract(v, test)
+  #insert comment
+  rmsepp[k] &lt;- RMSE(test$prec, p$prec)
+}
+#insert comment
+rmsepp
+#insert comment
+mean(rmsepp)
+#insert comment
+1 - (mean(rmsepp) / null)</code></pre>
+<p><br></p>
+<p class="comment">
+<strong>Question 1</strong>: Add comments to the above code chunk to describe what each step is doing.
+</p>
+<p class="comment">
+<strong>Question 2</strong>: How does the proximity-polygon approach compare to the NULL model?
+</p>
+<p class="comment">
+<strong>Question 3</strong>: You would not typically use proximity polygons for rainfall data. Why? For what kind of data would you use them?
+</p>
+<p><br></p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="local-spatial-average" class="section level2">
+<h2><strong>Local Spatial Average</strong></h2>
+<p><br />
+</p>
+<p>The Local Spatial Average method (OSU page 255) generalizes the proximity polygon method by considering more than one neighbor. The method is sometimes called nearest neighbor interpolation. Here we do nearest neighbor interpolation considering five neighbors.</p>
+<p>We can use the <code>gstat()</code> function located in the <strong>gstat</strong> package for this. First we fit the following model. <code>~1</code> means “intercept only”. In the case of spatial data, that would be only ‘x’ and ‘y’ coordinates are used. We set the maximum number of points to 5, and the “inverse distance power” <code>idp</code> to zero, such that all five neighbors are equally weighted (so the message you will get that says you are running inverse distance weighting interpolation is not true in this case).</p>
+<pre class="r"><code>gs &lt;- gstat(formula=prec~1, locations=dta, nmax=5, set=list(idp = 0))
+nn &lt;- interpolate(r, gs)</code></pre>
+<pre><code>## [inverse distance weighted interpolation]</code></pre>
+<p>Plot our results</p>
+<pre class="r"><code>nnmsk &lt;- mask(nn, vr)
+plot(nnmsk)</code></pre>
+<p><img src="interpolation_files/figure-html/unnamed-chunk-18-1.png" /><!-- --></p>
+<p>Cross validate the result (k = 5). Note that we can use the <code>predict()</code> method to get predictions for the locations of the test points.</p>
+<pre class="r"><code>rmsenn &lt;- rep(NA, 5)
+for (k in 1:5) {
+  test &lt;- dta[kf == k, ]
+  train &lt;- dta[kf != k, ]
+  gscv &lt;- gstat(formula=prec~1, locations=train, nmax=5, set=list(idp = 0))
+  p &lt;- predict(gscv, test)$var1.pred
+  rmsenn[k] &lt;- RMSE(test$prec, p)
+}</code></pre>
+<pre><code>## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]</code></pre>
+<pre class="r"><code>rmsenn</code></pre>
+<pre><code>## [1] 200.6222 190.8336 180.3833 169.9658 237.9067</code></pre>
+<pre class="r"><code>mean(rmsenn)</code></pre>
+<pre><code>## [1] 195.9423</code></pre>
+<pre class="r"><code>1 - (mean(rmsenn) / null)</code></pre>
+<pre><code>## [1] 0.5498908</code></pre>
+<p>Better than the null, but better than proximity polygons?</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="inverse-distance-weighted" class="section level2">
+<h2><strong>Inverse Distance Weighted</strong></h2>
+<p><br />
+</p>
+<p>A more commonly used method is “inverse distance weighted” interpolation. This method is described starting on page 257 in OSU. The only difference with the nearest neighbor approach is that points that are further away get less weight in predicting a value a location. Use the <code>gstat()</code> function again, but this time do not set <code>idp</code> to 0.</p>
+<pre class="r"><code>gs &lt;- gstat(formula=prec~1, locations=dta)
+idw &lt;- interpolate(r, gs)</code></pre>
+<pre><code>## [inverse distance weighted interpolation]</code></pre>
+<p>Plot the predictions.</p>
+<pre class="r"><code>idwr &lt;- mask(idw, vr)
+plot(idwr)</code></pre>
+<p><img src="interpolation_files/figure-html/unnamed-chunk-21-1.png" /><!-- --></p>
+<p><br></p>
+<p class="comment">
+<strong>Question 4</strong>: IDW generated rasters tend to have a noticeable artifact. What is it?
+</p>
+<p><br></p>
+<p>Cross validate (k = 5). We can predict to the locations of the test points</p>
+<pre class="r"><code>rmseidw &lt;- rep(NA, 5)
+for (k in 1:5) {
+  test &lt;- dta[kf == k, ]
+  train &lt;- dta[kf != k, ]
+  gs &lt;- gstat(formula=prec~1, locations=train)
+  p &lt;- predict(gs, test)
+  rmseidw[k] &lt;- RMSE(test$prec, p$var1.pred)
+}</code></pre>
+<pre><code>## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]</code></pre>
+<pre class="r"><code>rmseidw</code></pre>
+<pre><code>## [1] 215.3319 211.9383 190.0231 211.8308 230.1893</code></pre>
+<pre class="r"><code>mean(rmseidw)</code></pre>
+<pre><code>## [1] 211.8627</code></pre>
+<pre class="r"><code>1 - (mean(rmseidw) / null)</code></pre>
+<pre><code>## [1] 0.5133192</code></pre>
+<p><br></p>
+<p class="comment">
+<strong>Question 5</strong>: Inspect the arguments used for and make a map of the IDW model below. What other name could you give to this method (IDW with these parameters)? Why?
+</p>
+<p><br></p>
+<pre class="r"><code>gs2 &lt;- gstat(formula=prec~1, locations=dta, nmax=1, set=list(idp=1))</code></pre>
+<hr />
+<p><a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>.</p>
+<p>Website created and maintained by <a href="https://nbrazil.faculty.ucdavis.edu/">Noli Brazil</a></p>
+</div>
 
 
 
@@ -448,7 +760,7 @@ $(document).ready(function ()  {
 
     // establish options
     var options = {
-      selectors: "h1,h2,h3",
+      selectors: "h1,h2,h3,h4",
       theme: "bootstrap3",
       context: '.toc-content',
       hashGenerator: function (text) {
