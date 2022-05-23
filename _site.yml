@@ -37,6 +37,10 @@ navbar:
           href: logistic.html
         - text: "Prediction Modelling"
           href: prediction.html
+        - text: "Spatial Interpolation"
+          href: interpolation.html
+        - text: "Kriging"
+          href: kriging.html
     - text: "R Tips"
       href: tips.html
 

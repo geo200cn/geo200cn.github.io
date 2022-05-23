@@ -378,6 +378,12 @@ div.tocify {
     <li>
       <a href="prediction.html">Prediction Modelling</a>
     </li>
+    <li>
+      <a href="interpolation.html">Spatial Interpolation</a>
+    </li>
+    <li>
+      <a href="kriging.html">Kriging</a>
+    </li>
   </ul>
 </li>
 <li>
@@ -647,7 +653,7 @@ main=c(&quot;Moran Scatterplot for COVID-19 case rates&quot;, &quot;in New York&
 ## weights: nycw  
 ## number of simulations + 1: 1000 
 ## 
-## statistic = 0.023944, observed rank = 721, p-value = 0.279
+## statistic = 0.023944, observed rank = 727, p-value = 0.273
 ## alternative hypothesis: greater</code></pre>
 <p>A summary of results</p>
 <pre class="r"><code>summary(fit.lag)</code></pre>
@@ -716,27 +722,27 @@ fit.lag.effects</code></pre>
 ## ========================================================
 ## Simulated standard errors
 ##                  Direct      Indirect         Total
-## pblk      0.01581155972 0.03254381464 0.04648223185
-## phisp     0.02442686379 0.04993203336 0.07139145991
-## medincome 0.00001358352 0.00002636417 0.00003956425
-## totp      0.00001278610 0.00002692259 0.00003888459
-## p65old    0.07223095992 0.16212022855 0.22603784401
+## pblk      0.01534456867 0.03229760103 0.04587318648
+## phisp     0.02257477023 0.04526117528 0.06473453310
+## medincome 0.00001269659 0.00002518737 0.00003748069
+## totp      0.00001294078 0.00002667497 0.00003881385
+## p65old    0.06962305325 0.15081565277 0.21247925059
 ## 
 ## Simulated z-values:
 ##              Direct  Indirect     Total
-## pblk       3.095736  2.799949  3.013397
-## phisp      3.133689  2.848108  3.064204
-## medincome -1.227569 -1.176457 -1.205407
-## totp      -2.225004 -1.983218 -2.104754
-## p65old     3.185361  2.664797  2.929152
+## pblk       3.139812  2.764152  2.996403
+## phisp      3.388316  3.115374  3.359814
+## medincome -1.345380 -1.259134 -1.301897
+## totp      -2.215071 -2.004151 -2.115880
+## p65old     3.214061  2.762241  3.013762
 ## 
 ## Simulated p-values:
-##           Direct    Indirect  Total    
-## pblk      0.0019633 0.0051111 0.0025834
-## phisp     0.0017262 0.0043980 0.0021825
-## medincome 0.2196089 0.2394124 0.2280464
-## totp      0.0260810 0.0473431 0.0353127
-## p65old    0.0014457 0.0077035 0.0033989</code></pre>
+##           Direct     Indirect  Total     
+## pblk      0.00169056 0.0057071 0.00273185
+## phisp     0.00070323 0.0018371 0.00077995
+## medincome 0.17850251 0.2079819 0.19295151
+## totp      0.02675521 0.0450539 0.03435504
+## p65old    0.00130872 0.0057406 0.00258030</code></pre>
 <p><br></p>
 <p class="comment">
 <strong>Question 5</strong>: In your own words, interpret the meaning of the direct and indirect effects of pblk.
@@ -762,7 +768,7 @@ fit.lag.effects</code></pre>
 ## weights: nycw  
 ## number of simulations + 1: 1000 
 ## 
-## statistic = -0.04723, observed rank = 205, p-value = 0.795
+## statistic = -0.04723, observed rank = 218, p-value = 0.782
 ## alternative hypothesis: greater</code></pre>
 <p><a href="https://www.youtube.com/watch?v=GM-e46xdcUo">Are the residuals spatially autocorrelated?</a></p>
 <p>A summary of the model</p>
