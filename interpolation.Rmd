@@ -69,10 +69,10 @@ To help us accomplish these learning objectives, we will use precipitation data 
 ## **Installing and loading packages**
 \
 
-We'll be using one new package in this lab.  First, install the package if you haven't already.
+We'll be using two new packages in this lab.  First, install the packages if you haven't already.
 
 ```{r eval = FALSE}
-install.packages("gstat")
+install.packages(c("gstat", "rgeos"))
 ```
 
 Second, load all necessary packages.
@@ -84,6 +84,7 @@ library(tidyverse)
 library(rgdal)
 library(dismo)
 library(gstat)
+library(rgeos)
 ```
 
 <div style="margin-bottom:25px;">

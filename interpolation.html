@@ -469,15 +469,16 @@ h2.title {
 <h2><strong>Installing and loading packages</strong></h2>
 <p><br />
 </p>
-<p>We’ll be using one new package in this lab. First, install the package if you haven’t already.</p>
-<pre class="r"><code>install.packages(&quot;gstat&quot;)</code></pre>
+<p>We’ll be using two new packages in this lab. First, install the packages if you haven’t already.</p>
+<pre class="r"><code>install.packages(c(&quot;gstat&quot;, &quot;rgeos&quot;))</code></pre>
 <p>Second, load all necessary packages.</p>
 <pre class="r"><code>library(sp)
 library(sf)
 library(tidyverse)
 library(rgdal)
 library(dismo)
-library(gstat)</code></pre>
+library(gstat)
+library(rgeos)</code></pre>
 <div style="margin-bottom:25px;">
 
 </div>
