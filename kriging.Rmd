@@ -486,8 +486,8 @@ Kriging is one of the most common interpolation methods in a Geographer's toolki
 You must be tired of running models on California. Let's predict precipitation for the great state of Texas! Bring in the files *precip* and *texas*.  
 
 ```{r results = "hide"}
-P <- readOGR("precip.shp")
-TX <- readOGR("texas.shp")
+P <- shapefile("precip.shp")
+TX <- shapefile("texas.shp")
 ```
 
 Note the classes 

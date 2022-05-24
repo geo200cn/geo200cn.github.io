@@ -769,8 +769,8 @@ mean(rmseuk)</code></pre>
 </p>
 <p>Kriging is one of the most common interpolation methods in a Geographer’s toolkit. But, it’s not the only tool. In fact, we went through several in last lab guide. Let’s go back to these and make some comparisons with the new friends we made in today’s lab.</p>
 <p>You must be tired of running models on California. Let’s predict precipitation for the great state of Texas! Bring in the files <em>precip</em> and <em>texas</em>.</p>
-<pre class="r"><code>P &lt;- readOGR(&quot;precip.shp&quot;)
-TX &lt;- readOGR(&quot;texas.shp&quot;)</code></pre>
+<pre class="r"><code>P &lt;- shapefile(&quot;precip.shp&quot;)
+TX &lt;- shapefile(&quot;texas.shp&quot;)</code></pre>
 <p>Note the classes</p>
 <pre class="r"><code>class(P)</code></pre>
 <pre><code>## [1] &quot;SpatialPointsDataFrame&quot;

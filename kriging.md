@@ -629,8 +629,8 @@ You must be tired of running models on California. Let's predict precipitation f
 
 
 ```r
-P <- readOGR("precip.shp")
-TX <- readOGR("texas.shp")
+P <- shapefile("precip.shp")
+TX <- shapefile("texas.shp")
 ```
 
 Note the classes 
