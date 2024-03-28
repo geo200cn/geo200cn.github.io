@@ -38,10 +38,12 @@ h2.title {
 \
 
 
-Assignments are released Monday morning as pdfs on Canvas in the Files -> Labs and Assignments folder. They will be typically due the following Monday morning. Assignments will typically have two components:
+Assignments are released Monday morning as pdfs on Canvas in their respective weekly Lab and Assignment folder. They will be typically due the following Monday morning (see the course agenda in the syllabus). Assignments will typically (but not always) have two components:
 
 1. Answering non R-related conceptual questions.
 2. Executing data analysis tasks in R - for example, create a map or run a statistical model and interpret its results.
+
+For (2), sometimes the questions are outside of the lab guide, while sometimes they are embedded within the lab guide.
 
 You will use [R Markdown](https://rmarkdown.rstudio.com/) to write up all assignments, including the non-R related questions.
 
@@ -102,7 +104,7 @@ Once you've installed these packages, you don't need to install them any more in
 </div>
 ## **Creating and saving an R Markdown document**
 \
-To create a new `.Rmd` file in RStudio, select File -> New File -> R Markdown.  A window should pop up.  Type in "Assignment 1" next to *Title* and your name next to *Author*. Leave everything else alone and click OK. A new window in the top left of your RStudio console should pop up containing your new R Markdown file.
+To create a new `.Rmd` file in RStudio, select File -> New File -> R Markdown.  A window should pop up.  Type in "Assignment X", where X is the assignment number, next to *Title* and your name next to *Author*. The date should be the current date. Leave everything else alone and click OK. A new window in the top left of your RStudio console should pop up containing your new R Markdown file.
 
 
 <br>
@@ -152,7 +154,7 @@ In the assignment's YAML, add your name, assignment number, and the date.  These
 ````
 ---
 title: "Assignment [insert number here]"
-subtitle: "GEO 200CN""
+subtitle: "GEO 200CN"
 author: Your full name here
 date: Assignment due date
 output: html_document
@@ -172,7 +174,7 @@ Question 1
 
 1+1
 
-1. What does the above code do?
+1. What is the result of the above operation?
 ````
 \
 
@@ -193,7 +195,7 @@ We will ask you to annotate your R code so that we (and you) know what is being 
 
 ````
 ```{r}
-#this yields two
+#The code adds one plus one
 1+1
 ```
 ````
@@ -207,14 +209,15 @@ The first line of the chunk has `{r}` which basically states that everything ins
 
 ````
 ```{r q1chunk1}
-#this yields two
+#The code adds one plus one
 1+1
 ```
 ````
 
 <br>
 
-Here, I named the chunk `q1chunk1` which indicates this is question 1, chunk 1. You can name the chunk whatever you like (sally, clare, stevewheeler). The chunk name is not required; however, it is good practice to give each chunk a unique name (we'll see its value later when we talk about knitting).
+Here, I named the chunk `q1chunk1` which indicates this is question 1, chunk 1. You can name the chunk whatever you like (jenny, sara). The chunk name is not required; however, it is good practice to give each chunk a unique name.
+
 
 In the R Markdown you created and saved, you will notice the following R code chunk after the YAML.
 
@@ -254,14 +257,14 @@ You can also set options for individual chunks.  These are local options - local
 ### **Text**
 \
 
-In addition to R code, assignments will ask you to write text to explain results.  Going back to our example question from above
+In addition to R code, assignments will ask you to write text to explain results. There will also be non-R related questions that we will ask you to answer in the R Markdown. Going back to our example question from above
 
 ````
 Question 1
 
 1+1
 
-1. What does the above code do?
+1. What is the result of the above operation?
 ````
 \
 
@@ -271,12 +274,11 @@ You would type in your R Markdown document the following
 Question 1
 
 ```{r q1chunk1}
-#this yields two
+#The code adds one plus one 
 1+1
 ```
 
-The code adds one plus one
-
+This yields two
 ````
 
 <br>
@@ -339,7 +341,7 @@ Two plus two equals four.
 
 <br>
 
-Think of writing a script as similar to writing an essay.  You don't write an essay in one single paragraph.  You break it up into several paragraphs, where paragraph breaks are used to separate major points and ideas.  On the other end of the spectrum, do not break up every single line of code like you would not break up every single sentence in an essay.  Break up your code where it makes sense.
+Think of writing a script as similar to writing an essay.  You don't write an essay in one single paragraph.  You break it up into several paragraphs, where paragraph breaks are used to separate major points and ideas.  On the other end of the spectrum, do not break up every single line of code like you would not break up every single sentence into its own paragraph in an essay.  Break up your code where it makes sense.
 
 
 
@@ -356,11 +358,11 @@ After you write code in a chunk, you'll need to test the code to make sure it is
 Question 1
 
 ```{r q1chunk1}
-#this yields two
+#The code adds one plus one 
 1+1
 ```
 
-The code adds one plus one.
+This yields two
 ````
 
 <br>
@@ -368,7 +370,6 @@ The code adds one plus one.
 Run that code chunk to make sure it works (you should get 2!).  *Then* proceed to the next question.  Let me emphasize: **Do not write all of your code answering every question in the assignment and run it at the very end.** Routinely TEST, Test, and test your code to make sure it runs properly.
 
 <br>
-
 
 There are a number of ways to run code in R Markdown.  First, you can click your mouse in the R code chunk you want to run and  click on ![](/Users/noli/Documents/UCD/teaching/GEO 200CN/lab/geo200cn.github.io/hwguide3.png) located at the top of the R Markdown window and select *Run Current Chunk*.  
 
@@ -410,6 +411,8 @@ Note that when you first run an R code chunk for the very first time ever, its o
 
 </center>
 
+\
+
 This will also be true when you plot graphs and maps. When you are testing your code, you might want to have the code results shown in your RStudio Console (the bottom left window) and plots/maps shown in the Plots window (bottom right window). To get RStudio to do this, select the "Tools" menu and select "Global Options".  Select "R Markdown" from the left-hand side and deselect the check box "Show output inline for all R Markdown documents". The output from your code should now be shown in the console or Plots window. 
 
 <center>
@@ -438,51 +441,7 @@ To Knit your document click ![](/Users/noli/Documents/UCD/teaching/GEO 200CN/Lab
 <br>
 
 
-When you start knitting, you will notice that a new window on the bottom left will appear in place of the console.  The window will show the progress in your knitting.  R is going through each R code chunk one at a time. The percentages you will see will be based on the proportion of your R Markdown file that R has successfully knitted. See Figure below.
-
-<br>
-
-<center>
-![R Markdown knitting progress window ](/Users/noli/Documents/UCD/teaching/GEO 200CN/Lab/geo200cn.github.io/knitprog.png)
-
-</center>
-
-<br>
-
-If it has a problem knitting, R will stop at the chunk that contains the problem.  You can determine the offending place in your R Markdown file two ways.  First, in the R Markdown tab in  the bottom left window, if you click on "Output" located at the top right corner of this window, you will see the R Markdown progress window, the error in red, and where R Markdown stopped. Carefully read the description of the error, which will contain the R code chunk name and sometimes the lines containing the problem in your R Markdown file.  This is where it is useful for naming your chunks.  You can go to your offending chunk and see what may be the problem. For example, the figure below shows knitting was stopped because the object *xyz* was not created in the R Markdown file.  You can go to the chunk named *q2chunk2* to remedy the issue.
-
-<br>
-
-<center>
-![R Markdown knitting stopped by an error ](/Users/noli/Documents/UCD/teaching/GEO 200CN/Lab/geo200cn.github.io/kniterror.png)
-
-</center>
-
-<br>
-
-The other way to find where R Markdown is having trouble is by clicking on "Issues" also located at the top right corner of the R Markdown window. The error will give you something similar to what you found in the Output window, but instead of a chunk, it will tell you the specific line in your R Markdown file that this error is located.  Go to that line in your R Markdown file and see what is the issue.  For example the error is located in line 34.
-
-<br>
-
-<center>
-![R Markdown knitting stopped by an error ](/Users/noli/Documents/UCD/teaching/GEO 200CN/Lab/geo200cn.github.io/kniterror2.png)
-
-</center>
-
-<br>
-
-Hopefully, the error statement reveals why you were not able to knit.  If it is not illuminating (oh oh), you'll need to figure out what you did wrong.  See the **Having problems knitting?** section below.
-
-Note that when you are knitting, progress and any errors will be shown not in the regular R console window, but in a special R Markdown window.  To toggle back to the Console (and back to the R Markdown window), just click on the Console (or R Markdown) tab as shown below.
-
-<br><br>
-
-<center>
-![](/Users/noli/Documents/UCD/teaching/GEO 200CN/Lab/geo200cn.github.io/consoletab.png)
-
-</center>
-
-<br><br>
+When you start knitting, you will notice that a new window on the bottom left named "Render" will appear in place of the console.  The window will show the progress in your knitting. If it has a problem knitting, R will stop and give you an error. Hopefully, the error statement reveals why you were not able to knit.  If it is not illuminating (oh oh), you'll need to figure out what you did wrong.  See the **Having problems knitting?** section below.
 
 If you encounter no errors, a preview of your knitted document will pop up in a new window and the `.html` (or pdf or docx) file will be saved in the folder where your Rmd file resides.  I recommend not waiting till the very end of an assignment to knit.  When you finish one question, knit your document to see if everything is working properly. If it is working for that question, move on to the next question. 
 
@@ -577,15 +536,18 @@ The proper workflow for each assignment will be as follows
 3. Create an R Markdown assignment file. Save it in the appropriate assignment folder on your hard drive.
 4. Download any data needed for the assignment into the same folder.  For most assignments, I will upload the assignment data on GitHub, which you can directly link to in R, so you won't have to download data.  Some files will be located on Canvas.
 5. In the R Markdown document, answer the first assignment question.
-* Most of the questions will ask you to run code.  Show that code in R Markdown chunks. Bottom line: Any code you used to get a result should be in your assignment. Otherwise, you will get points off, and for some questions, get *all* points off.
+* Some questions will be non R related. Answer those questions within the R Markdown as text.
+* Most of the questions will ask you to run code. Some of these questions will be outside of the lab guide. 
+  + Other questions will be embedded in the lab guide. In these cases, you will need to run the lab guide code in your Assignment R Markdown. To be clear, some assignments, the questions will be located in the lab guide, so you will need to run the lab guide code in your Assignment R Markdown.
+* Show your code in R Markdown chunks. Bottom line: Any code you used to get a result should be in your assignment. Otherwise, you will get points off, and for some questions, get *all* points off.
   + Break up your code into different chunks where it makes sense. For some questions, you might include all code for a question in one single chunk.  For other questions, you might break up the code into several chunks.
   + Make sure your code works.  Run code one chunk at a time to make sure it is working. Note that there are multiple ways to get to an answer in R. **We will not grade on how efficient your code is unless stated so in the question**. 
+  + Make sure to comment your code.
 * Most of the questions will ask you to explain your results. Write your explanations outside of the R code chunks. Please - *please* - take these interpretation questions seriously.  This is a not a programming or Data Science course - you may have taken 40 hours to produce super elegant code to answer a question, but your results won't be worth much to anyone if you can't properly interpret them. 
-* If you have non-R related questions in the assignment, answer them as text in your R Markdown.
 6. After you've completed the first question, knit to an html, pdf or docx file. Make sure it knits properly. If it does not, examine the error, and fix the problem.
 7. If you're satisfied with your code and its results for the first question, and the document properly knitted, move on to the next question. Repeat steps 5 and 6.
 8. Once you've completed all questions and successfully knitted, submit the `.Rmd` and the knitted files on Canvas **before** the designated due time.
-9. Smile, pat yourself on the back, and have some ice cream (I like these [folks](https://biritemarket.com/creamery/)).
+
 
 <div style="margin-bottom:25px;">
 </div>
@@ -602,6 +564,22 @@ In order to get full credit for R related questions, you will need to
 4. Provide correct written answers.  
 
 Any response requiring a data analysis task  must be supported by code you generate to produce your result. Just examining your various objects in the “Environment” section of R Studio is insufficient—you must use scripted commands.   Because there are typically multiple ways to get an answer, we will not grade you on the efficiency of your code.  You can ask for help from the TA and work with other students.  However, you *must* submit your own assignments.
+
+You *must* include in *your own words* comments that explain each line of code in your R Markdown. It does not have to be extensive, but should be concise and clear enough to let us know that you understand what the code is doing. You should indicate not just the **what**, but also the **why**. For example
+
+````
+```{r q1chunk1}
+#keeps the variables var1 and var2 because these are the only variables I need 
+#for the analysis.
+
+object <- object %>%
+          select(var1, var2)
+```
+````
+
+<br>
+
+Comments are important for demonstrating that you understand what your code is doing. Furthermore, by writing in basic English what each piece of code is doing and why you are doing it, you will be able to strengthen your understanding of how R works. Furthermore, comments will help clear up any confusion when future you goes back to your code.
 
 We will be lenient in our grading early in the quarter as you learn R.  However, grading will get progressively stringent, particularly on aspects of your submission that we've already covered in a prior week. 
 
@@ -634,7 +612,7 @@ Also note: all code used to produce your results must be shown in your html or p
 ## **Getting R Markdown Help**
 \
 
-Whenever you are editing R Markdown documents in RStudio, you can display an R Markdown cheat sheet by going to Help -> Cheatsheets -> R Markdown Cheat Sheet. A basic introduction to R Markdown can also be found in Chapter 21 in [R for Data Science](http://r4ds.had.co.nz/index.html). R Studio has a quick [introduction](https://rmarkdown.rstudio.com/authoring_quick_tour.html) to R Markdown. We've put together some additional R tips [here](https://geo200cn.github.io/tips.html) in the likely case that you get stuck. And, of course, there is the Google machine. Use it to get help.
+Whenever you are editing R Markdown documents in RStudio, you can display an R Markdown cheat sheet by going to Help -> Cheatsheets -> R Markdown Cheat Sheet. A basic introduction to R Markdown can also be found in Chapter 27 in [R for Data Science](http://r4ds.had.co.nz/index.html). R Studio has a quick [introduction](https://rmarkdown.rstudio.com/authoring_quick_tour.html) to R Markdown. We've put together some additional R tips [here](https://geo200cn.github.io/tips.html) in the likely case that you get stuck. And, of course, there is the Google machine. Use it to get help.
 
 
 

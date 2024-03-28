@@ -1,7 +1,7 @@
 name: "GEO 200CN: Quantitative Geography"
 output_dir: "."
 navbar:
-  title: "GEO 200CN: Spring 2022"
+  title: "GEO 200CN: Spring 2024"
   left:
     - text: "Home"
       href: index.html
@@ -16,31 +16,33 @@ navbar:
         - text: "Exploratory Data Analysis"
           href: eda.html
         - text: "Statistical Inference"
-          href: central.html
+          href: inference.html
         - text: "Hypothesis Testing"
           href: hypothesis.html
+        - text: "Linear Regression"
+          href: linearregression.html
+        - text: "More Linear Regression"
+          href: linearregression2.html
+        - text: "Logistic Regression"
+          href: logistic.html
         - text: "Intro to Spatial Data"
           href: introspatial.html
         - text: "Point Pattern Analysis"
           href: pointpatterns.html
         - text: "Spatial Autocorrelation"
           href: spatialautocorrelation.html
-        - text: "Linear Regression I"
-          href: linearregression.html
-        - text: "Linear Regression II"
-          href: linearregression2.html
         - text: "Spatial Regression"
           href: spatialreg.html
-        - text: "Spatial Heterogeneity"
-          href: spatialheterogeneity.html
-        - text: "Logistic Regression"
-          href: logistic.html
         - text: "Prediction Modelling"
           href: prediction.html
+        - text: "Model Selection"
+          href: modelselection.html
         - text: "Spatial Interpolation"
           href: interpolation.html
         - text: "Kriging"
           href: kriging.html
+        - text: "Regression Trees"
+          href: regtrees.html
     - text: "R Tips"
       href: tips.html
 

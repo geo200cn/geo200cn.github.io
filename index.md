@@ -1,7 +1,7 @@
 ---
 title: 'GEO 200CN: Quantitative Geography'
-subtitle: <h4 style="font-style:normal">Professor Noli Brazil</h4>
-author: <h4 style="font-style:normal">University of California, Davis</h4>
+subtitle: Professor Noli Brazil
+author: University of California, Davis
 ---
 
 <style>

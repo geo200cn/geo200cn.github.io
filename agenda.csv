@@ -1,21 +1,21 @@
-﻿Date,Class,Topic,Due
-28-Mar,Lecture,Introduction to Class,
-30-Mar,Lecture,Qunatitative Research Framework,
-4-Apr,Lecture,Exploratory Data Analysis,HW 1
-6-Apr,Lecture,Exploratory Data Analysis,
-11-Apr,Lecture,Statistical Inference,HW 2
-13-Apr,Lecture,Hypothesis Testing,
-18-Apr,Lecture,Intro to Spatial Data,HW 3
-20-Apr,Lecture,"Maps, Patterns and Processes",Quiz 1
-25-Apr,Lecture,Point Pattern Analysis,HW 4
-27-Apr,Lecture,Spatial Autocorrelation,
-2-May,Lecture,Linear Regression,HW 5
-4-May,Lecture,Linear Regression,
-9-May,Lecture,Spatial Regression,HW 6
-11-May,Lecture,Spatial Heterogeneity,
-16-May,Lecture,Logistic Regression,HW 7
-18-May,Lecture,Prediction Modelling,
-23-May,Lecture,Spatial Interpolation,HW 8
-25-May,Lecture,Spatial Interpolation,
-30-May,Lecture,"Holiday, no class",HW 9
-1-Jun,Lecture,Conclusion,Quiz 2
+﻿Date,Topic,Due,Quiz
+1-Apr,Introduction to Class,,
+3-Apr,Qunatitative Research Framework,,
+8-Apr,Exploratory Data Analysis,HW 1,
+10-Apr,Statistical Inference,,
+15-Apr,Hypothesis Testing,HW 2,
+17-Apr,Linear Regression,,
+22-Apr,Linear Regression,HW 3,
+24-Apr,Logistic Regression,,
+29-Apr,Intro to Spatial Data,HW 4,Quiz 1
+1-May,"Maps, Patterns and Processes",,
+6-May,Point Pattern Analysis,HW 5,
+8-May,Spatial Autocorrelation,,
+13-May,Spatial Regression,HW 6,
+15-May,Predictive Modelling,,
+20-May,Model Selection,HW 7,Quiz 2
+22-May,Spatial Interpolation,,
+27-May,"Holiday, no class",,
+29-May,Spatial Interpolation,HW 8,
+3-Jun,Regression Trees,,
+5-Jun,No Class,HW 9,

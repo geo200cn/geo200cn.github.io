@@ -9,11 +9,12 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
+<meta name="author" content="University of California, Davis" />
 
 
 <title>GEO 200CN: Quantitative Geography</title>
 
-<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.22/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
@@ -58,6 +59,7 @@ if (window.hljs) {
 
 
 
+
 <link rel="stylesheet" href="styles.css" type="text/css" />
 
 
@@ -82,6 +84,9 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
 }
 pre code {
   padding: 0;
@@ -139,11 +144,15 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.tab('show');
-
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
   // Navbar adjustments
   var navHeight = $(".navbar").first().height() + 15;
@@ -172,8 +181,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -181,16 +190,9 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -234,12 +236,12 @@ $(document).ready(function () {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="index.html">GEO 200CN: Spring 2022</a>
+      <a class="navbar-brand" href="index.html">GEO 200CN: Spring 2024</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
@@ -253,7 +255,7 @@ $(document).ready(function () {
   <a href="hw_guidelines.html">Assignment Guidelines</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Labs
      
     <span class="caret"></span>
@@ -266,10 +268,19 @@ $(document).ready(function () {
       <a href="eda.html">Exploratory Data Analysis</a>
     </li>
     <li>
-      <a href="central.html">Statistical Inference</a>
+      <a href="inference.html">Statistical Inference</a>
     </li>
     <li>
       <a href="hypothesis.html">Hypothesis Testing</a>
+    </li>
+    <li>
+      <a href="linearregression.html">Linear Regression</a>
+    </li>
+    <li>
+      <a href="linearregression2.html">More Linear Regression</a>
+    </li>
+    <li>
+      <a href="logistic.html">Logistic Regression</a>
     </li>
     <li>
       <a href="introspatial.html">Intro to Spatial Data</a>
@@ -281,28 +292,22 @@ $(document).ready(function () {
       <a href="spatialautocorrelation.html">Spatial Autocorrelation</a>
     </li>
     <li>
-      <a href="linearregression.html">Linear Regression I</a>
-    </li>
-    <li>
-      <a href="linearregression2.html">Linear Regression II</a>
-    </li>
-    <li>
       <a href="spatialreg.html">Spatial Regression</a>
     </li>
     <li>
-      <a href="spatialheterogeneity.html">Spatial Heterogeneity</a>
-    </li>
-    <li>
-      <a href="logistic.html">Logistic Regression</a>
-    </li>
-    <li>
       <a href="prediction.html">Prediction Modelling</a>
+    </li>
+    <li>
+      <a href="modelselection.html">Model Selection</a>
     </li>
     <li>
       <a href="interpolation.html">Spatial Interpolation</a>
     </li>
     <li>
       <a href="kriging.html">Kriging</a>
+    </li>
+    <li>
+      <a href="regtrees.html">Regression Trees</a>
     </li>
   </ul>
 </li>
@@ -322,12 +327,8 @@ $(document).ready(function () {
 
 
 <h1 class="title toc-ignore">GEO 200CN: Quantitative Geography</h1>
-<h3 class="subtitle"><h4 style="font-style:normal">
-Professor Noli Brazil
-</h4></h3>
-<h4 class="author"><h4 style="font-style:normal">
-University of California, Davis
-</h4></h4>
+<h3 class="subtitle">Professor Noli Brazil</h3>
+<h4 class="author">University of California, Davis</h4>
 
 </div>
 
@@ -366,7 +367,8 @@ h2.title {
 </style>
 <p><br />
 </p>
-<p>Welcome to the GEO 200CN website! This website complements the class <a href="https://login.canvas.ucdavis.edu/">Canvas</a> site.</p>
+<p>Welcome to the GEO 200CN website! This website complements the class
+<a href="https://login.canvas.ucdavis.edu/">Canvas</a> site.</p>
 <p>On this website you will find:</p>
 <ul>
 <li>An abridged syllabus</li>
@@ -387,23 +389,45 @@ h2.title {
 </p>
 <div id="about-the-class" class="section level2">
 <h2>About the class</h2>
-<p>This course provides an introduction to quantitative geographic methods with a focus on spatial data manipulation, modeling, and analysis. Students leaving the course should have gained both methodological skills, and have a stronger sense of the concepts underlying this type of research analysis. Lectures will present abstract statistical concepts alongside data analysis examples motivated through real-world problems. Labs will provide hands-on practice of the methods covered in lecture and readings using the statistical software program R.</p>
+<p>This course provides an introduction to quantitative geographic
+methods with a focus on spatial data manipulation, modeling, and
+analysis. Students leaving the course should have gained both
+methodological skills, and have a stronger sense of the concepts
+underlying this type of research analysis. Lectures will present
+abstract statistical concepts alongside data analysis examples motivated
+through real-world problems. Labs will provide hands-on practice of the
+methods covered in lecture and readings using the statistical software
+program R.</p>
 <p><br></p>
 </div>
 <div id="giving-credit" class="section level2">
 <h2>Giving Credit</h2>
-<p>The following websites were used in the construction of this course website. My gratitude to the people who invested their time and effort in developing and offering these valuable resources to the public.</p>
+<p>The following websites were used in the construction of this course
+website. My gratitude to the people who invested their time and effort
+in developing and offering these valuable resources to the public.</p>
 <ul>
-<li>Robert Hijman’s <a href="https://rspatial.org/">Spatial Data Science with R</a></li>
-<li>Manuel Gimond’s <a href="https://mgimond.github.io/Spatial/index.html">Intro to GIS and Spatial Analysis</a></li>
-<li>Edzer Pebesma and Roger Bivand’s <a href="https://keen-swartz-3146c4.netlify.app/">Spatial Data Science</a></li>
-<li>Corey Sparks’ <a href="https://rpubs.com/corey_sparks">RPubs labs</a></li>
-<li>Claudia Engel’s <a href="https://cengel.github.io/R-spatial/">Using Spatial Data in R</a></li>
-<li>The Center for Spatial Data Science <a href="https://spatialanalysis.github.io/tutorials/">Tutorials</a></li>
+<li>Robert Hijman’s <a href="https://rspatial.org/">Spatial Data Science
+with R</a></li>
+<li>Manuel Gimond’s <a
+href="https://mgimond.github.io/Spatial/index.html">Intro to GIS and
+Spatial Analysis</a></li>
+<li>Edzer Pebesma and Roger Bivand’s <a
+href="https://keen-swartz-3146c4.netlify.app/">Spatial Data
+Science</a></li>
+<li>Corey Sparks’ <a href="https://rpubs.com/corey_sparks">RPubs
+labs</a></li>
+<li>Claudia Engel’s <a href="https://cengel.github.io/R-spatial/">Using
+Spatial Data in R</a></li>
+<li>The Center for Spatial Data Science <a
+href="https://spatialanalysis.github.io/tutorials/">Tutorials</a></li>
 </ul>
 <hr />
-<p><a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>.</p>
-<p>Website created and maintained by <a href="https://nbrazil.faculty.ucdavis.edu/">Noli Brazil</a></p>
+<p><a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a><br />This
+work is licensed under a
+<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative
+Commons Attribution-NonCommercial 4.0 International License</a>.</p>
+<p>Website created and maintained by <a
+href="https://nbrazil.faculty.ucdavis.edu/">Noli Brazil</a></p>
 </div>
 
 
