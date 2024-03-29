@@ -43,9 +43,12 @@ navbar:
           href: kriging.html
         - text: "Regression Trees"
           href: regtrees.html
-    - text: "R Tips"
-      href: tips.html
-
+    - text: "Other"
+      menu:
+        - text: "R Tips"
+          href: tips.html
+        - text: "Data Wrangling"
+          href: data_wrangling.html
 output:
   html_document:
     theme: cosmo

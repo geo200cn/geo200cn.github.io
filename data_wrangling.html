@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Professor Noli Brazil" />
+
+
+<title>Data Wrangling</title>
+
+<script src="site_libs/header-attrs-2.22/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+      .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">GEO 200CN: Spring 2024</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="syllabus.html">Syllabus</a>
+</li>
+<li>
+  <a href="hw_guidelines.html">Assignment Guidelines</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Labs
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="getting_started.html">Getting Started</a>
+    </li>
+    <li>
+      <a href="eda.html">Exploratory Data Analysis</a>
+    </li>
+    <li>
+      <a href="inference.html">Statistical Inference</a>
+    </li>
+    <li>
+      <a href="hypothesis.html">Hypothesis Testing</a>
+    </li>
+    <li>
+      <a href="linearregression.html">Linear Regression</a>
+    </li>
+    <li>
+      <a href="linearregression2.html">More Linear Regression</a>
+    </li>
+    <li>
+      <a href="logistic.html">Logistic Regression</a>
+    </li>
+    <li>
+      <a href="introspatial.html">Intro to Spatial Data</a>
+    </li>
+    <li>
+      <a href="pointpatterns.html">Point Pattern Analysis</a>
+    </li>
+    <li>
+      <a href="spatialautocorrelation.html">Spatial Autocorrelation</a>
+    </li>
+    <li>
+      <a href="spatialreg.html">Spatial Regression</a>
+    </li>
+    <li>
+      <a href="prediction.html">Prediction Modelling</a>
+    </li>
+    <li>
+      <a href="modelselection.html">Model Selection</a>
+    </li>
+    <li>
+      <a href="interpolation.html">Spatial Interpolation</a>
+    </li>
+    <li>
+      <a href="kriging.html">Kriging</a>
+    </li>
+    <li>
+      <a href="regtrees.html">Regression Trees</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="tips.html">R Tips</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Data Wrangling</h1>
+<h3 class="subtitle"><font size="4">GEO 200CN - Quantitative
+Geography</font></h3>
+<h4 class="author">Professor Noli Brazil</h4>
+
+</div>
+
+
+<style>
+p.comment {
+background-color: #DBDBDB;
+padding: 10px;
+border: 1px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: normal;
+}
+
+.figure {
+   margin-top: 20px;
+   margin-bottom: 20px;
+}
+
+h1.title {
+  font-weight: bold;
+  font-family: Arial;  
+}
+
+h2.title {
+  font-family: Arial;  
+}
+
+</style>
+<style type="text/css">
+#TOC {
+  font-size: 13px;
+  font-family: Arial;
+}
+</style>
+<p><br />
+</p>
+<p>In this supplementary guide, you will learn how to use
+<strong>tidyverse</strong> functions to accomplish various data
+wrangling tasks. Data wrangling is the process of transforming raw data
+into a more usable form. It is relatively rare outside of the cloistered
+setting of a University classroom to have a clean data set ready for
+analysis. In fact, some <a
+href="https://msimonline.ischool.uw.edu/blog/what-is-data-wrangling/">estimate</a>
+that data wrangling can take upwards of 80% to 90% of your data analysis
+time.</p>
+<p>We will rely on <strong>tidyverse</strong> to demonstrate data
+wrangling in R because its consistency, together with the goal of
+increasing productivity, mean that the syntax of tidy functions is
+typically straightforward to learn. Because of time constraints, we will
+not be able to go through all of <strong>tidyverse</strong>’s functions
+in this guide. Some you will encounter in the course’s lab guides.
+Others you may need to learn on your own. The best resource is the book
+<a href="http://r4ds.had.co.nz/index.html">R for Data Science</a> (RDS),
+which is free online and was written by <strong>tidyverse</strong>’s
+creators. You can also go straight to the <strong>tidyverse</strong>
+official <a href="https://www.tidyverse.org/">website</a>.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+<div id="tidyverse-package" class="section level2">
+<h2><strong>Tidyverse package</strong></h2>
+<p><br />
+</p>
+<p>All of <strong>tidyverse</strong>’s functions are located in the
+package <strong>tidyverse</strong>. If you haven’t already done so,
+install the package.</p>
+<pre class="r"><code>install.packages(&quot;tidyverse&quot;)</code></pre>
+<p>Remember that you will install packages once and never more (unless
+you update R). Next, load the package in your current session using
+<code>library()</code></p>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<p>Unlike installing, loading a package using <code>library()</code>
+needs to happen every time you start a new R session. Install once,
+never more. Library every time you start R.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="reading-and-writing-data" class="section level2">
+<h2><strong>Reading and writing data</strong></h2>
+<p><br />
+</p>
+<p>Let’s bring in some data to help illustrate the use of tidy R
+functions. I uploaded a file on GitHub containing the number of
+Hispanic, white, Asian, and black residents in 2018 in California
+neighborhoods taken from the United States <a
+href="https://www.census.gov/programs-surveys/acs">American Community
+Survey</a>. To import this file in R, use the <code>read_csv()</code>
+command</p>
+<pre class="r"><code>neighborhoods &lt;- read_csv(&quot;https://raw.githubusercontent.com/geo200cn/data/master/week2data.csv&quot;)</code></pre>
+<p><br></p>
+<p>To write or save data, you would use the function
+<code>write_csv()</code>.</p>
+<p><strong>tidyverse</strong> can read in more than just csv files. It
+has a suite of <code>read_</code> functions that are a part of the
+subpackage <strong>readr</strong>. The goal of <strong>readr</strong> is
+to provide a fast and friendly way to read rectangular data (like csv,
+tsv, and fwf). It is designed to flexibly parse many types of data found
+in the wild, while still cleanly failing when data unexpectedly changes.
+To learn more about these functions, see <strong>readr</strong>’s
+dedicated <a href="https://readr.tidyverse.org/index.html">site</a>.</p>
+<p>Note the underscore in between <code>read</code> and
+<code>csv</code>. There is a base R function called
+<code>read.csv()</code>. What is the difference? The function
+<code>read.csv()</code> stores your data into a regular data frame. The
+function <code>read_csv()</code> stores your data in a special tidy R
+object - a tibble, which we discuss next.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="tibbles" class="section level2">
+<h2><strong>Tibbles</strong></h2>
+<p><br />
+</p>
+<p>Although the <strong>tidyverse</strong> works with all data objects,
+its fundamental object type is the tibble. Tibbles are essentially a
+special variant of <a
+href="https://geo200cn.github.io/getting_started.html#Data_Frames">data
+frames</a> that have desirable properties for printing and joining. To
+illustrate comparisons between tibbles and regular data frames, let’s
+bring in the county data we downloaded above but using the base R
+function <code>read.csv()</code></p>
+<pre class="r"><code>neighborhoods.df &lt;- read.csv(&quot;https://raw.githubusercontent.com/geo200cn/data/master/week2data.csv&quot;)</code></pre>
+<p>The object <em>neighborhoods.df</em> is a regular data frame. The
+first difference between regular data frames and tibbles is how the
+dataset “looks.” First, the tibble.</p>
+<pre class="r"><code>neighborhoods</code></pre>
+<pre><code>## # A tibble: 7,937 × 7
+##         GEOID NAME            hisp nhasn nhblk nhwhite tpopr
+##         &lt;dbl&gt; &lt;chr&gt;          &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;
+##  1 6019001100 Fresno          2033    24   552      81  2760
+##  2 6071001600 San Bernardino  5325    11    18      94  5527
+##  3 6019000200 Fresno          1935   317   416     153  2870
+##  4 6077000801 San Joaquin     4977  1083   400     389  7352
+##  5 6019001500 Fresno          1868    36    25     541  2475
+##  6 6037204920 Los Angeles     2544     0    27      68  2639
+##  7 6077000300 San Joaquin     1216   307   401     291  2240
+##  8 6019001000 Fresno          2524   693   842      93  4231
+##  9 6037206050 Los Angeles     1550   183   112     127  2010
+## 10 6019000400 Fresno          4770   633   106     422  5958
+## # ℹ 7,927 more rows</code></pre>
+<p>Tibbles have a refined print method that shows only the first 10
+rows, and only the columns that fit on the screen. In addition, each
+column reports its name and type.</p>
+<p>Tibbles are designed so that you don’t accidentally overwhelm your
+console when you print large data frames. Compare the print output above
+to what you get with a data frame</p>
+<pre class="r"><code>neighborhoods.df</code></pre>
+<p>Ugly, right?</p>
+<p>Another important difference between tidy and base R is that
+<code>read_csv()</code> will always read variables containing text as
+character variables. In contrast, the base R function
+<code>read.csv()</code> will sometimes convert a character variable to a
+factor. Tidy R figures that if you really wanted a character, you can
+easily convert it when you load it in. <code>read_csv()</code> will also
+not convert numbers with a leading zero into an integer. It figures that
+if you want to convert it into an integer, you can do it after the data
+are read in. In contrast, <code>read.csv()</code> will assume you want
+it in an integer. And you know what they say about <a
+href="https://www.youtube.com/watch?v=svkgOsr7pUc">assuming</a>.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="data-manipulation" class="section level2">
+<h2><strong>Data manipulation</strong></h2>
+<p><br />
+</p>
+<p>One of the clear advantages of tidy R, at least when you are first
+learning R, is its assortment of user-friendly data manipulation
+functions, which is a part of its <strong>dplyr</strong> package.
+Compared to base R, the beauty of these <strong>dplyr</strong> functions
+is that they feature consistent design principles and easily work with
+non-standard evaluation (i.e., you don’t have to put quotes around
+variable names).</p>
+<p>It is rare that the data you download are in exactly the right form
+for analysis. For example, you might want to analyze just Yolo county
+neighborhoods. Or you might want to discard certain variables from the
+dataset to reduce clutter. Or you encounter missing data. The process of
+gathering data in its raw form and molding it into a form that is
+suitable for its end use is known as <em>data wrangling</em>.</p>
+<p>In this guide, we won’t have time to go through all of the methods
+and functions in R that are associated with the data wrangling process.
+Many methods you will have to learn on your own given the specific tasks
+you will need to accomplish. In the rest of this guide, we’ll go through
+some of the basic data wrangling techniques using the functions found in
+the package <strong>dplyr</strong>, which was automatically installed
+and loaded when you brought in the <strong>tidyverse</strong> package.
+These functions can be used for tibbles and regular data frames.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+<div id="renaming-variables" class="section level3">
+<h3><strong>Renaming variables</strong></h3>
+<p><br />
+</p>
+<p>You will likely encounter a variable in a dataset with a name that is
+not descriptive. The more descriptive the names, the more efficient your
+analysis will be and the less likely you are going to make a mistake. To
+see the names of variables in your dataset, use the <code>names()</code>
+command.</p>
+<pre class="r"><code>names(neighborhoods)</code></pre>
+<pre><code>## [1] &quot;GEOID&quot;   &quot;NAME&quot;    &quot;hisp&quot;    &quot;nhasn&quot;   &quot;nhblk&quot;   &quot;nhwhite&quot; &quot;tpopr&quot;</code></pre>
+<p>Use the command <code>rename()</code> to - what else? - rename a
+variable! Let’s rename <em>NAME</em> to <em>County</em>.</p>
+<pre class="r"><code>neighborhoods &lt;- rename(neighborhoods, County = &quot;NAME&quot;)</code></pre>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="selecting-variables" class="section level3">
+<h3><strong>Selecting variables</strong></h3>
+<p><br />
+</p>
+<p>In practice, most of the data files you will download will contain
+variables you don’t need. It is easier to work with a smaller dataset as
+it reduces clutter and clears up memory space, which is important if you
+are executing complex tasks on a large number of observations. Use the
+command <code>select()</code> to keep variables by name. Visually, we
+are doing the following (taken from the RStudio <a
+href="http://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf">cheatsheet</a>)</p>
+<center>
+<p><img
+src="subsetcols.png" /></p>
+</center>
+<p>Let’s keep <em>County</em>, <em>GEOID</em>, and <em>hisp</em>,
+<em>nhwhite</em>, <em>nhblk</em> and <em>tpopr</em> from the
+<em>neighborhoods</em> dataset.</p>
+<pre class="r"><code>select(neighborhoods, County, GEOID, hisp, nhwhite, nhblk, tpopr)</code></pre>
+<pre><code>## # A tibble: 7,937 × 6
+##    County              GEOID  hisp nhwhite nhblk tpopr
+##    &lt;chr&gt;               &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+##  1 Fresno         6019001100  2033      81   552  2760
+##  2 San Bernardino 6071001600  5325      94    18  5527
+##  3 Fresno         6019000200  1935     153   416  2870
+##  4 San Joaquin    6077000801  4977     389   400  7352
+##  5 Fresno         6019001500  1868     541    25  2475
+##  6 Los Angeles    6037204920  2544      68    27  2639
+##  7 San Joaquin    6077000300  1216     291   401  2240
+##  8 Fresno         6019001000  2524      93   842  4231
+##  9 Los Angeles    6037206050  1550     127   112  2010
+## 10 Fresno         6019000400  4770     422   106  5958
+## # ℹ 7,927 more rows</code></pre>
+<p>You can use also use <code>select()</code> command to keep variables
+<em>except</em> for the ones you designate. For example, to keep all
+variables in <em>neighborhoods</em> except <em>nhasn</em> and save this
+back into <em>neighborhoods</em>, type in</p>
+<pre class="r"><code>neighborhoods &lt;- select(neighborhoods, -nhasn)
+neighborhoods</code></pre>
+<p>The negative sign tells R to exclude the variable.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="creating-new-variables" class="section level3">
+<h3><strong>Creating new variables</strong></h3>
+<p><br />
+</p>
+<p>The <code>mutate()</code> function allows you to create new variables
+within your dataset. This is important when you need to transform
+variables in some way - for example, calculating a ratio or adding two
+variables together. Visually, you are doing this</p>
+<center>
+<p><img
+src="mutate.png" /></p>
+</center>
+<p>You can use the <code>mutate()</code> command to generate as many new
+variables as you would like. For example, let’s construct three new
+variables in <em>neighborhoods</em> - the percent of residents who are
+non-Hispanic white, non-Hispanic black, and Hispanic. Name these
+variables <em>pwhite</em>, <em>pblack</em>, and <em>phisp</em>,
+respectively.</p>
+<pre class="r"><code>mutate(neighborhoods, pwhite = nhwhite/tpopr, pblack = nhblk/tpopr, 
+       phisp = hisp/tpopr)</code></pre>
+<p>Note that you can create new variables based on the variables you
+just created in the same line of code. For example, you can create a
+categorical variable yielding “Majority” if the tract is majority
+Hispanic and “Not Majority” otherwise after creating the percent
+Hispanic variable within the same <code>mutate()</code> command. Let’s
+save these changes back into <em>neighborhoods</em>.</p>
+<pre class="r"><code>neighborhoods &lt;- mutate(neighborhoods, pwhite = nhwhite/tpopr,  
+              pblack = nhblk/tpopr, phisp = hisp/tpopr,
+              mhisp = ifelse(phisp &gt; 0.5, &quot;Majority&quot;,&quot;Not Majority&quot;))
+neighborhoods</code></pre>
+<p>We used the function <code>ifelse()</code> to create <em>mhisp</em> -
+the function tells R that if the condition <code>phisp &gt; 0.5</code>
+is met, the tract’s value for the variable <em>mhisp</em> will be
+“Majority”, otherwise it will be “Not Majority”.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="filtering" class="section level3">
+<h3><strong>Filtering</strong></h3>
+<p><br />
+</p>
+<p>Filtering means selecting rows/observations based on their values. To
+filter in R, use the command <code>filter()</code>. Visually, filtering
+rows looks like.</p>
+<center>
+<p><img
+src="subsetrows.png" /></p>
+</center>
+<p>The first argument in the parentheses of this command is the name of
+the data frame. The second and any subsequent arguments (separated by
+commas) are the expressions that filter the data frame. For example, we
+can select Sacramento county</p>
+<pre class="r"><code>filter(neighborhoods, County == &quot;Sacramento&quot;)</code></pre>
+<p>The double equal operator <code>==</code> means equal to. We can also
+explicitly exclude cases and keep everything else by using the not equal
+operator <code>!=</code>. The following code <em>excludes</em>
+Sacramento county.</p>
+<pre class="r"><code>filter(neighborhoods, County != &quot;Sacramento&quot;)</code></pre>
+<p>What about filtering if a neighborhood has a value greater than a
+specified value? For example, neighborhoods with a percent white greater
+than 0.5 (50%).</p>
+<pre class="r"><code>filter(neighborhoods, pwhite &gt; 0.5)</code></pre>
+<p>What about less than 0.5 (50%)?</p>
+<pre class="r"><code>filter(neighborhoods, pwhite &lt; 0.5)</code></pre>
+<p>Both lines of code do not include neighborhoods that have a percent
+white equal to 0.5. We include it by using the less than or equal
+operator <code>&lt;=</code> or greater than or equal operator
+<code>&gt;=</code>.</p>
+<pre class="r"><code>filter(neighborhoods, pwhite &lt;= 0.5)</code></pre>
+<p>In addition to comparison operators, filtering may also utilize
+logical operators that make multiple selections. There are three basic
+logical operators: <code>&amp;</code> (and), <code>|</code> is (or), and
+<code>!</code> is (not). We can keep neighborhoods with <em>phisp</em>
+greater than 0.5 <strong>and</strong> <em>tpopr</em> greater than 5000
+using <code>&amp;</code>.</p>
+<pre class="r"><code>filter(neighborhoods, phisp &gt; 0.5 &amp; tpopr &gt; 5000)</code></pre>
+<p>Use <code>|</code> to keep neighborhoods in Sacramento
+<strong>or</strong> Yolo</p>
+<pre class="r"><code>filter(neighborhoods, County == &quot;Sacramento&quot; | County == &quot;Yolo&quot;)</code></pre>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="joining-tables" class="section level3">
+<h3><strong>Joining tables</strong></h3>
+<p><br />
+</p>
+<p>Often you will have two datasets containing the same observations but
+with different variables. Your goal is to combine the datasets into a
+single one.</p>
+<p>Let’s join a dataset containing some health and air pollution data
+from California’s <a
+href="https://oehha.ca.gov/calenviroscreen/report/calenviroscreen-30">CalEnviroScreen</a>
+program. Read it in from GitHub using our new friend
+<code>read_csv()</code>.</p>
+<pre class="r"><code>ces &lt;- read_csv(&quot;https://raw.githubusercontent.com/geo200cn/data/master/ces.csv&quot;)
+names(ces)</code></pre>
+<p>The dataset contains the poverty rate, air pollution levels (<a
+href="https://www.epa.gov/pm-pollution/particulate-matter-pm-basics">PM2.5</a>),
+and whether the neighborhood is environmentally disadvantaged according
+to the CES. To join the objects <em>ces</em> and <em>neighborhoods</em>,
+we need a unique ID that connects the observations across the two files.
+This unique is named <em>GEOID</em> in both files. The IDs should be the
+same data class, which is the case.</p>
+<pre class="r"><code>class(ces$GEOID)</code></pre>
+<pre><code>## [1] &quot;numeric&quot;</code></pre>
+<pre class="r"><code>class(neighborhoods$GEOID)</code></pre>
+<pre><code>## [1] &quot;numeric&quot;</code></pre>
+<p>To merge the datasets together, use the function
+<code>left_join()</code>, which matches pairs of observations whenever
+their keys or IDs are equal. We match on the variable <em>GEOID</em> and
+save the merged data set into a new object called <em>neighces</em>.</p>
+<pre class="r"><code>neighces &lt;- left_join(neighborhoods, ces, by = &quot;GEOID&quot;)</code></pre>
+<p>The argument <em>by</em> tells R which variable(s) to match rows on,
+in this case <em>GEOID</em>. You can match on multiple variables and you
+can also match on a single variable with different variable names (see
+the <code>left_join()</code> help documentation for how to do this).</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="other-functions" class="section level3">
+<h3><strong>Other functions</strong></h3>
+<p><br />
+</p>
+<p>If you have a dataset with a lot of variables, you might want to put
+important variables at or close to the front. To relocate variables in
+your dataset, use the function <code>relocate()</code>. Currently, this
+is the order of variables in <em>neighborhoods</em></p>
+<pre class="r"><code>names(neighborhoods)</code></pre>
+<pre><code>##  [1] &quot;GEOID&quot;   &quot;County&quot;  &quot;hisp&quot;    &quot;nhblk&quot;   &quot;nhwhite&quot; &quot;tpopr&quot;   &quot;pwhite&quot; 
+##  [8] &quot;pblack&quot;  &quot;phisp&quot;   &quot;mhisp&quot;</code></pre>
+<p>Use <code>relocate()</code> to move up <em>tpopr</em> right after
+<em>GEOID</em> and <em>County</em></p>
+<pre class="r"><code>neighborhoods &lt;- relocate(neighborhoods, GEOID, County, tpopr)
+names(neighborhoods)</code></pre>
+<pre><code>##  [1] &quot;GEOID&quot;   &quot;County&quot;  &quot;tpopr&quot;   &quot;hisp&quot;    &quot;nhblk&quot;   &quot;nhwhite&quot; &quot;pwhite&quot; 
+##  [8] &quot;pblack&quot;  &quot;phisp&quot;   &quot;mhisp&quot;</code></pre>
+<p>What if you want to arrange rows? Use the <code>arrange()</code>
+function. Use the function <code>head()</code> to see what are the
+observations at the top of your file</p>
+<pre class="r"><code>head(neighborhoods)</code></pre>
+<pre><code>## # A tibble: 6 × 10
+##        GEOID County         tpopr  hisp nhblk nhwhite pwhite  pblack phisp mhisp
+##        &lt;dbl&gt; &lt;chr&gt;          &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;
+## 1 6019001100 Fresno          2760  2033   552      81 0.0293 0.2     0.737 Majo…
+## 2 6071001600 San Bernardino  5527  5325    18      94 0.0170 0.00326 0.963 Majo…
+## 3 6019000200 Fresno          2870  1935   416     153 0.0533 0.145   0.674 Majo…
+## 4 6077000801 San Joaquin     7352  4977   400     389 0.0529 0.0544  0.677 Majo…
+## 5 6019001500 Fresno          2475  1868    25     541 0.219  0.0101  0.755 Majo…
+## 6 6037204920 Los Angeles     2639  2544    27      68 0.0258 0.0102  0.964 Majo…</code></pre>
+<p>What if we wanted to sort the rows by population size in descending
+order?</p>
+<pre class="r"><code>neighborhoods &lt;- arrange(neighborhoods, tpopr)
+head(neighborhoods)</code></pre>
+<pre><code>## # A tibble: 6 × 10
+##        GEOID County        tpopr  hisp nhblk nhwhite pwhite pblack  phisp mhisp 
+##        &lt;dbl&gt; &lt;chr&gt;         &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt; 
+## 1 6075980300 San Francisco    66     0     0      55  0.833      0 0      Not M…
+## 2 6017031900 El Dorado        75     4     0      69  0.92       0 0.0533 Not M…
+## 3 6037575500 Los Angeles      92    80     0      12  0.130      0 0.870  Major…
+## 4 6037930101 Los Angeles      92     0     0      48  0.522      0 0      Not M…
+## 5 6037980019 Los Angeles     151     0     0     125  0.828      0 0      Not M…
+## 6 6065940100 Riverside       166    25     0     135  0.813      0 0.151  Not M…</code></pre>
+<p>To sort in descending order, add a <code>-</code> sign in front of
+the variable</p>
+<pre class="r"><code>neighborhoods &lt;- arrange(neighborhoods, -tpopr)
+head(neighborhoods)</code></pre>
+<pre><code>## # A tibble: 6 × 10
+##        GEOID County      tpopr  hisp nhblk nhwhite pwhite  pblack phisp mhisp   
+##        &lt;dbl&gt; &lt;chr&gt;       &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;   
+## 1 6073018700 San Diego   38932 10784  3414   22842  0.587 0.0877  0.277 Not Maj…
+## 2 6073013310 San Diego   32326 14894  1135    4489  0.139 0.0351  0.461 Not Maj…
+## 3 6107001003 Tulare      24719 13575   119    8656  0.350 0.00481 0.549 Majority
+## 4 6077005206 San Joaquin 23903  5103  1698    7640  0.320 0.0710  0.213 Not Maj…
+## 5 6059052420 Orange      23482  2415     0    7437  0.317 0       0.103 Not Maj…
+## 6 6077003500 San Joaquin 23464  6583  1213    5464  0.233 0.0517  0.281 Not Maj…</code></pre>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="function-conflicts" class="section level3">
+<h3><strong>Function conflicts</strong></h3>
+<p><br />
+</p>
+<p>You’ll learn to understand that R is beautiful. But, it isn’t
+perfect. One of its annoyances is that because R is open source, R users
+who contribute packages sometimes create functions with the same names.
+To demonstrate this, let’s load in the package <strong>MASS</strong></p>
+<pre class="r"><code>library(MASS)</code></pre>
+<p>You see the warning? Keep it in mind.</p>
+<p>Let’s use the function <code>select()</code> again to keep the
+variables <em>GEOID</em> and <em>PM2.5</em> from <em>neighces</em></p>
+<pre class="r"><code>select(neighces, GEOID, PM2.5)</code></pre>
+<pre><code>## Error in select(neighces, GEOID, PM2.5): unused arguments (GEOID, PM2.5)</code></pre>
+<p>What in the world just happened? By loading <strong>MASS</strong>, we
+have overwritten <strong>tidyverse</strong>’s <code>select()</code>
+function (hence the warning when you loaded <strong>MASS</strong>). R
+will choose the function from the package that was most recently loaded.
+The normal workaround is to be explicit about which
+<code>select()</code> function you want by using
+<code>dplyr::select()</code> as in</p>
+<pre class="r"><code>dplyr::select(neighces, GEOID, PM2.5)</code></pre>
+<pre><code>## # A tibble: 7,937 × 2
+##         GEOID PM2.5
+##         &lt;dbl&gt; &lt;dbl&gt;
+##  1 6019001100  15.4
+##  2 6071001600  13.3
+##  3 6019000200  15.4
+##  4 6077000801  12.5
+##  5 6019001500  15.4
+##  6 6037204920  12.9
+##  7 6077000300  13.4
+##  8 6019001000  15.4
+##  9 6037206050  12.9
+## 10 6019000400  15.4
+## # ℹ 7,927 more rows</code></pre>
+<p>To unload a package (i.e. “unlibrary” it) use the
+<code>detach()</code> function as follows.</p>
+<pre class="r"><code>detach(&quot;package:MASS&quot;)</code></pre>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+</div>
+<div id="pipes" class="section level2">
+<h2><strong>Pipes</strong></h2>
+<p><br />
+</p>
+<p>One of the important innovations from the <strong>tidyverse</strong>
+is the pipe operator <code>%&gt;%</code>. <a
+href="https://www.youtube.com/watch?v=ofsljUAUdlc">Pipes</a> are the
+workhorse of tidy analyses. Piping allows you to chain together many
+functions, eliminating the need to define multiple intermediate objects
+to use as the input to subsequent functions. <a
+href="https://www.youtube.com/watch?v=-B5VBH0y2Ig">Pipes</a> are also
+the primary reason that <strong>tidyverse</strong> code is fundamentally
+easier to read than base R code.</p>
+<p>It may seem complicated at first, but what the pipe does is actually
+quite simple. That is, it allows users to write linear code. To
+illustrate the use of the pipe, consider the following base R code that
+takes the mean of the log of three numbers</p>
+<pre class="r"><code>mean(log(c(1, 3, 9)))</code></pre>
+<pre><code>## [1] 1.098612</code></pre>
+<p>Notice how the numbers <em>c(1, 3, 9)</em> are nested inside
+<code>log()</code>, which is then nested inside <code>mean()</code>. If
+you’re reading the code from left-to-right, it means the functions are
+performed in reverse order from how they are written. If we broke the
+code down into its three functions, we would actually expect the order
+of operations to proceed as follows</p>
+<ol style="list-style-type: decimal">
+<li>Concatenate numbers into vector <code>c(...)</code></li>
+<li>Log the numeric vector <code>log(...)</code></li>
+<li>Estimate the mean of the logged numeric vector
+<code>mean(...)</code></li>
+</ol>
+<p>Now consider how you would do this using pipes.</p>
+<pre class="r"><code>c(1, 3, 9) %&gt;% 
+  log() %&gt;% 
+  mean()</code></pre>
+<pre><code>## [1] 1.098612</code></pre>
+<p>In contrast to the nested base code, the tidy code is linear; in
+other words, the code appears in the same order (moving from left to
+right) as the operations are performed. Let’s bring back our original
+<em>neighborhoods</em> dataset</p>
+<pre class="r"><code>neighborhoods &lt;- read_csv(&quot;https://raw.githubusercontent.com/geo200cn/data/master/week2data.csv&quot;)</code></pre>
+<p>and use pipes to</p>
+<ol style="list-style-type: decimal">
+<li>rename the variable <em>NAME</em> to <em>County</em></li>
+<li>keep all variables except <em>nhasn</em></li>
+<li>create the percent race/ethnicity and majority Hispanic
+variables</li>
+<li>join the <em>ces</em> file</li>
+</ol>
+<pre class="r"><code>neighces &lt;- neighborhoods %&gt;%
+  rename(County = NAME) %&gt;%
+  select(GEOID, County, hisp, nhblk, nhwhite, tpopr) %&gt;%
+  mutate(pwhite = nhwhite/tpopr, phisp = hisp/tpopr,
+         pblk = nhblk/tpopr, 
+         mhisp = ifelse(phisp &gt; 0.5, &quot;Majority&quot;,&quot;Not Majority&quot;)) %&gt;%
+  left_join(ces, by = &quot;GEOID&quot;)</code></pre>
+<p>In the code above, the tibble <em>neighborhoods</em> is piped into
+the command <code>rename()</code>. This command changes <em>NAME</em> to
+<em>County</em>. The resulting object gets piped into the command
+<code>select()</code>. And so on.</p>
+<p>Piping makes code clearer, and simultaneously gets rid of the need to
+define any intermediate objects that you would have needed to keep track
+of while reading the code.</p>
+<hr />
+<p><a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a><br />This
+work is licensed under a
+<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative
+Commons Attribution-NonCommercial 4.0 International License</a>.</p>
+<p>Website created and maintained by <a
+href="https://nbrazil.faculty.ucdavis.edu/">Noli Brazil</a></p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("show" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3,h4",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+
+</body>
+</html>
