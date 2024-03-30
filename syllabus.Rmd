@@ -1,16 +1,33 @@
 ---
 title: "Syllabus"
-subtitle: <h4 style="font-style:normal">GEO 200CN - Quantitative Geography</h4>
-author: <h4 style="font-style:normal">Professor Noli Brazil</h4>
+subtitle: <font size="4">GEO 200CN - Quantitative Geography</font>
+author: Professor Noli Brazil
 output: 
   html_document:
     toc: true
     toc_depth: 4
     toc_float: true
     theme: cosmo
+    code_folding: show
+    self_contained: false
 ---
 
+
 <style>
+p.comment {
+background-color: #DBDBDB;
+padding: 10px;
+border: 1px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: normal;
+}
+
+.figure {
+   margin-top: 20px;
+   margin-bottom: 20px;
+}
+
 h1.title {
   font-weight: bold;
   font-family: Arial;  
@@ -20,12 +37,8 @@ h2.title {
   font-family: Arial;  
 }
 
-.figure {
-   margin-top: 20px;
-   margin-bottom: 20px;
-}
-
 </style>
+
 
 <style type="text/css">
 #TOC {
@@ -34,7 +47,12 @@ h2.title {
 }
 </style>
 
+
 \
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message = FALSE)
+```
 
 The following is an abridged version of the course syllabus.  A full course syllabus can be found on the Canvas class website.
 
@@ -43,28 +61,31 @@ The following is an abridged version of the course syllabus.  A full course syll
 ## **Lecture and Lab Times**
 
 * Lecture: 
-    + Monday and Wednesday, 9:00-10:20, in-person
-    + 1006 Giedt
+    + Monday and Wednesday, 9:00-9:50, in-person
+    + 1007 Giedt
 * Labs: 
     + Monday and Wednesday, 11:00-12:50, in-person 
-    + 2219 Plant and Environmental Sciences (PES)
+    + 2212 Science Laboratory Building
 
 <div style="margin-bottom:25px;">
 </div>
 ## **Instructor**
 
 Dr. Noli Brazil  
+
 *Contact*: nbrazil.at.ucdavis.edu  
-*Office hours*: Monday and Wednesday from 4:30-5:30 pm or by appointment, Zoom or in-person.  Please sign up for a slot [here](https://www.wejoinin.com/sheets/vbcaq). Out of courtesy to other students, please do not sign up for more than two 10-minute blocks.  If you do, I will keep only the first two blocks. Zoom link is located on Canvas and pdf syllabus.
+*Office hours*: Monday and Wednesday from 4:10-5:10 pm or by appointment, Zoom or in-person.  2325 Hart Hall. Please sign up for a slot [here](https://www.wejoinin.com/sheets/vwzry). Out of courtesy to other students, please do not sign up for more than two 10-minute blocks.  If you do, I will keep only the first two blocks. The last 20 minutes are open drop in. Zoom link is located [here](https://ucdavis.zoom.us/j/93537642124?pwd=NENYZGlGd2s1NVFvWGF3OFhuSmxBdz09) and on the Canvas home page.
+
+
 
 <div style="margin-bottom:25px;">
 </div>
 ## **Teaching Assistant**
 
-Jennifer Cribbs 
-*Contact*: jecribbs.at.ucdavis.edu  
-*Office hours*: Thursday, 11:00-12:00 (in-person or Zoom), Tuesday, 4:30-5:30 (Zoom only)
+Sara Ludwick
 
+*Contact*: scludwick.at.ucdavis.edu  
+*Office hours*: Friday, 1:00-3:00 (in-person or Zoom). 2420 Hart Hall.
 Zoom link is located on Canvas and pdf syllabus.
 
 <div style="margin-bottom:25px;">
@@ -90,18 +111,16 @@ The course is organized into the following phases.
 
 1.	Statistical Foundation: We will cover core statistical concepts that will form the foundation to many of the methods covered in the class.  Topics covered include sampling, confidence intervals, and hypothesis testing.
 
-2.	Descriptive: We will cover methods of using data to describe geographic phenomena.  We are not trying to make any causal claims, but are simply trying to explore the data and reveal associations.  Topics covered include exploratory data analysis, mapping, clustering, and point pattern analysis.
+2.	Descriptive: We will cover methods of using data to describe geographic phenomena.  We are not trying to make any causal claims, but are simply trying to explore the data and reveal associations.  Topics covered include exploratory data analysis, linear regression, mapping, clustering, and point pattern analysis.
   
-3.	Inferential:  We will cover approaches of using data to infer the causes and consequences of geographic phenomena and processes.   Here, we move away from associations and move towards causality.  We will cover the building blocks of inferential statistics. We will then extensively cover regression, the workhorse of statistical inference in the sciences.
-
-4.	Predictive: We will cover approaches of using data to predict geographic phenomena.  We don’t care about description or about making causal claims, but about predictive quality and best fit. We will cover topics in Geostatistics.
+3.	Predictive: We will cover approaches of using data to predict geographic phenomena.  We don’t care about description or about making causal claims, but about predictive quality and best fit. We will cover topics in Geostatistics.
 
 
 <div style="margin-bottom:25px;">
 </div>
 ### **Lecture**
 
-The Monday/Wednesday 9:00-10:20 am classes will be a combination of lecture and discussion covering the substantive topics from the week’s readings.  There are readings for each lecture and they generally cover the mathematical underpinnings of the topics for that lecture 
+The Monday/Wednesday 9:00-9:50 am classes will be a combination of lecture and discussion covering the substantive topics from the week’s readings.  There are readings for each lecture and they generally cover the mathematical underpinnings of the topics for that lecture 
 
 <div style="margin-bottom:25px;">
 </div>
@@ -113,15 +132,17 @@ The Monday/Wednesday 11:00-12:50 pm labs will provide students the opportunity t
 </div>
 ## **Required Readings**
 
-The primary reading material is composed of a combination of the following three textbooks
+The primary reading material is composed of a combination of the following three:
 
 1.	(OSU) O’Sullivan, D. and D. Unwin. 2010. Geographic Information Analysis, 2nd Edition, Wiley.
 
-2.	My handouts.  
+2.	(ISLR) James, G., Witten, D., Hastie, T., & Tibshirani, R. (2013). An introduction to statistical learning (Vol. 112, p. 18). New York: springer.
 
-3.	Book chapters and journal articles.
+3.	My Handouts
 
-OSU will be used to cover geographic methods and techniques.  OSU is available for hard copy purchase from the campus bookstore.  A digital copy is uploaded on the Canvas website in the Readings folder. Several topics are not covered by OSU.  As such, I will provide handouts, book chapters and journal articles on Canvas in advance of the assigned class.  At the end of each my handouts, I will provide additional references if you are interested in learning more, all of which will be available free on Canvas. 
+OSU will be used to cover most geographic methods and techniques.  ISLR will be used to cover the predictive modelling portion of the course. Both books are available for hard copy purchase from the campus bookstore.  Digital copies are uploaded on the Canvas website in the Readings folder. Several topics are not covered by the textbooks.  As such, I will provide handouts covering these topics on Canvas in advance of the assigned class.  At the end of each my handouts, I will provide additional references if you are interested in learning more, all of which will be available free on Canvas.  
+
+The other major course material are lab guides.  The week’s guides will be released before lecture on Monday and will be located on the class GitHub website linked above.
 
 
 <div style="margin-bottom:25px;">
@@ -140,13 +161,16 @@ Assignments will be released on Canvas typically before Monday’s lecture.  The
 
 Late submissions will be deducted 10% per 24 hours until 72 hours after the submission due time.  After 72 hours your submission will not be graded.  
 
-2. Quizzes
+2. Quizzes (20%)
 
-There will be **two** quizzes that will test conceptual material covered in lecture and readings.  The quizzes are closed book and will be taken in class during their designated dates and will cover only the material covered since the last quiz. They will consist of short computational, multiple choice and short answer questions.  You will not be expected to write or interpret R code. Make-up quizzes will be given ONLY in the case of extreme emergencies (severe illness, death in the immediate family) and when accompanied by appropriate documentation (e.g. doctor’s note). In the case of unexcused absences (travel plans, overslept, etc.), there are no make-up quizzes.  If you have been tested or have been exposed to COVID, and cannot take the test in class but can take it at home, we will provide online accommodations to take the quiz during the same time as the rest of the class.
+There will be **two** 25 minute quizzes that will test conceptual material covered in lecture and readings.  The quizzes are closed book and will be taken in class during their designated dates and will cover only the material covered since the last quiz. They will consist of short computational, multiple choice and short answer questions.  You will not be expected to write or interpret R code. Make-up quizzes will be given ONLY in the case of extreme emergencies (severe illness, death in the immediate family) and when accompanied by appropriate documentation (e.g. doctor’s note). In the case of unexcused absences (travel plans, overslept, etc.), there are no make-up quizzes.  If you have been tested or have been exposed to COVID, and cannot take the test in class but can take it at home, we will provide online accommodations to take the quiz during the same time as the rest of the class.
 
-2. Reading responses (10%)
+2. Final (20%)
 
-There is a set of empirical readings that complement the course topics. You are required to select **one** of these readings and provide a reading response due during finals week.  The response will demonstrate your ability to analyze the research design and methods of published works, and demonstrate your own comprehension of basic concepts and ideas in quantitative spatial analysis.  If you find a different peer-reviewed journal article that covers one of the course methods that you would prefer to summarize, please let me know.    
+You will choose one of two options to fulfill your final submission (for full details see Canvas):
+
+1.	Select two readings from the set of empirical readings that complement the course topics. Provide a reading response for each selected reading.  
+2.	Establish a research question and develop a data and methods proposal to answer the research question.
 
 <div style="margin-bottom:25px;">
 </div>	
