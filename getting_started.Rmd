@@ -435,7 +435,7 @@ brazil
 ```
 
 
-The error occurs because R tries to print the value of object *brazil*, but there is no such object in your current environment. So remember that any time you get the error message `object 'something' not found`, the most likely reason is that you forgot to quote a character value. If not, it probably means that you have misspelled, or not yet created, the object that you are referring to.   I've included common pitfalls and R tips in this class [resource](https://crd230.github.io/tips.html). 
+The error occurs because R tries to print the value of object *brazil*, but there is no such object in your current environment. So remember that any time you get the error message `object 'something' not found`, the most likely reason is that you forgot to quote a character value. If not, it probably means that you have misspelled, or not yet created, the object that you are referring to.   I've included common pitfalls and R tips in this class [resource](https://geo200cn.github.io/tips.html). 
 
 You can add vectors with the same length
 
@@ -551,7 +551,7 @@ Store this data frame in an object called *df1*
 df1<-data.frame(v1, v2)
 ```
 
-*df1* should pop up in your Environment window.  You'll notice a ![](/Users/noli/Documents/UCD/teaching/CRD 230/Lab/crd230.github.io/lab0fig2.png) next to *df1*.  This tells you that *df1* possesses or holds more than one object. Click on ![](/Users/noli/Documents/UCD/teaching/CRD 230/Lab/crd230.github.io/lab0fig2.png) and you'll see the two vectors we saved into *df1*.  Another neat thing you can do is directly click on *df1* from the Environment window to bring up an Excel style worksheet on the top left of your RStudio interface.  You can't edit this worksheet directly, but it allows you to see the values that a higher level R data object contains.
+*df1* should pop up in your Environment window.  You'll notice a ![](/Users/noli/Documents/UCD/teaching/GEO 200CN/Lab/geo200cn.github.io/lab0fig2.png) next to *df1*.  This tells you that *df1* possesses or holds more than one object. Click on ![](/Users/noli/Documents/UCD/teaching/GEO 200CN/Lab/geo200cn.github.io/lab0fig2.png) and you'll see the two vectors we saved into *df1*.  Another neat thing you can do is directly click on *df1* from the Environment window to bring up an Excel style worksheet on the top left of your RStudio interface.  You can't edit this worksheet directly, but it allows you to see the values that a higher level R data object contains.
 
 We can store different types of vectors in a data frame.  For example, we can store one character vector and one numeric vector in a single data frame.
 
