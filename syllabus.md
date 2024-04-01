@@ -63,7 +63,7 @@ The following is an abridged version of the course syllabus.  A full course syll
     + 1007 Giedt
 * Labs: 
     + Monday and Wednesday, 11:00-12:50, in-person 
-    + 2212 Science Laboratory Building
+    + 2212 Teaching and Learning Complex
 
 <div style="margin-bottom:25px;">
 </div>
@@ -167,7 +167,7 @@ There will be **two** 25 minute quizzes that will test conceptual material cover
 
 You will choose one of two options to fulfill your final submission (for full details see Canvas):
 
-1.	Select two readings from the set of empirical readings that complement the course topics. Provide a reading response for each selected reading.  
+1.	Select a reading from the set of empirical readings that complement the course topics. Provide a reading response for each selected reading.  
 2.	Establish a research question and develop a data and methods proposal to answer the research question.
 
 <div style="margin-bottom:25px;">
