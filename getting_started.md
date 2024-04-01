@@ -215,7 +215,7 @@ Open up RStudio.  You should see the interface shown in the figure below, which 
 
 * **Console** (left) - The way R works is you write a line of code to execute some kind of task on a data object.  The R Console allows you to run code interactively. The screen prompt `>` is an invitation from R to enter its world. This is where you type code in, press enter to execute the code, and see the results.
 * **Environment, History, and Connections tabs** (upper-right)
-    + **Environment** - shows all the R objects that are currently open in your workspace.  This is the place, for example, where you will see any data you've loaded into R. When you exit RStudio, R will clear all objects in this window.  You can also click on ![](/Users/noli/Documents/UCD/teaching/CRD150/Lab/crd150.github.io/broom.png) to clear out all the objects loaded and created in your current session.
+    + **Environment** - shows all the R objects that are currently open in your workspace.  This is the place, for example, where you will see any data you've loaded into R. When you exit RStudio, R will clear all objects in this window.  You can also click on ![](/Users/noli/Documents/UCD/teaching/GEO 200CN/Lab/geo200cn.github.io/broom.png) to clear out all the objects loaded and created in your current session.
     + **History** - shows a list of executed commands in the current session.
     + **Connections** - you can connect to a variety of data sources, and explore the objects and data inside the connection.  I typically don't use this window, but you [can](https://support.rstudio.com/hc/en-us/articles/115010915687-Using-RStudio-Connections).    
     + **Tutorial** - used to run tutorials that will help you learn and master the R programming language.   
@@ -227,7 +227,7 @@ Open up RStudio.  You should see the interface shown in the figure below, which 
     + **Viewer** - allows you to view local web content (won't be using this much).
     + **Presentation** - used to display HTML slides.
 
-There is actually fourth window. But, we'll get to this window a little later (if you read the [assignment guidelines](https://crd150.github.io/hw_guidelines.html) you already know what this fourth window is).
+There is actually fourth window. But, we'll get to this window a little later (if you read the [assignment guidelines](https://geo200cn.github.io/hw_guidelines.html) you already know what this fourth window is).
 
 For more information on each tab, check this [resource](https://docs.posit.co/ide/user/ide/guide/ui/ui-panes.html).
 
