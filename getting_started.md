@@ -51,9 +51,7 @@ h2.title {
 
 \
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message = FALSE)
-```
+
 
 
 We will be using R to complete all data analysis tasks in this class.  For those who have never used R or it has been a long time since you've used the program, welcome to what will be a life fulfilling journey! The goal of this class is not to learn skills to be a programmer. Instead, we are going to learn enough of R to apply the statistical methods we will learn in the class using real data. 
@@ -98,7 +96,8 @@ The next question you may have is "I love Excel [or insert your favorite program
 
 R is different from Excel in that it is generally not a point-and-click program.  You will be primarily writing code to clean and analyze data.  What does *writing* or *sourcing* code mean? A basic example will help clarify.  Let's say you are given a dataset with 10 rows representing people living in Davis, CA. You have a variable in the dataset representing individual income.  Let's say this variable is named *inc*.  To get the mean income of the 10 people in your dataset, you would write code that would look something like this
 
-```{r eval=FALSE, warning=FALSE, results="hide"}
+
+```r
 mean(inc)
 ```
 
@@ -240,21 +239,34 @@ For more information on each tab, check this [resource](https://docs.posit.co/id
 
 Let’s now explore what R can do. R is really just a big fancy calculator. For example, type in the following mathematical expression next to the `>` in the R console (left window)
 
-```{r results="hide"}
+
+```r
 1+1
 ```
 
 Note that spacing does not matter: `1+1` will generate the same answer as `1      +       1`.  Can you say hello to the world?
 \
 
-```{r, error=TRUE}
+
+```r
 hello world
+```
+
+```
+## Error: <text>:1:7: unexpected symbol
+## 1: hello world
+##           ^
 ```
 
 Nope. What is the problem here?  We need to put quotes around it. 
 
-```{r, error=TRUE}
+
+```r
 "hello world"
+```
+
+```
+## [1] "hello world"
 ```
 
 "hello world" is a character and R recognizes characters only if there are quotes around it. Characters are one of R's five basic data types. Let's go through each of them.
@@ -273,24 +285,44 @@ The most important basic (or “primitive”) data types are the “numeric” (
 
 Numerics are separated into two types: integer and double. The distinction between integers and doubles is usually not important. R treats numerics as doubles by default because it is a less restrictive data type. You can do any mathematical operation on numeric values. We added one and one above. We can also multiply using the `*` operator.
 
-```{r}
+
+```r
 2*3
+```
+
+```
+## [1] 6
 ```
 
 Divide
 
-```{r}
+
+```r
 4/2
+```
+
+```
+## [1] 2
 ```
 
 And even take the logarithm!
 
-```{r}
+
+```r
 log(1)
 ```
 
-```{r}
+```
+## [1] 0
+```
+
+
+```r
 log(0)
+```
+
+```
+## [1] -Inf
 ```
 
 Uh oh. What is `-Inf`? Well, you can’t take the logarithm of 0, so R is telling you that you’re getting a non numeric value in return. The value `-Inf` is another type of value type that you can get in R.
@@ -305,16 +337,26 @@ A character variable is used to represent letters, codes, or words.  Character v
 
 R has a set of functions that manipulate strings. For example, to get a part of a string use `substr()`
 
-```{r}
+
+```r
 substr("Hello World", 1, 5)
+```
+
+```
+## [1] "Hello"
 ```
 
 The function `substr` keeps the character values in the 1st through 5th positions of the word "Hello World".  Try using other numbered positions and see what you get.
 
 To replace characters in a string use `gsub`.
 
-```{r}
+
+```r
 gsub("Hello", "Bye bye", "Hello World")
+```
+
+```
+## [1] "Bye bye World"
 ```
 
 Here, the function finds the set of characters in the first value ("Hello"), replaces it with the second value "Bye bye", in all instances in the third value ("Hello World").
@@ -326,21 +368,43 @@ Here, the function finds the set of characters in the first value ("Hello"), rep
 
 A logical takes on two values: FALSE or TRUE. Think of a logical as the answer to a question like “Is this value greater than (lower than/equal to) this other value?” The answer will be either TRUE or FALSE. For example, typing in the following
 
-```{r}
+
+```r
 3 > 2
+```
+
+```
+## [1] TRUE
 ```
 
 We can test for equality using two equal signs `==` (not a single `=` which would be an assignment!). 
 
-```{r}
+
+```r
 "robert" == "catherine"
+```
+
+```
+## [1] FALSE
 ```
 
 `<=` means “smaller or equal” and `>=` means “larger or equal”.
 
-```{r}
+
+```r
 2 <= 2
+```
+
+```
+## [1] TRUE
+```
+
+```r
 3 <= 2
+```
+
+```
+## [1] FALSE
 ```
 
 
@@ -358,8 +422,13 @@ A factor is a nominal (categorical) variable with a set of known possible values
 
 All basic data types can have “missing values”. These are represented by the symbol `NA` for “Not Available”. Typing NA in the R Console yields
 
-```{r}
+
+```r
 NA
+```
+
+```
+## [1] NA
 ```
 
 Note that `NA` is not quoted (it is a special symbol, it is not the word “NA”).
@@ -381,25 +450,40 @@ You just learned that R has several basic data types. Now, let’s go through ho
 A vector is the most common and basic R data structure and is pretty much the workhorse of the language. A vector is simply a sequence of values which can be of any data type but all of the same type.  There are a number of ways to create a vector depending on the data type, but the most common is to insert the data you want to save in a vector into the command `c()`.  For example, to represent the values 4, 16 and 9 in a vector type in
 
 
-```{r}
+
+```r
 c(4, 16, 9)
+```
+
+```
+## [1]  4 16  9
 ```
 
 
 You can also have a vector of character values
 
 
-```{r}
+
+```r
 c("diana", "clare", "gwen")
+```
+
+```
+## [1] "diana" "clare" "gwen"
 ```
 
 
 The above code does not actually "save" the values 4, 16, and 9 - it just presents it on the screen in a vector. If you want to use these values again without having to type out `c(4, 16, 9)`, you can save it in a data object. You assign data to an object using the arrow sign `<-`.  This will create an object in R's memory that can be called back into the command window at any time.  For example, you can save "hello world" to a vector called *b* by typing in
 
 
-```{r}
+
+```r
 b <- "hello world"
 b
+```
+
+```
+## [1] "hello world"
 ```
 
 
@@ -408,9 +492,14 @@ You can pronounce the above as “b becomes 'hello world'”.
 Note that R is case sensitive, if you type in *B* instead of *b*, you will get an error. Lets save the numbers 4, 16 and 9 into a vector called *v1*
 
 
-```{r}
+
+```r
 v1 <- c(4, 16, 9)
 v1
+```
+
+```
+## [1]  4 16  9
 ```
 
 
@@ -420,9 +509,17 @@ You should see the objects *b* and *v1* pop up in the Environment tab on the top
 Note that the name *v1* is nothing special here. You could have named the object *x* or *geo200cn* or your pet's name (mine was *charlie*).  You can't, however, name objects using special characters (e.g. !, @, $) or only numbers (although you can combine numbers and letters, but a number cannot be at the beginning e.g. *2d2*).  For example, you'll get an error if you save the vector *c(4,16,9)* to an object with the following names
 
 
-```{r error=TRUE}
+
+```r
 123 <- c(4, 16, 9)
 !!! <- c(4, 16, 9)
+```
+
+```
+## Error: <text>:2:5: unexpected assignment
+## 1: 123 <- c(4, 16, 9)
+## 2: !!! <-
+##        ^
 ```
 
 
@@ -430,8 +527,13 @@ Note that the name *v1* is nothing special here. You could have named the object
 Also note that to distinguish a character value from a variable name, it needs to be quoted.  "v1" is a character value whereas *v1* is a variable.  One of the most common mistakes for beginners is to forget the quotes.
 
 
-```{r error = TRUE}
+
+```r
 brazil
+```
+
+```
+## Error in eval(expr, envir, enclos): object 'brazil' not found
 ```
 
 
@@ -439,29 +541,49 @@ The error occurs because R tries to print the value of object *brazil*, but ther
 
 You can add vectors with the same length
 
-```{r}
+
+```r
 c <- 1:5
 d <- 6:10
 c+d
 ```
 
+```
+## [1]  7  9 11 13 15
+```
+
 You can also test their equality
 
-```{r}
+
+```r
 c == d
+```
+
+```
+## [1] FALSE FALSE FALSE FALSE FALSE
 ```
 
 
 Every vector has two key properties: *type* and *length*.  The type property indicates the data type that the vector is holding. Use the command `typeof()` to determine the type 
 
 
-```{r}
+
+```r
 typeof(b)
 ```
 
+```
+## [1] "character"
+```
 
-```{r}
+
+
+```r
 typeof(v1)
+```
+
+```
+## [1] "double"
 ```
 
 
@@ -470,44 +592,74 @@ Note that a vector cannot hold values of different types.  If different data typ
 The command `length()` determines the number of data values that the vector is storing
 
 
-```{r}
+
+```r
 length(b)
 ```
 
+```
+## [1] 1
+```
 
-```{r}
+
+
+```r
 length(v1)
+```
+
+```
+## [1] 3
 ```
 
 
 You can also directly determine if a vector is of a specific data type by using the command `is.X()` where you replace `X` with the data type.  For example, to find out if *v1* is numeric, type in
 
 
-```{r}
+
+```r
 is.numeric(b)
 ```
 
+```
+## [1] FALSE
+```
 
-```{r}
+
+
+```r
 is.numeric(v1)
+```
+
+```
+## [1] TRUE
 ```
 
 
 There is also `is.logical()`, `is.character()`, `is.factor()`, and `is.na()`.  You can also coerce a vector of one data type to another.  For example, save the value "1" and "2" (both in quotes) into a vector named *x1*
 
 
-```{r}
+
+```r
 x1 <- c("1", "2")
 typeof(x1)
+```
+
+```
+## [1] "character"
 ```
 
 
 To convert *x1* into a numeric, use the command `as.numeric()`
 
 
-```{r}
+
+```r
 x2 <- as.numeric(x1)
 typeof(x2)
+```
+
+```
+## [1] "double"
 ```
 
 
@@ -516,7 +668,8 @@ There is also `as.logical()`, `as.character()`, and `as.factor()`.
 An important practice you should adopt early is to keep only necessary objects in your current R Environment.  For example, we will not be using *x2* any longer in this guide.  To remove this object from R forever, use the command `rm()`
 
 
-```{r eval = FALSE}
+
+```r
 rm(x2)
 ```
 
@@ -532,22 +685,32 @@ Also note that when you close down R Studio, the objects you created above will 
 We learned that data values can be stored in data structures known as vectors.  The next step is to learn how to store vectors into an even higher level data structure.  The data frame can do this. A data frame is what you get when you read spreadsheet-like data into R.  Data frames store vectors of the same length.  Create a vector called *v2* storing the values 5, 12, and 25
 
 
-```{r}
+
+```r
 v2 <- c(5,12,25)
 ```
 
 We can create a data frame using the command `data.frame()` storing the vectors *v1* and *v2* as columns
 
 
-```{r}
+
+```r
 data.frame(v1, v2)
+```
+
+```
+##   v1 v2
+## 1  4  5
+## 2 16 12
+## 3  9 25
 ```
 
 
 Store this data frame in an object called *df1*
 
 
-```{r}
+
+```r
 df1<-data.frame(v1, v2)
 ```
 
@@ -556,33 +719,56 @@ df1<-data.frame(v1, v2)
 We can store different types of vectors in a data frame.  For example, we can store one character vector and one numeric vector in a single data frame.
 
 
-```{r}
+
+```r
 v3 <- c("diana", "clare", "gwen")
 df2 <- data.frame(v1, v3)
 df2
 ```
 
+```
+##   v1    v3
+## 1  4 diana
+## 2 16 clare
+## 3  9  gwen
+```
+
 For higher level data structures like a data frame, use the function `class()` to figure out what kind of object you're working with.
 
 
-```{r}
+
+```r
 class(df2)
+```
+
+```
+## [1] "data.frame"
 ```
 
 
 We can't use `length()` on a data frame because it has more than one vector. Instead, it has *dimensions* - the number of rows and columns. You can find the number of rows and columns that a data frame has by using the command `dim()`
 
 
-```{r}
+
+```r
 dim(df1)
+```
+
+```
+## [1] 3 2
 ```
 
 
 Here, the data frame *df1* has 3 rows and 2 columns. Data frames also have column names, which are characters.
 
 
-```{r}
+
+```r
 colnames(df1)
+```
+
+```
+## [1] "v1" "v2"
 ```
 
 
@@ -590,26 +776,47 @@ In this case, the data frame used the vector names for the column names.
 
 We can extract columns from data frames by referring to their names using the `$` sign.
 
-```{r, error=TRUE}
+
+```r
 df1$v1
+```
+
+```
+## [1]  4 16  9
 ```
 
 We can also extract data from data frames using brackets `[ , ]`
 
-```{r}
+
+```r
 df1[,1]
+```
+
+```
+## [1]  4 16  9
 ```
 
 The value before the comma indicates the row, which you leave empty if you are not selecting by row, which we did above.  The value after the comma indicates the column, which you leave empty if you are not selecting by column.  Let's select the 2nd row.
 
-```{r, error=TRUE}
+
+```r
 df1[2,]
+```
+
+```
+##   v1 v2
+## 2 16 12
 ```
 
 What is the value in the 2nd row and 1st column?
 
-```{r, error=TRUE}
+
+```r
 df1[2,1]
+```
+
+```
+## [1] 16
 ```
 
 
@@ -622,31 +829,78 @@ A list is a very flexible container to store data. Each element of a list can co
 
 Here is a simple list of three numbers
 
-```{r}
+
+```r
 list(1:3)
+```
+
+```
+## [[1]]
+## [1] 1 2 3
 ```
 
 It shows that the first element `[[1]]` contains a vector of 1, 2, 3.
 
 Here is one with two data types, one is a vector of two numbers and another vector of one character.
 
-```{r}
+
+```r
 e <- list(c(2,5), 'abc')
 e
 ```
 
+```
+## [[1]]
+## [1] 2 5
+## 
+## [[2]]
+## [1] "abc"
+```
+
 Here is a list containing a vector and a data frame 
 
-```{r}
+
+```r
 list1 <- list(c, df2)
 list1
 ```
 
+```
+## [[1]]
+## [1] 1 2 3 4 5
+## 
+## [[2]]
+##   v1    v3
+## 1  4 diana
+## 2 16 clare
+## 3  9  gwen
+```
+
 And a more complex list.
 
-```{r}
+
+```r
 list2 <- list(e, df2, 'abc')
 list2
+```
+
+```
+## [[1]]
+## [[1]][[1]]
+## [1] 2 5
+## 
+## [[1]][[2]]
+## [1] "abc"
+## 
+## 
+## [[2]]
+##   v1    v3
+## 1  4 diana
+## 2 16 clare
+## 3  9  gwen
+## 
+## [[3]]
+## [1] "abc"
 ```
 
 We won't run into lists too much in this class, only encountering them when we deal with spatial data. You can learn more about them and matrices, a data structure that has data frame like qualities, [here](https://rspatial.org/intr/3-basic-data-structures.html).
@@ -666,23 +920,34 @@ In R, you type in the function's name and set a number of options or parameters 
 Let’s use the function `seq()` which makes regular sequences of numbers.  You can find out what the options are for a function by calling up its help documentation by typing `?` and the function name
 
 
-```{r eval = FALSE}
+
+```r
 ? seq
 ```
 
 The help documentation should have popped up in the bottom right window of your RStudio interface.  The documentation should also provide some examples of the function at the bottom of the page. Type the arguments `from = 1, to = 10` inside the parentheses
 
 
-```{r}
+
+```r
 seq(from = 1, to = 10)
+```
+
+```
+##  [1]  1  2  3  4  5  6  7  8  9 10
 ```
 
 
 You should get the same result if you type in
 
 
-```{r}
+
+```r
 seq(1, 10)
+```
+
+```
+##  [1]  1  2  3  4  5  6  7  8  9 10
 ```
 
 
@@ -692,8 +957,13 @@ The code above demonstrates something about how R resolves function arguments. W
 Each argument requires a certain type of data type.  For example, you'll get an error when you use character values in `seq()`
 
 
-```{r error = TRUE}
+
+```r
 seq("p", "w")
+```
+
+```
+## Error in seq.default("p", "w"): 'from' must be a finite number
 ```
 
 
@@ -709,7 +979,8 @@ R comes with thousands of functions for you to use. Nevertheless, it is often ne
 
 For these reasons, writing functions is one of the most important coding skills to learn. Writing your own functions is not difficult. The below is a very simple function. It is called `f`. This is an entirely arbitrary name. You can also call it `myFirstFunction`. It takes no arguments, and always returns ‘hello’.
 
-```{r}
+
+```r
 f <- function() {
     return('hello')
 }
@@ -719,14 +990,29 @@ Look carefully how we assign a function to name `f` using the function keyword f
 
 Now that we have the function, we can inspect it, and use it.
 
-```{r}
+
+```r
 f
+```
+
+```
+## function() {
+##     return('hello')
+## }
+```
+
+```r
 f()
+```
+
+```
+## [1] "hello"
 ```
 
 `f` is a very boring function. It takes no arguments and always returns the same result. Let’s make it more interesting.
 
-```{r}
+
+```r
 f <- function(name) {
     x <- paste("hello", name)
     return(x)
@@ -734,19 +1020,29 @@ f <- function(name) {
 f('Sara')
 ```
 
+```
+## [1] "hello Sara"
+```
+
 Note the return statement. This indicates that variable *x* (which is only known inside of the function) is returned to the caller of the function. Simply typing *x* would also suffice, and ending the function with `paste("hello", name)` would also do! So the below is equivalent but shorter, at the expense of being less explicit.
 
-```{r}
+
+```r
 f <- function(name) {
     paste("hello", name)
 }
 f("Sara")
 ```
 
+```
+## [1] "hello Sara"
+```
+
 
 Now an example of a function that manipulates numbers. This function squares the sum of two numbers.
 
-```{r}
+
+```r
 sumsquare <- function(a, b) {
     d <- a + b
     dd <- d * d
@@ -756,32 +1052,57 @@ sumsquare <- function(a, b) {
 
 We can now use the `sumsquare` function. Note that it is vectorized (each argument can be more than one number)
 
-```{r}
+
+```r
 sumsquare(1,2)
 ```
 
-```{r}
+```
+## [1] 9
+```
+
+
+```r
 x <- 1:3
 y <- 5
 sumsquare(x,y)
 ```
 
+```
+## [1] 36 49 64
+```
+
 You can name the arguments when using a function; that often makes your intentions clearer.
 
-```{r}
+
+```r
 sumsquare(a=1, b=2)
+```
+
+```
+## [1] 9
 ```
 
 But the names must match
 
-```{r, error=TRUE}
+
+```r
 sumsquare(a=1, d=2)
+```
+
+```
+## Error in sumsquare(a = 1, d = 2): unused argument (d = 2)
 ```
 
 And both arguments need to be present
 
-```{r, error=TRUE}
+
+```r
 sumsquare(1:5)
+```
+
+```
+## Error in sumsquare(1:5): argument "b" is missing, with no default
 ```
 
 
@@ -799,7 +1120,8 @@ Functions do not exist in a vacuum, but exist within [R packages](https://r-pkgs
 Many functions you will use in this class are not pre-installed. In order to use functions in a new package, you first need to install the package using the `install.packages()` command. For example, we will be using commands from the package **tidyverse** throughout the rest of this course.  So, let's install it.
 
 
-```{r eval = FALSE}
+
+```r
 install.packages("tidyverse")
 ```
 
@@ -808,7 +1130,8 @@ You should see a bunch of gobbledygook roll through your console screen.  Don't 
 Next, you will need to load packages in your working environment (every time you start RStudio). We do this with the `library()` function.
 
 
-```{r}
+
+```r
 library(tidyverse)
 ```
 
@@ -833,15 +1156,35 @@ In most labs, we will be using commands from the **tidyverse** package. [Tidyver
 With that said, my approach to this course is to lean towards the tidy way of doing R.  Tidy R is built off of base R functions, so there is a natural connection.  But, code written in the **tidyverse** style is much easier to read. For example, if you want to select certain variables from your data frame, you use an actual tidy function named `select()`.  For example, to extract $v1$ from the data frame $df1$
 
 
-```{r}
+
+```r
 select(df1, v1)
+```
+
+```
+##   v1
+## 1  4
+## 2 16
+## 3  9
 ```
 
 In Base R, you have to use the $ sign or bracket convention shown earlier.
 
-```{r}
+
+```r
 df1$v1
+```
+
+```
+## [1]  4 16  9
+```
+
+```r
 df1[,1]
+```
+
+```
+## [1]  4 16  9
 ```
 
 In general, Base R has a somewhat inconsistent and sometimes incomprehensible mish-mash of function and argument styles. We'll use both approaches, but lean more towards **tidy**.  
