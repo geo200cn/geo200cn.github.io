@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Professor Noli Brazil" />
+
+<meta name="date" content="2024-04-03" />
+
+<title>Exploratory Data Analysis</title>
+
+<script src="site_libs/header-attrs-2.22/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+      .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">GEO 200CN: Spring 2024</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="syllabus.html">Syllabus</a>
+</li>
+<li>
+  <a href="hw_guidelines.html">Assignment Guidelines</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Labs
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="getting_started.html">Getting Started</a>
+    </li>
+    <li>
+      <a href="eda.html">Exploratory Data Analysis</a>
+    </li>
+    <li>
+      <a href="inference.html">Statistical Inference</a>
+    </li>
+    <li>
+      <a href="hypothesis.html">Hypothesis Testing</a>
+    </li>
+    <li>
+      <a href="linearregression.html">Linear Regression</a>
+    </li>
+    <li>
+      <a href="linearregression2.html">More Linear Regression</a>
+    </li>
+    <li>
+      <a href="logistic.html">Logistic Regression</a>
+    </li>
+    <li>
+      <a href="introspatial.html">Intro to Spatial Data</a>
+    </li>
+    <li>
+      <a href="pointpatterns.html">Point Pattern Analysis</a>
+    </li>
+    <li>
+      <a href="spatialautocorrelation.html">Spatial Autocorrelation</a>
+    </li>
+    <li>
+      <a href="spatialreg.html">Spatial Regression</a>
+    </li>
+    <li>
+      <a href="prediction.html">Prediction Modelling</a>
+    </li>
+    <li>
+      <a href="modelselection.html">Model Selection</a>
+    </li>
+    <li>
+      <a href="interpolation.html">Spatial Interpolation</a>
+    </li>
+    <li>
+      <a href="kriging.html">Kriging</a>
+    </li>
+    <li>
+      <a href="regtrees.html">Regression Trees</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Other
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="tips.html">R Tips</a>
+    </li>
+    <li>
+      <a href="data_wrangling.html">Data Wrangling</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Exploratory Data Analysis</h1>
+<h3 class="subtitle"><font size="4">GEO 200CN - Quantitative
+Geography</font></h3>
+<h4 class="author">Professor Noli Brazil</h4>
+<h4 class="date">April 3, 2024</h4>
+
+</div>
+
+
+<style>
+p.comment {
+background-color: #DBDBDB;
+padding: 10px;
+border: 1px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: normal;
+}
+
+.figure {
+   margin-top: 20px;
+   margin-bottom: 20px;
+}
+
+h1.title {
+  font-weight: bold;
+  font-family: Arial;  
+}
+
+h2.title {
+  font-family: Arial;  
+}
+
+</style>
+<style type="text/css">
+#TOC {
+  font-size: 13px;
+  font-family: Arial;
+}
+</style>
+<p><br />
+</p>
+<p>In last lab, you were introduced to the basics of R. In this lab, you
+will learn how to use R to run exploratory data analysis (EDA). The
+objectives of this lab are as follows:</p>
+<ol style="list-style-type: decimal">
+<li>Learn how to run univariate descriptive statistics.</li>
+<li>Learn how to run bivariate descriptive statistics.</li>
+<li>Introduction to data visualization in R.</li>
+</ol>
+<div style="margin-bottom:25px;">
+
+</div>
+<div id="installing-and-loading-packages" class="section level2">
+<h2><strong>Installing and loading packages</strong></h2>
+<p><br />
+</p>
+<p>As described in last lab, many functions are part of packages that
+are not preinstalled into R. In last lab, we installed the package
+<strong>tidyverse</strong>. We will be using one new package in this
+lab, so let’s install it.</p>
+<pre class="r"><code>install.packages(&quot;corrr&quot;)</code></pre>
+<p>Installing a package does not mean its functions are accessible
+during a given R session. You’ll need to load packages using the
+function <code>library()</code>. Unlike installing, you need to use
+<code>library()</code> every time you start an R session. A good
+practice is to load all the packages you will be using in a given R
+Markdown at the top of the file. We’ll be using the
+<strong>tidyverse</strong> package in this lab, so let’s load it and the
+<strong>corrr</strong> package in.</p>
+<pre class="r"><code>library(tidyverse)
+library(corrr)</code></pre>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="reading-data" class="section level2">
+<h2><strong>Reading data</strong></h2>
+<p><br />
+</p>
+<p>Let’s bring in some data to help illustrate EDA tools in R. I
+uploaded a file on GitHub containing the number of Hispanic, white,
+Asian, and black residents in 2018 in California neighborhoods taken
+from the United States <a
+href="https://www.census.gov/programs-surveys/acs">American Community
+Survey</a>. The data are also located on Canvas in the Lab and
+Assignments Week 1 folder. To import this file in R, use the
+<code>read_csv()</code> command, which is a part of the
+<strong>tidyverse</strong> package.</p>
+<pre class="r"><code>neighborhoods &lt;- read_csv(&quot;https://raw.githubusercontent.com/geo200cn/data/master/week2data.csv&quot;)</code></pre>
+<p><br></p>
+<p>The data object <em>neighborhoods</em> should have appeared in your
+environment window.</p>
+<p>Let’s bring in another dataset containing some health and air
+pollution data from California’s <a
+href="https://oehha.ca.gov/calenviroscreen/report/calenviroscreen-30">CalEnviroScreen</a>
+program. Read it in from GitHub using our new friend
+<code>read_csv()</code>.</p>
+<pre class="r"><code>ces &lt;- read_csv(&quot;https://raw.githubusercontent.com/geo200cn/data/master/ces.csv&quot;)
+names(ces)</code></pre>
+<p>The dataset contains the poverty rate, air pollution levels (<a
+href="https://www.epa.gov/pm-pollution/particulate-matter-pm-basics">PM2.5</a>),
+and whether the neighborhood is environmentally disadvantaged according
+to the CES.</p>
+<p>Note the underscore in between <code>read</code> and
+<code>csv</code>. There is a base R function called
+<code>read.csv()</code>. What is the difference? The function
+<code>read.csv()</code> stores your data into a regular data frame. The
+function <code>read_csv()</code> stores your data in a special tidy R
+object - a tibble.</p>
+<p>Although the <strong>tidyverse</strong> works with all data objects,
+its fundamental object type is the tibble. Tibbles are essentially a
+special variant of <a
+href="https://geo200cn.github.io/getting_started.html#Data_Frames">data
+frames</a> that have desirable properties for printing and joining. An
+important difference between tidy and base R is that
+<code>read_csv()</code> will always read variables containing text as
+character variables. In contrast, the base R function
+<code>read.csv()</code> will sometimes convert a character variable to a
+factor. Tidy R figures that if you really wanted a factor, you can
+easily convert it when you load it in. <code>read_csv()</code> will also
+not convert numbers with a leading zero into an integer. It figures that
+if you want to convert it into an integer, you can do it after the data
+are read in. In contrast, <code>read.csv()</code> will assume you want
+it in an integer.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="data-wrangling" class="section level2">
+<h2><strong>Data Wrangling</strong></h2>
+<p><br />
+</p>
+<p>It is rare that the data you download is in exactly the right form
+for analysis. For example, you might want to analyze just Yolo county
+neighborhoods. Or you might want to discard certain variables from the
+dataset to reduce clutter. Or you encounter missing data. The process of
+gathering data in its raw form and molding it into a form that is
+suitable for its end use is known as <em>data wrangling</em>. In this
+lab, we won’t go through the various data wrangling functions that
+<strong>tidyverse</strong> offers since all the data we will provide in
+labs and assignments will be largely cleaned and ready for analysis. If
+you would like to learn on your own, I’ve provided an extra <a
+href="https://geo200cn.github.io/data_wrangling.html">lab on data
+wrangling</a>. You can also look through chapters 5 and 9-16 in <a
+href="https://r4ds.had.co.nz/index.html">R for Data Science</a>.
+However, I want to cover one of the most important innovations from
+<strong>tidyverse</strong>, the pipe operator <code>%&gt;%</code>,
+before starting EDA.</p>
+<p>Pipes are the workhorse of tidy analyses. Piping allows you to chain
+together many functions, eliminating the need to define multiple
+intermediate objects to use as the input to subsequent functions. Pipes
+are also the primary reason that <strong>tidyverse</strong> code is
+fundamentally easier to read than base R code.</p>
+<p>It may seem complicated at first, but what the pipe does is actually
+quite simple. That is, it allows users to write linear code. To
+illustrate the use of the pipe, consider the following base R code that
+takes the mean of the log of three numbers</p>
+<pre class="r"><code>mean(log(c(1, 3, 9)))</code></pre>
+<pre><code>## [1] 1.098612</code></pre>
+<p>Notice how the numbers <em>c(1, 3, 9)</em> are nested inside
+<code>log()</code>, which is then nested inside <code>mean()</code>. If
+you’re reading the code from left-to-right, it means the functions are
+performed in reverse order from how they are written. If we broke the
+code down into its three functions, we would actually expect the order
+of operations to proceed as follows</p>
+<ol style="list-style-type: decimal">
+<li>Concatenate numbers into vector <code>c(...)</code></li>
+<li>Log the numeric vector <code>log(...)</code></li>
+<li>Estimate the mean of the logged numeric vector
+<code>mean(...)</code></li>
+</ol>
+<p>Now consider how you would do this using pipes.</p>
+<pre class="r"><code>c(1, 3, 9) %&gt;% 
+  log() %&gt;% 
+  mean()</code></pre>
+<pre><code>## [1] 1.098612</code></pre>
+<p>In contrast to the nested base code, the tidy code is linear; in
+other words, the code appears in the same order (moving from left to
+right) as the operations are performed.</p>
+<p>Let’s use pipes to conduct the following data wrangling tasks on the
+data object <em>neighborhoods</em>.</p>
+<ol style="list-style-type: decimal">
+<li>rename the variable <em>NAME</em> to <em>County</em></li>
+<li>keep all variables except <em>nhasn</em></li>
+<li>create the percent race/ethnicity and majority Hispanic
+variables</li>
+<li>join the <em>ces</em> file</li>
+</ol>
+<pre class="r"><code>neighces &lt;- neighborhoods %&gt;%
+  rename(County = NAME) %&gt;%
+  select(GEOID, County, hisp, nhblk, nhwhite, tpopr) %&gt;%
+  mutate(pwhite = nhwhite/tpopr, phisp = hisp/tpopr,
+         pblk = nhblk/tpopr, 
+         mhisp = ifelse(phisp &gt; 0.5, &quot;Majority&quot;,&quot;Not Majority&quot;)) %&gt;%
+  left_join(ces, by = &quot;GEOID&quot;)</code></pre>
+<p>In the code above, the tibble <em>neighborhoods</em> is piped into
+the command <code>rename()</code>. This command changes <em>NAME</em> to
+<em>County</em>. The resulting object gets piped into the command
+<code>select()</code>, which keeps the variables <em>GEOID</em>,
+<em>County</em>, <em>hisp</em>, <em>nhblk</em>, <em>nhwhite</em>,
+<em>tpopr.</em> This result gets piped into the <code>mutate()</code>
+function, which creates the variables <em>pwhite</em>, <em>phisp</em>,
+and <em>pblk</em>, which represent the proportion of the population that
+is white, Hispanic and Black, and <em>mhisp</em>, which designates
+neighborhoods as “Majority” Hispanic if its proportion Hispanic is
+greater than 0.5, and “Not Majority” otherwise. This then gets piped in
+the <code>left_join()</code> function, which joins the <em>ces</em>
+dataset using the ID <em>GEOID</em> which uniquely identifies each
+neighborhood.</p>
+<p>Piping makes code clearer, and simultaneously gets rid of the need to
+define any intermediate objects that you would have needed to keep track
+of while reading the code.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="exploratory-data-analysis" class="section level2">
+<h2><strong>Exploratory Data Analysis</strong></h2>
+<p><br />
+</p>
+<p>Below we go through several methods for conducting Exploratory Data
+Analysis (EDA). We first start with univariate and bivariate statistics.
+We then go through how to construct charts and graphs.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+<div id="univariate-statistics" class="section level3">
+<h3><strong>Univariate statistics</strong></h3>
+<p><br />
+</p>
+<p>Univariate statistics provide summaries of a single variable. The
+most common statistics capture a distribution’s central tendency or
+spread.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+<div id="central-tendency" class="section level4">
+<h4><strong>Central tendency</strong></h4>
+<p><br />
+</p>
+<p>The most common univariate statistics are those that measure central
+tendency. The most common measure of central tendency is the mean. We
+can calculate the mean of a variable using the function **tidyverse*
+function <code>summarize()</code>.</p>
+<pre class="r"><code>summarize(neighces, mean(PM2.5))</code></pre>
+<pre><code>## # A tibble: 1 × 1
+##   `mean(PM2.5)`
+##           &lt;dbl&gt;
+## 1          10.4</code></pre>
+<p>The first argument inside <code>summarize()</code> is the data object
+<em>neighces</em> and the second argument is the function calculating
+the specific summary statistic, in this case <code>mean()</code>, which
+unsurprisingly calculates the mean of the variable you indicate in
+between the parentheses.</p>
+<p>Other common measures of central tendency are the median (50th
+percentile)</p>
+<pre class="r"><code>summarize(neighces, 
+          median(PM2.5))</code></pre>
+<pre><code>## # A tibble: 1 × 1
+##   `median(PM2.5)`
+##             &lt;dbl&gt;
+## 1            10.4</code></pre>
+<p>and the mode (most frequent value). There is no base function for
+calculating the mode, so lets create our own function called
+<code>getmode()</code>.</p>
+<pre class="r"><code># Create a function that calculates the statistical mode
+getmode &lt;- function(v) {
+   uniqv &lt;- unique(v)
+   uniqv[which.max(tabulate(match(v, uniqv)))]
+}</code></pre>
+<p>We can plug in all three measures within a single
+<code>summarize()</code>.</p>
+<pre class="r"><code>neighces %&gt;%
+  summarize(Mean = mean(PM2.5),
+            Median = median(PM2.5),
+            Mode = getmode(PM2.5))</code></pre>
+<pre><code>## # A tibble: 1 × 3
+##    Mean Median  Mode
+##   &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;
+## 1  10.4   10.4  12.0</code></pre>
+<p>The mean and the mode have the same value. What does this say about
+the shape of the distribution of PM 2.5?</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="spread" class="section level4">
+<h4><strong>Spread</strong></h4>
+<p><br />
+</p>
+<p>The other common set of univariate statistics measure a
+distribution’s spread. The three most common measures of spread are the
+variance, its buddy the standard deviation and the Interquartile Range
+(IQR). We calculate the variance, standard deviation and IQR using the
+functions <code>var()</code>, <code>sd()</code> and <code>IQR()</code>,
+respectively. Let’s combine them with measures of central tendency into
+a single <code>summarize()</code>.</p>
+<pre class="r"><code>neighces %&gt;%
+  summarize(Mean = mean(PM2.5),
+            Median = median(PM2.5),
+            Mode = getmode(PM2.5),
+            Variance = var(PM2.5),
+            SD = sd(PM2.5),
+            IQR = IQR(PM2.5))</code></pre>
+<pre><code>## # A tibble: 1 × 6
+##    Mean Median  Mode Variance    SD   IQR
+##   &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1  10.4   10.4  12.0     6.74  2.60  3.35</code></pre>
+<p>You can get a summary of all the variables in a data frame using the
+<code>summary()</code> function.</p>
+<pre class="r"><code>summary(neighces)</code></pre>
+<pre><code>##      GEOID              County               hisp           nhblk       
+##  Min.   :6.001e+09   Length:7937        Min.   :    0   Min.   :   0.0  
+##  1st Qu.:6.037e+09   Class :character   1st Qu.:  641   1st Qu.:  34.0  
+##  Median :6.059e+09   Mode  :character   Median : 1420   Median : 116.0  
+##  Mean   :6.055e+09                      Mean   : 1909   Mean   : 269.5  
+##  3rd Qu.:6.073e+09                      3rd Qu.: 2789   3rd Qu.: 311.0  
+##  Max.   :6.115e+09                      Max.   :14894   Max.   :5469.0  
+##     nhwhite          tpopr           pwhite           phisp       
+##  Min.   :    0   Min.   :   66   Min.   :0.0000   Min.   :0.0000  
+##  1st Qu.:  649   1st Qu.: 3495   1st Qu.:0.1466   1st Qu.:0.1537  
+##  Median : 1590   Median : 4632   Median :0.3783   Median :0.3088  
+##  Mean   : 1839   Mean   : 4904   Mean   :0.3895   Mean   :0.3797  
+##  3rd Qu.: 2681   3rd Qu.: 5924   3rd Qu.:0.6131   3rd Qu.:0.5805  
+##  Max.   :22842   Max.   :38932   Max.   :0.9804   Max.   :1.0000  
+##       pblk             mhisp              Poverty         PM2.5       
+##  Min.   :0.000000   Length:7937        Min.   : 0.0   Min.   : 1.651  
+##  1st Qu.:0.008253   Class :character   1st Qu.:19.2   1st Qu.: 8.698  
+##  Median :0.025617   Mode  :character   Median :33.5   Median :10.370  
+##  Mean   :0.055452                      Mean   :36.4   Mean   :10.377  
+##  3rd Qu.:0.065583                      3rd Qu.:51.6   3rd Qu.:12.050  
+##  Max.   :0.839158                      Max.   :96.2   Max.   :19.600  
+##  disadvantage      
+##  Length:7937       
+##  Class :character  
+##  Mode  :character  
+##                    
+##                    
+## </code></pre>
+<p>You’ll notice that some variables are not given summary statistics.
+These are of class <em>character</em>. How do we summarize variables
+whose values are of class <em>character</em>?</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="categorical-variable" class="section level4">
+<h4><strong>Categorical variable</strong></h4>
+<p><br />
+</p>
+<p>You summarize a categorical variable using a frequency table. What
+are the percentages of neighborhoods that are considered to be
+environmentally burdened in California? To get these percentages, you’ll
+need to combine the functions <code>group_by()</code>,
+<code>summarize()</code> and <code>mutate()</code> using
+<code>%&gt;%</code>.</p>
+<pre class="r"><code>neighces %&gt;%
+  group_by(disadvantage) %&gt;%
+  summarize(n = n()) %&gt;%
+  mutate(freq = n / sum(n))</code></pre>
+<pre><code>## # A tibble: 2 × 3
+##   disadvantage     n  freq
+##   &lt;chr&gt;        &lt;int&gt; &lt;dbl&gt;
+## 1 No            5947 0.749
+## 2 Yes           1990 0.251</code></pre>
+<p>The <code>group_by()</code> function applies another function
+independently within groups of observations (where the groups are
+specified by a categorical variable in your data frame). In the code
+above, we group by whether neighborhoods are considered to be
+disadvantaged or not. We used <code>summarize()</code> to count the
+number of neighborhoods by disadvantage designation. The function to get
+a count is <code>n()</code>, and we saved this count in a variable named
+<em>n</em>. The code within <code>mutate()</code> calculates the
+frequencies.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+</div>
+<div id="bivariate-statistics" class="section level3">
+<h3><strong>Bivariate statistics</strong></h3>
+<p><br />
+</p>
+<p>A frequent goal in data analysis is to efficiently describe or
+measure the strength of relationships between variables, or to detect
+associations between categorical variables used to set up a cross
+tabulation. A related goal may be to determine which variables are
+related in a predictive sense to a particular outcome variable, or put
+another way, to learn how best to predict future values of a outcome
+variable. Correlation, along with measures of association constructed
+from tables, provide the means for constructing and displaying such
+relationships.</p>
+<p>The correlation coefficient is used to measure the association
+between two numeric variables. Use the function <code>cor</code> in R.
+What is the correlation between PM2.5 levels and percent Hispanic? What
+about percent White?</p>
+<pre class="r"><code>neighces %&gt;%
+  summarize(hispcor = cor(phisp,PM2.5, use = &quot;complete.obs&quot;),
+            whitecor = cor(pwhite,PM2.5, use = &quot;complete.obs&quot;))</code></pre>
+<pre><code>## # A tibble: 1 × 2
+##   hispcor whitecor
+##     &lt;dbl&gt;    &lt;dbl&gt;
+## 1   0.366   -0.372</code></pre>
+<p>You can obtain a correlation matrix to show bivariate correlation
+across multiple variables. One way of doing this in R is to use the
+<code>correlate()</code> function, which is found in the package
+<strong>corrr</strong>.</p>
+<pre class="r"><code>neighces %&gt;% 
+  select(pwhite, phisp, pblk, Poverty, `PM2.5`) %&gt;% 
+  correlate()</code></pre>
+<pre><code>## # A tibble: 5 × 6
+##   term    pwhite   phisp    pblk Poverty   PM2.5
+##   &lt;chr&gt;    &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
+## 1 pwhite  NA     -0.771  -0.329   -0.598 -0.372 
+## 2 phisp   -0.771 NA       0.0326   0.701  0.366 
+## 3 pblk    -0.329  0.0326 NA        0.223  0.0766
+## 4 Poverty -0.598  0.701   0.223   NA      0.234 
+## 5 PM2.5   -0.372  0.366   0.0766   0.234 NA</code></pre>
+<p>To summarize the relationship between two categorical variables,
+you’ll need to find the proportion of observations for each combination,
+also known as a cross tabulation. Let’s create a cross tabulation of the
+categorical variables <em>mhisp</em> and <em>disadvantage</em>. We do
+this by using both variables in the <code>group_by()</code> command.</p>
+<pre class="r"><code>neighces %&gt;%
+  group_by(disadvantage, mhisp) %&gt;%
+  summarize(n = n())  %&gt;%
+  mutate(freq = n / sum(n))</code></pre>
+<pre><code>## # A tibble: 4 × 4
+## # Groups:   disadvantage [2]
+##   disadvantage mhisp            n  freq
+##   &lt;chr&gt;        &lt;chr&gt;        &lt;int&gt; &lt;dbl&gt;
+## 1 No           Majority       980 0.165
+## 2 No           Not Majority  4967 0.835
+## 3 Yes          Majority      1492 0.750
+## 4 Yes          Not Majority   498 0.250</code></pre>
+<p>A much higher proportion of disadvantaged neighborhoods are Majority
+Hispanic (0.750) compared to non disadvantage neighborhoods (0.165).</p>
+<p>What about summarizing the relationship between a categorical and
+numeric variable? A typical way of summarizing the relationship between
+a categorical variable and a numeric variable is to take the mean of the
+numeric variable for each level of the categorical variable. What is the
+mean pollution levels for majority vs non-majority Hispanic
+neighborhoods?</p>
+<pre class="r"><code>neighces %&gt;%
+  group_by(mhisp) %&gt;%
+  summarize(Mean = mean(PM2.5))</code></pre>
+<pre><code>## # A tibble: 2 × 2
+##   mhisp         Mean
+##   &lt;chr&gt;        &lt;dbl&gt;
+## 1 Majority     11.6 
+## 2 Not Majority  9.82</code></pre>
+<p>You can also find the mean PM2.5 levels by county using the same
+code.</p>
+<pre class="r"><code>neighces %&gt;%
+  group_by(County) %&gt;%
+  summarize(Mean = mean(PM2.5)) </code></pre>
+<pre><code>## # A tibble: 58 × 2
+##    County        Mean
+##    &lt;chr&gt;        &lt;dbl&gt;
+##  1 Alameda       8.78
+##  2 Alpine        2.59
+##  3 Amador        6.65
+##  4 Butte         9.05
+##  5 Calaveras     6.26
+##  6 Colusa        7.24
+##  7 Contra Costa  8.01
+##  8 Del Norte     3.80
+##  9 El Dorado     6.78
+## 10 Fresno       15.2 
+## # ℹ 48 more rows</code></pre>
+<p>How can you add to the above code to find out the top 10 counties in
+average PM2.5 levels?</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="data-visualization" class="section level3">
+<h3><strong>Data visualization</strong></h3>
+<p><br />
+</p>
+<p>Instead of tables and summary statistics, you might want to summarize
+your data using plots. The base R function for plotting is
+<code>plot()</code>. We can create a scatterplot (more on this later) of
+proportion and Hispanic and the poverty rate by typing in the
+following</p>
+<pre class="r"><code>plot(neighces$phisp~neighces$Poverty)</code></pre>
+<p><img
+src="eda_files/figure-html/unnamed-chunk-20-1.png" /><!-- --></p>
+<p>The <strong>tidyverse</strong>’s data visualization package is
+<strong>ggplot2</strong>. The graphing function is <code>ggplot()</code>
+and it takes on the basic template</p>
+<p><br></p>
+<pre><code>ggplot(data = &lt;DATA&gt;) +
+      &lt;GEOM_FUNCTION&gt;(mapping = aes(x, y)) +
+      &lt;OPTIONS&gt;()</code></pre>
+<p><br></p>
+<ol style="list-style-type: decimal">
+<li><p><code>ggplot()</code> is the base function where you specify your
+dataset using the <code>data = &lt;DATA&gt;</code> argument.</p></li>
+<li><p>You then need to build on this base by using the plus operator
+<code>+</code> and <code>&lt;GEOM_FUNCTION&gt;()</code> where
+<code>&lt;GEOM_FUNCTION&gt;()</code> is a unique function indicating the
+type of graph you want to plot. Each unique function has its unique set
+of mapping arguments which you specify using the
+<code>mapping = aes()</code> argument. Charts and graphs have an x-axis,
+y-axis, or both. Check <a
+href="https://rstudio.github.io/cheatsheets/data-visualization.pdf">this</a>
+<strong>ggplot</strong> cheat sheet for all possible geoms.</p></li>
+<li><p><code>&lt;OPTIONS&gt;()</code> are a set of functions you can
+specify to change the look of the graph, for example relabeling the axes
+or adding a title.</p></li>
+</ol>
+<p>The basic idea is that a ggplot graphic layers geometric objects
+(circles, lines, etc), themes, and scales on top of data.</p>
+<p>You first start out with the base layer. It represents the empty
+ggplot layer defined by the <code>ggplot()</code> function.</p>
+<pre class="r"><code>ggplot(neighces)</code></pre>
+<p><img
+src="eda_files/figure-html/unnamed-chunk-21-1.png" /><!-- --></p>
+<p>We haven’t told <code>ggplot()</code> what type of geometric
+object(s) we want to plot, nor how the variables should be mapped to the
+geometric objects, so we just have a blank plot. We have geoms to paint
+the blank canvas.</p>
+<p>From here, we add a “geom” layer to the ggplot object. Layers are
+added to ggplot objects using <code>+</code>, instead of
+<code>%&gt;%</code>, since you are not explicitly piping an object into
+each subsequent layer, but adding layers on top of one another. Each
+geom is associated with a specific type of graph.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+<div id="histogram" class="section level4">
+<h4><strong>Histogram</strong></h4>
+<p><br />
+</p>
+<p>Histograms are used to summarize a single numeric variable. To create
+a histogram, use <code>geom_histogram()</code> for
+<code>&lt;GEOM_FUNCTION()&gt;</code>. Let’s create a histogram of PM
+2.5.</p>
+<pre class="r"><code>ggplot(neighces) + 
+  geom_histogram(mapping = aes(x=PM2.5)) +
+  xlab(&quot;PM 2.5&quot;) </code></pre>
+<p><img
+src="eda_files/figure-html/unnamed-chunk-22-1.png" /><!-- --></p>
+<p>Because a single variable is plotted on the x-axis, we specify
+<code>x = in aes()</code> but not a <code>y =</code>. The
+<code>xlab()</code> function, which is an example of a
+<code>&lt;OPTIONS&gt;()</code> function, allows you to relabel the title
+of the x-axis (<code>ylab()</code> is for the y-axis). The message
+before the plot tells us that we can use the <code>bins =</code>
+argument to change the number of bins used to produce the histogram. You
+can increase the number of bins to make the bins narrower and thus get a
+finer grain of detail. Or you can decrease the number of bins to get a
+broader visual summary of the shape of the variable’s distribution. Try
+changing the number of bins and see what you get.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="density-plot" class="section level4">
+<h4><strong>Density plot</strong></h4>
+<p><br />
+</p>
+<p>A density plot is a plot of the local relative frequency or density
+of points along the number line or x-axis of a plot. The local density
+is determined by summing the individual “kernel” densities for each
+point. Where points occur more frequently, this sum, and consequently
+the local density, will be greater. Density plots get around some of the
+problems that histograms have. <code>geom_density()</code> is the
+associated <code>&lt;GEOM_FUNCTION()&gt;</code> for a density plot.
+Let’s make a density plot of PM 2.5.</p>
+<pre class="r"><code>ggplot(neighces) + 
+  geom_density(mapping = aes(x=PM2.5)) +
+  ylab(&quot;PM 2.5&quot;) </code></pre>
+<p><img
+src="eda_files/figure-html/unnamed-chunk-23-1.png" /><!-- --></p>
+<p>Plots with both a histogram and density line can be created:</p>
+<pre class="r"><code>ggplot(neighces, aes(x=PM2.5)) + 
+ geom_histogram(aes(y=..density..), colour=&quot;black&quot;, fill=&quot;white&quot;)+
+ geom_density(alpha=.2, fill=&quot;blue&quot;) </code></pre>
+<p><img
+src="eda_files/figure-html/unnamed-chunk-24-1.png" /><!-- --></p>
+<p><code>alpha =</code> controls the transparency and
+<code>fill =</code> controls for the color of the plot.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="boxplot" class="section level4">
+<h4><strong>Boxplot</strong></h4>
+<p><br />
+</p>
+<p>We can use a boxplot (or a box-and-whisker plot) to visually
+summarize the distribution of a single numeric variable. Use
+<code>geom_boxplot()</code> for <code>&lt;GEOM_FUNCTION()&gt;</code> to
+create a boxplot. Let’s examine PM 2.5</p>
+<pre class="r"><code>ggplot(neighces) + 
+  geom_boxplot(mapping = aes(y=PM2.5)) +
+  ylab(&quot;PM 2.5&quot;) </code></pre>
+<p><img
+src="eda_files/figure-html/unnamed-chunk-25-1.png" /><!-- --></p>
+<p>The top, middle and bottom of the box represent the 75th, 50th, and
+25th percentiles, respectively. The points outside the whiskers
+represent outliers. Outliers are defined as having values that are
+either larger than the 75th percentile plus 1.5 times the IQR or smaller
+than the 25th percentile minus 1.5 times the IQR.</p>
+<p>We can also use the boxplot to examine the relationship between a
+categorical and numeric variable. Let’s examine the distribution of PM
+2.5 by majority vs. non majority Hispanic. Because we are examining the
+association between two variables, we need to specify <em>x</em> and
+<em>y</em> variables within <code>aes()</code></p>
+<pre class="r"><code>ggplot(neighces) + 
+  geom_boxplot(mapping = aes(x = mhisp, y=PM2.5)) +
+  ylab(&quot;PM 2.5&quot;) +
+    xlab(&quot;Hispanic population&quot;) </code></pre>
+<p><img
+src="eda_files/figure-html/unnamed-chunk-26-1.png" /><!-- --></p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="barchart" class="section level4">
+<h4><strong>Barchart</strong></h4>
+<p><br />
+</p>
+<p>We use a bar chart to summarize a categorical variable. Bar charts
+show either the number or frequency of each category. To create a bar
+chart, use <code>geom_bar()</code> for
+<code>&lt;GEOM_FUNCTION&gt;()</code>. Let’s show a bar chart of
+environmentally disadvantaged communities.</p>
+<pre class="r"><code>ggplot(neighces, aes(x=factor(disadvantage)))+
+    geom_bar(stat=&quot;count&quot;)+
+    xlab(&quot;Disadvantaged neighborhood&quot;) +
+    ylab(&quot;Count&quot;) </code></pre>
+<p><img
+src="eda_files/figure-html/unnamed-chunk-27-1.png" /><!-- --></p>
+<p>This provides the number of observations in each category. What if we
+want to get the percentage? There is no <code>stat = "freq"</code>
+option, so we can borrow from the code we used earlier to create our
+<em>disadvantage</em> frequency table and pipe this table directly into
+<code>ggplot()</code>.</p>
+<pre class="r"><code>neighces %&gt;%
+  group_by(disadvantage) %&gt;%
+  summarize(n = n()) %&gt;%
+  mutate(freq = n / sum(n))  %&gt;%
+  ggplot() +
+  geom_bar(mapping=aes(x=disadvantage, y=freq),stat=&quot;identity&quot;) +
+    xlab(&quot;Disadvantaged neighborhood&quot;) +
+    ylab(&quot;Proportion&quot;) </code></pre>
+<p><img
+src="eda_files/figure-html/unnamed-chunk-28-1.png" /><!-- --></p>
+<p>We didn’t need to specify <code>data = &lt;DATA&gt;</code> in
+<code>ggplot()</code> because it was piped in. Within
+<code>aes()</code>, we specified the categorical variable
+<em>disadvantage</em> on the x-axis and then the proportion of
+neighborhoods freq on the y-axis. The argument
+<code>stat = "identity"</code> tells <code>ggplot()</code> to plot the
+exact value listed for the variable <em>freq</em>.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="scatterplot" class="section level4">
+<h4><strong>Scatterplot</strong></h4>
+<p><br />
+</p>
+<p>The scatterplot is the traditional graph for visualizing the
+association between two numeric variables. For scatterplots, we use
+<code>geom_point()</code> for <code>&lt;GEOM_FUNCTION&gt;()</code>.
+Because we are plotting two variables, we specify an <em>x</em> and
+<em>y</em> variable. Does proportion Hispanic change with greater
+poverty in the neighborhood?</p>
+<pre class="r"><code>ggplot(neighces) +
+    geom_point(mapping = aes(x = Poverty, 
+                             y = phisp)) +
+    xlab(&quot;Poverty&quot;) +
+    ylab(&quot;Proportion Hispanic&quot;)</code></pre>
+<p><img
+src="eda_files/figure-html/unnamed-chunk-29-1.png" /><!-- --></p>
+<p>What does scatter plot suggest about the relationship between the two
+variables?</p>
+<p>You can add the <code>facet_wrap()</code> function to create a
+scatterplot for each county.</p>
+<pre class="r"><code>ggplot(neighces) +
+    geom_point(mapping = aes(x = Poverty, 
+                             y = phisp)) +
+    xlab(&quot;Poverty&quot;) +
+    ylab(&quot;Proportion Hispanic&quot;) +
+      facet_wrap(~County) </code></pre>
+<p><img
+src="eda_files/figure-html/unnamed-chunk-30-1.png" /><!-- --></p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="dot-plot" class="section level4">
+<h4><strong>Dot plot</strong></h4>
+<p><br />
+</p>
+<p>A (Cleveland) dot plot displays the values of a single variable as
+symbols plotted along a line, with a separate line for each observation.
+The associated <code>&lt;GEOM_FUNCTION&gt;()</code> is
+<code>geom_point()</code>. Here is a dot plot of the mean PM 2.5 levels
+for each county in California. We have to first create a tibble
+containing the mean levels, and pipe that into <code>ggplot()</code></p>
+<pre class="r"><code>neighces %&gt;%
+  group_by(County) %&gt;%
+  summarize(Mean = mean(PM2.5)) %&gt;%
+ggplot() + 
+  geom_point(aes(x=County, y=Mean)) +
+  coord_flip()</code></pre>
+<p><img
+src="eda_files/figure-html/unnamed-chunk-31-1.png" /><!-- --></p>
+<p><code>coord_flip()</code> flips the x and y axes (take it out and see
+how ugly the plot is).</p>
+<p>The default ordering of the y-axis is alphabetical. We can reorder
+the counties based on highest to lowest in mean PM 2.5 using the
+function <code>reorder()</code>.</p>
+<pre class="r"><code>neighces %&gt;%
+  group_by(County) %&gt;%
+  summarize(Mean = mean(PM2.5)) %&gt;%
+ggplot() + 
+  geom_point(aes(x=Mean, y=reorder(County,Mean))) +
+  ylab(&quot;County&quot;) +
+  xlab(&quot;PM 2.5&quot;)</code></pre>
+<p><img
+src="eda_files/figure-html/unnamed-chunk-32-1.png" /><!-- --></p>
+<p><code>ggplot()</code> has many additional functions and features that
+allow you to adjust the the aesthetic features of your plot. For
+example, we can add additional text to your plot to enhance its
+readability. To illustrate this, let’s create a scatterplot of mean PM
+2.5 and mean poverty rate for each county, but indicate the county
+corresponding to each point on the plot. We do this by adding the
+<code>geom_text()</code> function.</p>
+<pre class="r"><code>neighces %&gt;%
+  group_by(County) %&gt;%
+  summarize(MeanPM = mean(PM2.5),
+            MeanPov = mean(Poverty)) %&gt;%
+ggplot() + 
+  geom_point(aes(x=MeanPM, y=MeanPov)) +
+  geom_text(aes(x=MeanPM, y=MeanPov, label = County)) +
+  ylab(&quot;County&quot;) +
+  xlab(&quot;PM 2.5&quot;)</code></pre>
+<p><img
+src="eda_files/figure-html/unnamed-chunk-33-1.png" /><!-- --></p>
+<p><code>ggplot()</code> is a powerful function, and you can make a lot
+of really visually captivating graphs. You can change colors, add text
+labels, layer different plots on top of one another or side by side. You
+can also make maps with the function, which we’ll cover a few labs from
+now. You can also make your graphs really “pretty” and professional
+looking by altering graphing features using <code>&lt;OPTIONS()</code>,
+including colors, labels, titles and axes. For a list of
+<code>ggplot()</code> functions that alter various features of a graph,
+check out <a
+href="https://r4ds.had.co.nz/graphics-for-communication.html">Chapter 28
+in RDS</a>.</p>
+<p>Answer the assignment 2 questions that are uploaded on Canvas. Submit
+an R Markdown and its knitted document on Canvas by the assignment due
+date.</p>
+<hr />
+<p><a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a><br />This
+work is licensed under a
+<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative
+Commons Attribution-NonCommercial 4.0 International License</a>.</p>
+<p>Website created and maintained by <a
+href="https://nbrazil.faculty.ucdavis.edu/">Noli Brazil</a></p>
+</div>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("show" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3,h4",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+
+</body>
+</html>
