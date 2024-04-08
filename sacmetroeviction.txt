@@ -1,0 +1,43 @@
+--------------------------------------------------------------------------------
+Record layout for data file sac_metro_eviction.csv
+--------------------------------------------------------------------------------
+ 
+All demographic data were downloaded from the 2013-17 American Community Survey
+Eviction rate data were downloaded from the Eviction Lab
+https://evictionlab.org/
+All observations missing values in any variable were removed
+Units of observations: Sacramento Metropolitan Area census tracts
+ 
+--------------------------------------------------------------------------------
+Data Dictionary
+--------------------------------------------------------------------------------
+ 
+GEOID: Census Tract ID
+
+totp: Total population 
+
+ppov: Median household income    
+
+pund18: Percent of residents under the age of 18
+
+pblk: Percent black
+
+pasn: Percent Asian
+ 
+phisp: Percent Hispanic
+
+poor: Value of Poor if percent of residents living in poverty > 30%
+
+punemp: Percent of the civilian labor force that is unemployed
+
+rent: Median gross rent
+
+medage: Median age of housing (Current year - Year it was built)
+
+vacancy: Housing vacancy rate
+
+pburden: Percent of all renters who are severely cost burdened
+
+evict: Number of evictions per 100 renting households
+
+county: Sacramento metro area county
