@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Professor Noli Brazil" />
+
+<meta name="date" content="2024-04-10" />
+
+<title>Statistical Inference</title>
+
+<script src="site_libs/header-attrs-2.22/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+      .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">GEO 200CN: Spring 2024</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="syllabus.html">Syllabus</a>
+</li>
+<li>
+  <a href="hw_guidelines.html">Assignment Guidelines</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Labs
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="getting_started.html">Getting Started</a>
+    </li>
+    <li>
+      <a href="eda.html">Exploratory Data Analysis</a>
+    </li>
+    <li>
+      <a href="inference.html">Statistical Inference</a>
+    </li>
+    <li>
+      <a href="hypothesis.html">Hypothesis Testing</a>
+    </li>
+    <li>
+      <a href="linearregression.html">Linear Regression</a>
+    </li>
+    <li>
+      <a href="linearregression2.html">More Linear Regression</a>
+    </li>
+    <li>
+      <a href="logistic.html">Logistic Regression</a>
+    </li>
+    <li>
+      <a href="introspatial.html">Intro to Spatial Data</a>
+    </li>
+    <li>
+      <a href="pointpatterns.html">Point Pattern Analysis</a>
+    </li>
+    <li>
+      <a href="spatialautocorrelation.html">Spatial Autocorrelation</a>
+    </li>
+    <li>
+      <a href="spatialreg.html">Spatial Regression</a>
+    </li>
+    <li>
+      <a href="prediction.html">Prediction Modelling</a>
+    </li>
+    <li>
+      <a href="modelselection.html">Model Selection</a>
+    </li>
+    <li>
+      <a href="interpolation.html">Spatial Interpolation</a>
+    </li>
+    <li>
+      <a href="kriging.html">Kriging</a>
+    </li>
+    <li>
+      <a href="regtrees.html">Regression Trees</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Other
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="tips.html">R Tips</a>
+    </li>
+    <li>
+      <a href="data_wrangling.html">Data Wrangling</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Statistical Inference</h1>
+<h3 class="subtitle"><font size="4">GEO 200CN - Quantitative
+Geography</font></h3>
+<h4 class="author">Professor Noli Brazil</h4>
+<h4 class="date">April 10, 2024</h4>
+
+</div>
+
+
+<style>
+p.comment {
+background-color: #DBDBDB;
+padding: 10px;
+border: 1px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: normal;
+}
+
+.figure {
+   margin-top: 20px;
+   margin-bottom: 20px;
+}
+
+h1.title {
+  font-weight: bold;
+  font-family: Arial;  
+}
+
+h2.title {
+  font-family: Arial;  
+}
+
+</style>
+<style type="text/css">
+#TOC {
+  font-size: 13px;
+  font-family: Arial;
+}
+</style>
+<p><br />
+</p>
+<p>In this guide, we’ll demonstrate the concepts we learned in this
+week’s lecture and handout on statistical inference with real data. This
+will help ground the theorems, abstract equations and images of red
+balls from the handout. The objectives of the guide are as follows</p>
+<ol style="list-style-type: decimal">
+<li>Learn about estimating population parameters using sampling
+statistics</li>
+<li>Understand the implications of the Central Limit Theorem using real
+data</li>
+<li>Learn about uncertainty and confidence intervals</li>
+</ol>
+<div style="margin-bottom:25px;">
+
+</div>
+<div id="installing-and-loading-packages" class="section level2">
+<h2><strong>Installing and loading packages</strong></h2>
+<p><br />
+</p>
+<p>We’ll be working with one new package in this lab,
+<strong>infer</strong>. Install the package if you have not already done
+so.</p>
+<pre class="r"><code>install.packages(&quot;infer&quot;)</code></pre>
+<p>Next, we need to load this package as well as our new best friend
+<strong>tidyverse</strong>.</p>
+<pre class="r"><code>library(infer)
+library(tidyverse)</code></pre>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="population" class="section level2">
+<h2><strong>Population</strong></h2>
+<p><br />
+</p>
+<p>Our goal is to estimate the average age of a population from a
+sample. I uploaded onto GitHub a csv file containing the ages of a
+population of 1,000 residents. Let’s bring the population into R.</p>
+<pre class="r"><code>data &lt;- read_csv(&quot;https://raw.githubusercontent.com/geo200cn/data/master/ages.csv&quot;)</code></pre>
+<p>The object <em>data</em> contains the population. Because we have a
+Census, we know the true population parameters. So, we know the
+population mean</p>
+<pre class="r"><code>mean(data$age)</code></pre>
+<pre><code>## [1] 54.004</code></pre>
+<p>and population standard deviation</p>
+<pre class="r"><code>sd(data$age)</code></pre>
+<pre><code>## [1] 17.41066</code></pre>
+<p>Let’s say we don’t know the ages of every person in the population.
+Let’s also say we don’t have the resources to conduct a Census. So, we
+turn to sampling.</p>
+<p><br></p>
+<p class="comment">
+<strong>Question 1</strong>: Create a histogram of <em>age</em>. Does it
+look normal? Does it matter when you are trying to make inferences about
+the population mean using a sample?
+</p>
+<p><br></p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="sample" class="section level2">
+<h2><strong>Sample</strong></h2>
+<p><br />
+</p>
+<p>We take a sample of size 3 from the population. We can do it the base
+R way by using <code>sample()</code></p>
+<pre class="r"><code>#sampling is random. set a seed so you can replicate the results
+set.seed(1234)
+sample_ageb &lt;- sample(data$age, 3, replace=TRUE)</code></pre>
+<p>Or we can go the tidy R route using <code>sample_n()</code></p>
+<pre class="r"><code>#compare sample_n with sample_frac.  what&#39;s the difference?
+sample_aget &lt;- sample_n(data, 3, replace = TRUE)</code></pre>
+<p>A note about sampling in R: When you work with using random values,
+the results will be different each time you run some code (that is the
+point); but sometimes it is desirable to recreate exactly the same
+random sequence. The function <code>set.seed()</code> allows you to do
+that (after all, in computers we can only create pseudo-random values).
+So, by plugging in <code>set.seed(1234)</code> before we ran the
+sampling functions above, we can replicate the results at a later
+time.</p>
+<p>Mean age of the sample</p>
+<pre class="r"><code>mean(sample_aget$age)</code></pre>
+<pre><code>## [1] 66</code></pre>
+<p>Standard deviation of age of the sample</p>
+<pre class="r"><code>sd(sample_aget$age)</code></pre>
+<pre><code>## [1] 8.544004</code></pre>
+<p>But this is only for one sample. We can randomly sample 3 people 10
+times. We can do this using the <code>replicate()</code> function.</p>
+<pre class="r"><code>sim_results_repl &lt;-replicate(10, sample(data$age, 3, replace=TRUE))</code></pre>
+<p>Or we can use the tidy friendly function <code>rep_sample_n()</code>,
+which is a part of the <strong>infer</strong> package we installed
+earlier.</p>
+<pre class="r"><code>sim_results_repl10 &lt;-rep_sample_n(data, 3, replace = TRUE, reps = 10)</code></pre>
+<p>What does the histogram of each of these size 3 samples look like?
+Use <code>ggplot()</code> which we learned about in the exploratory data
+analysis <a
+href="https://geo200cn.github.io/eda.html#Data_visualization">lab</a>.</p>
+<pre class="r"><code>ggplot(sim_results_repl10, aes(x=age))+
+  geom_histogram(color=&quot;white&quot;)+
+  facet_wrap(~replicate)+
+  theme_classic()</code></pre>
+<p><img
+src="inference_files/figure-html/unnamed-chunk-12-1.png" /><!-- --></p>
+<p>The function <code>facet_wrap()</code> allows us to create a
+histogram for each <em>replicate</em> or sample.</p>
+<p>Notice, all of the samples do not have the same looking histogram.
+This is because of random sampling error. All of the samples are coming
+from the same distribution, but random chance makes each sample a little
+bit different.</p>
+<p>Now let’s look at the mean of the samples.</p>
+<pre class="r"><code>sample_means &lt;- sim_results_repl10 %&gt;%
+                group_by(replicate) %&gt;%
+                summarise(means=mean(age))
+sample_means</code></pre>
+<pre><code>## # A tibble: 10 × 2
+##    replicate means
+##        &lt;int&gt; &lt;dbl&gt;
+##  1         1  49  
+##  2         2  45  
+##  3         3  67.7
+##  4         4  73  
+##  5         5  52.7
+##  6         6  37.3
+##  7         7  42.3
+##  8         8  58.3
+##  9         9  39  
+## 10        10  37.7</code></pre>
+<p>A histogram gives a visual depiction of the distribution</p>
+<pre class="r"><code>ggplot(sample_means, aes(x=means))+
+  geom_histogram(color=&quot;white&quot;)+
+  theme_classic()</code></pre>
+<p><img
+src="inference_files/figure-html/unnamed-chunk-14-1.png" /><!-- --></p>
+<p>This is the distribution of the sample means, also known as the
+sampling distribution. It doesn’t look like much. That’s because we only
+took 10 samples.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="central-limit-theorem" class="section level2">
+<h2><strong>Central Limit Theorem</strong></h2>
+<p><br />
+</p>
+<p>The histogram of 10 sample means looks kind of lonely. Let’s give
+them some more friends. How about we repeat our sample of 3 one thousand
+times instead of just 10?</p>
+<pre class="r"><code>#sample of 3 one thousand times
+sim_results_repl1000 &lt;-rep_sample_n(data, 3, replace = TRUE, reps = 1000)
+
+#sample means
+sample_means1000 &lt;- sim_results_repl1000 %&gt;%
+                group_by(replicate) %&gt;%
+                summarise(means=mean(age))
+
+#plot of 1,000 sample means
+ggplot(sample_means1000, aes(x=means))+
+  geom_histogram(color=&quot;white&quot;)+
+  theme_classic()</code></pre>
+<p><img
+src="inference_files/figure-html/unnamed-chunk-15-1.png" /><!-- --></p>
+<p>Does it look normally distributed?</p>
+<p><br></p>
+<p class="comment">
+<strong>Question 2</strong>: Obtain sample sizes of <em>200</em> one
+thousand times and show a histogram of the 1,000 means. According to
+CLT, what happens to the histogram, mean and standard deviation of the
+sample means when you increase <em>n</em> (the sample size)? Does your
+histogram show this?
+</p>
+<p><br></p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="confidence-intervals" class="section level2">
+<h2><strong>Confidence Intervals</strong></h2>
+<p><br />
+</p>
+<p>The CLT is cool. And its coolness gives us the ability to map our
+estimate from a single sample onto a normal distribution in order to
+measure the uncertainty of an estimate. Return for a moment to the
+question that first motivated this lab: based on a sample, what can we
+infer about the population? Based only on a single sample, the best
+estimate of the mean age would be the sample mean. That serves as a good
+point estimate but it would be useful to also communicate how uncertain
+we are of that estimate. This can be captured by using a confidence
+interval.</p>
+<p>We can calculate a 95% confidence interval for a sample mean by
+adding and subtracting 1.96 standard errors to the point estimate</p>
+<p>Let’s take a sample of size 200.</p>
+<pre class="r"><code>sample_age200 &lt;- sample_n(data, 200, replace = TRUE)</code></pre>
+<p><br></p>
+<p class="comment">
+<strong>Question 3</strong>: Calculate the lower and upper boundary of
+the confidence interval. Interpret the values.
+</p>
+<p class="comment">
+<strong>Question 4</strong>: Let’s say you constructed the confidence
+intervals for all 1,000 samples of size 200 (You don’t have to do this
+in R to answer this question). What proportion of these intervals would
+you expect to capture the true population mean?
+</p>
+<p><br></p>
+<hr />
+<p><a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a><br />This
+work is licensed under a
+<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative
+Commons Attribution-NonCommercial 4.0 International License</a>.</p>
+<p>Website created and maintained by <a
+href="https://nbrazil.faculty.ucdavis.edu/">Noli Brazil</a></p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("show" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3,h4",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+
+</body>
+</html>
