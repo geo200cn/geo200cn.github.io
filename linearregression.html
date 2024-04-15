@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Professor Noli Brazil" />
+
+<meta name="date" content="2024-04-17" />
+
+<title>Linear Regression</title>
+
+<script src="site_libs/header-attrs-2.22/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+      .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">GEO 200CN: Spring 2024</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="syllabus.html">Syllabus</a>
+</li>
+<li>
+  <a href="hw_guidelines.html">Assignment Guidelines</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Labs
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="getting_started.html">Getting Started</a>
+    </li>
+    <li>
+      <a href="eda.html">Exploratory Data Analysis</a>
+    </li>
+    <li>
+      <a href="inference.html">Statistical Inference</a>
+    </li>
+    <li>
+      <a href="hypothesis.html">Hypothesis Testing</a>
+    </li>
+    <li>
+      <a href="linearregression.html">Linear Regression</a>
+    </li>
+    <li>
+      <a href="linearregression2.html">More Linear Regression</a>
+    </li>
+    <li>
+      <a href="logistic.html">Logistic Regression</a>
+    </li>
+    <li>
+      <a href="introspatial.html">Intro to Spatial Data</a>
+    </li>
+    <li>
+      <a href="pointpatterns.html">Point Pattern Analysis</a>
+    </li>
+    <li>
+      <a href="spatialautocorrelation.html">Spatial Autocorrelation</a>
+    </li>
+    <li>
+      <a href="spatialreg.html">Spatial Regression</a>
+    </li>
+    <li>
+      <a href="prediction.html">Prediction Modelling</a>
+    </li>
+    <li>
+      <a href="modelselection.html">Model Selection</a>
+    </li>
+    <li>
+      <a href="interpolation.html">Spatial Interpolation</a>
+    </li>
+    <li>
+      <a href="kriging.html">Kriging</a>
+    </li>
+    <li>
+      <a href="regtrees.html">Regression Trees</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Other
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="tips.html">R Tips</a>
+    </li>
+    <li>
+      <a href="data_wrangling.html">Data Wrangling</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Linear Regression</h1>
+<h3 class="subtitle"><font size="4">GEO 200CN - Quantitative
+Geography</font></h3>
+<h4 class="author">Professor Noli Brazil</h4>
+<h4 class="date">April 17, 2024</h4>
+
+</div>
+
+
+<style>
+p.comment {
+background-color: #DBDBDB;
+padding: 10px;
+border: 1px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: normal;
+}
+
+.figure {
+   margin-top: 20px;
+   margin-bottom: 20px;
+}
+
+h1.title {
+  font-weight: bold;
+  font-family: Arial;  
+}
+
+h2.title {
+  font-family: Arial;  
+}
+
+</style>
+<style type="text/css">
+#TOC {
+  font-size: 13px;
+  font-family: Arial;
+}
+</style>
+<p><br />
+</p>
+<p>Linear regression is the workhorse of applied statistics. Its
+robustness and easy interpretation are but two of the many reasons that
+it is often the first and frequently the last stop on the way to
+characterizing empirical relationships among observed variables. We will
+start with covering the functions and tools to run simple linear
+regression models in R, closely following this week’s handout and
+lecture. The objectives of this lab are as follows</p>
+<ol style="list-style-type: decimal">
+<li>Learn how to run and evaluate a simple linear regression model</li>
+<li>Learn how to calculate and evaluate model fit</li>
+</ol>
+<p>To help us accomplish these learning objectives, we will examine the
+association between neighborhood characteristics and housing eviction
+rates in the Sacramento metropolitan area. We will examine whether there
+are demographic and socioeconomic disparities in the types of
+neighborhoods that have higher eviction rates.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+<div id="installing-and-loading-packages" class="section level2">
+<h2><strong>Installing and loading packages</strong></h2>
+<p><br />
+</p>
+<p>We’ll be using a couple of new packages in this lab. First, you’ll
+need to install them. The code below checks if you’ve already installed
+these packages before. If you haven’t, it will install them.</p>
+<pre class="r"><code>install.packages(c(&quot;broom&quot;, &quot;gridExtra&quot;, &quot;classInt&quot;))</code></pre>
+<p>Load these packages and others we will need for this lab.</p>
+<pre class="r"><code>library(tidyverse)
+library(gridExtra)
+library(broom)
+library(spdep)
+library(sf)</code></pre>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="why-linear-regression" class="section level2">
+<h2><strong>Why linear regression</strong></h2>
+<p><br />
+</p>
+<p>There are three main reasons to run a linear regression:</p>
+<ol style="list-style-type: decimal">
+<li>You want to <strong>describe</strong> the relationship between two
+variables.</li>
+<li>You want to <strong>infer</strong> the causal effect of one variable
+on another.</li>
+<li>You want to <strong>predict</strong> the value of one variable from
+another.</li>
+</ol>
+<p>Why linear and not something else? It’s computationally easy. The
+estimated relationships are easy to describe. If certain assumptions are
+correct, it does a good job describing the relationship. We will cover
+nonlinear regression techniques later in the quarter.</p>
+<p>Our research question in this lab is: What ecological characteristics
+are associated with neighborhood eviction rates in the Sacramento
+metropolitan area?</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="bringing-in-the-data" class="section level2">
+<h2><strong>Bringing in the data</strong></h2>
+<p><br />
+</p>
+<p>Download the csv file <em>sac_metro_eviction.csv</em> located on
+Canvas in the Week 3 Lab and Assignments folder. Read in the csv file
+using the <code>read_csv()</code> function.</p>
+<pre class="r"><code>sac_metro &lt;- read_csv(&quot;sac_metro_eviction.csv&quot;)</code></pre>
+<p>2017 eviction rate case data were downloaded from the <a
+href="https://evictionlab.org/">Eviction Lab website</a>. Socioeconomic
+and demographic data were downloaded from the 2013-2017 <a
+href="https://www.census.gov/programs-surveys/acs">American Community
+Survey</a>. A record layout of the data can be found <a
+href="https://raw.githubusercontent.com/geo200cn/data/master/sacmetroeviction.txt">here</a>.
+We will not use all of these variables. We will do so next lab when we
+go through multiple linear regression.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="correlation" class="section level2">
+<h2><strong>Correlation</strong></h2>
+<p><br />
+</p>
+<p>We are interested in understanding the ecological characteristics
+associated with neighborhood level evictions per 100 renters
+(<em>evict</em>). Let’s examine its association with neighborhood
+percent unemployed <em>punemp</em>. One of the first steps in conducting
+a data analysis is to plot the two variables to detect whether a
+relationship exists. Because eviction rates and percent unemployed are
+numeric variables, we can construct a scatter plot to examine the
+relationship, which we covered in <a
+href="https://geo200cn.github.io/eda.html#Scatterplot">Week 2</a>. Let’s
+use our reliable friend <code>ggplot()</code> again.</p>
+<pre class="r"><code>ggplot(sac_metro) +
+    geom_point(mapping = aes(x = punemp, y = evict)) +
+    xlab(&quot;Percent unemployed&quot;) +
+    ylab(&quot;Eviction rates per 100 renters&quot;)</code></pre>
+<p><img
+src="linearregression_files/figure-html/unnamed-chunk-4-1.png" /><!-- --></p>
+<p>The relationship is not super clear. The next step is to calculate
+the correlation between variables to get a numerical summary of the
+relationship, which we also covered in <a
+href="https://geo200cn.github.io/eda.html#Bivariate_statistics">Week
+2</a>. A picture and a numerical summary is a good combination.</p>
+<p>Use the function <code>cor.test()</code> to calculate the Pearson
+correlation between eviction rates and percent unemployed.</p>
+<pre class="r"><code>cor.test(sac_metro$evict, sac_metro$punemp) </code></pre>
+<pre><code>## 
+##  Pearson&#39;s product-moment correlation
+## 
+## data:  sac_metro$evict and sac_metro$punemp
+## t = 6.2535, df = 397, p-value = 1.038e-09
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  0.2073757 0.3862725
+## sample estimates:
+##       cor 
+## 0.2994538</code></pre>
+<p>Correlation ranges from -1 to 0 to 1, with -1 indicating perfect
+negative correlation and 1 indicating perfect positive correlation. The
+function conducts a hypothesis test. What is the test statistic,
+alternative and null hypotheses? The correlation is 0.31 with a p-value
+near 0. What does this suggest about the relationship between the two
+variables?</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="simple-linear-regression" class="section level2">
+<h2><strong>Simple linear regression</strong></h2>
+<p><br />
+</p>
+<p>In correlation analysis, the two variables whose association is being
+measured are treated interchangeably. In contrast, a regression analysis
+designates a response or dependent variable <em>Y</em> and an
+independent or explanatory variable <em>X</em>. The idea is that there
+is a direction in the relationship. <em>X</em> leads to, predicts or
+potentially <em>causes</em> <em>Y</em>. In most regression applications,
+showing causality is difficult, so findings are more descriptive in
+nature.</p>
+<p>We will designate eviction rates as the dependent variable. We will
+examine its relationship with percent unemployed, which is the
+independent variable. The most common regression model is a linear
+regression model. The most common approach to estimating a regression
+model is ordinary least squares (OLS). A linear regression model
+containing only one independent variable is known as a simple linear
+regression.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+<div id="quantitative-independent-variable" class="section level3">
+<h3><strong>Quantitative independent variable</strong></h3>
+<p><br />
+</p>
+<p>Let’s first run a model where our independent variable is numeric. We
+use the function <code>lm()</code> to run a regression of eviction rates
+on percent unemployed.</p>
+<pre class="r"><code>lm1 &lt;- lm(evict ~ punemp, 
+          data = sac_metro)</code></pre>
+<p>The first argument in <code>lm()</code> is the outcome. This is
+followed by the <code>~</code> operator and then the independent
+variable. We indicate the data underlying the model using the argument
+<code>data =</code>.</p>
+<p>“Printing” the object gives a very short summary</p>
+<pre class="r"><code>lm1</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = evict ~ punemp, data = sac_metro)
+## 
+## Coefficients:
+## (Intercept)       punemp  
+##     0.95715      0.09143</code></pre>
+<p><code>names()</code> function reveals what’s contained in the
+<em>lm1</em> object.</p>
+<pre class="r"><code>names(lm1)</code></pre>
+<pre><code>##  [1] &quot;coefficients&quot;  &quot;residuals&quot;     &quot;effects&quot;       &quot;rank&quot;         
+##  [5] &quot;fitted.values&quot; &quot;assign&quot;        &quot;qr&quot;            &quot;df.residual&quot;  
+##  [9] &quot;xlevels&quot;       &quot;call&quot;          &quot;terms&quot;         &quot;model&quot;</code></pre>
+<p>We find out we can extract neat things like the residuals</p>
+<pre class="r"><code>lm1$residuals</code></pre>
+<p>Also the fitted values</p>
+<pre class="r"><code>lm1$fitted.values</code></pre>
+<p>The <code>summary()</code> function provides more detailed
+results.</p>
+<pre class="r"><code>summary(lm1)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = evict ~ punemp, data = sac_metro)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -2.1572 -0.8287 -0.3145  0.5179  6.4098 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  0.95715    0.12183   7.856 3.75e-14 ***
+## punemp       0.09143    0.01462   6.254 1.04e-09 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 1.2 on 397 degrees of freedom
+## Multiple R-squared:  0.08967,    Adjusted R-squared:  0.08738 
+## F-statistic: 39.11 on 1 and 397 DF,  p-value: 1.038e-09</code></pre>
+<p>We get the following information:</p>
+<ul>
+<li><em>Call</em>: The regression formula.</li>
+<li><em>Residuals</em>: Shows percentiles of the residuals.</li>
+<li><em>Coefficients</em>: Provides the regression coefficient estimates
+along with their standard errors and the results (t-stat and p-value) of
+t-tests for each coefficient.</li>
+<li><em>Significance threshold codes</em>: Asterisks showing whether the
+coefficient estimate p-values meet standard significance
+thresholds.</li>
+<li><em>Residual standard errors</em>: The standard deviation of the
+residuals. The smaller the residual standard error, the better a
+regression model fits a dataset.</li>
+<li><em>R-squared and adjusted R-squared</em>: Measures of fit.</li>
+<li><em>F-statistic</em>: A test of overall model fit (i.e., does the
+model fit the data).</li>
+</ul>
+<p>You can also create a <em>tidy</em> table of regression results using
+the <code>tidy()</code> function, which is a part of the
+<strong>broom</strong> package</p>
+<pre class="r"><code>tidy(lm1)</code></pre>
+<pre><code>## # A tibble: 2 × 5
+##   term        estimate std.error statistic  p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)   0.957     0.122       7.86 3.75e-14
+## 2 punemp        0.0914    0.0146      6.25 1.04e- 9</code></pre>
+<p><br></p>
+<p class="comment">
+<strong>Question 1</strong>: Write the equation of the regression line.
+What is the interpretation of the intercept? What is the interpretation
+of the slope coefficient?
+</p>
+<p><br></p>
+<p class="comment">
+<strong>Question 2</strong>: What is the predicted value of eviction
+rates at 10 percent unemployed? 50 percent?
+</p>
+<p><br></p>
+<p class="comment">
+<strong>Question 3</strong>: Plot the independent and dependent
+variables. Also plot the least squares regression best fit line. You
+want something that looks like one of the figures in Figure 2 in the
+linear regression handout.
+</p>
+<p><br></p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="qualitative-independent-variable" class="section level3">
+<h3><strong>Qualitative independent variable</strong></h3>
+<p><br />
+</p>
+<p>The variables <em>punemp</em> is quantitative or numeric. Let’s
+examine a qualitative or categorical independent variable. First, let’s
+examine the variable <em>poor</em>, which categorizes the neighborhood
+as a poor (poverty rate greater than 30%) and nonpoor (poverty rate less
+than or equal to 30%) neighborhood. It’s qualitative because the values
+are “Poor” and “Nonpoor”.</p>
+<pre class="r"><code>lm2 &lt;- lm(evict ~  poor, 
+          data = sac_metro)
+summary(lm2)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = evict ~ poor, data = sac_metro)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -2.4780 -0.8331 -0.2431  0.5219  5.3920 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)   1.4731     0.0647  22.768  &lt; 2e-16 ***
+## poorPoor      1.0849     0.1759   6.168  1.7e-09 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 1.202 on 397 degrees of freedom
+## Multiple R-squared:  0.08746,    Adjusted R-squared:  0.08516 
+## F-statistic: 38.05 on 1 and 397 DF,  p-value: 1.701e-09</code></pre>
+<p><br></p>
+<p class="comment">
+<strong>Question 4</strong>: What is the interpretation of the
+coefficient estimate for the <em>poorPoor</em> variable?
+</p>
+<p><br></p>
+<p>Next, let’s examine a multi-categorical variable. Here, instead of
+two categories, we have multiple. Let’s examine the variable
+<em>county</em>, which identifies the county (El Dorado, Placer,
+Sacramento, Yolo) the neighborhood is located. It’s qualitative because
+the values are the names of the 4 counties.</p>
+<pre class="r"><code>lm3 &lt;- lm(evict ~  county, 
+          data = sac_metro)
+summary(lm3)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = evict ~ county, data = sac_metro)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -1.6872 -0.7748 -0.1978  0.4978  6.1428 
+## 
+## Coefficients:
+##                  Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)        2.0354     0.1919  10.607  &lt; 2e-16 ***
+## countyPlacer      -1.6676     0.2714  -6.145 1.96e-09 ***
+## countySacramento  -0.2282     0.2038  -1.120    0.264    
+## countyYolo        -1.0831     0.2752  -3.935 9.81e-05 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 1.167 on 395 degrees of freedom
+## Multiple R-squared:  0.1435, Adjusted R-squared:  0.137 
+## F-statistic: 22.06 on 3 and 395 DF,  p-value: 3.154e-13</code></pre>
+<p><br></p>
+<p class="comment">
+<strong>Question 5</strong>: What is the interpretation of the
+coefficient estimates for <em>countyPlacer</em>,
+<em>countySacramento</em>, and <em>countyYolo</em>?
+</p>
+<p><br></p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+</div>
+<div id="statistical-inference" class="section level2">
+<h2><strong>Statistical Inference</strong></h2>
+<p><br />
+</p>
+<p>So far, we’ve asked you to interpret the coefficients in terms of how
+they characterize the relationship between the dependent and independent
+variables. We have not asked you, however, to make any statistical
+inferences regarding the significance of the coefficients (e.g. is the
+coefficient statistically significant from 0). Let’s get a summary of
+our regression results and make some inferences.</p>
+<pre class="r"><code>#eliminate scientific notation
+options(scipen=999)
+
+summary(lm1)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = evict ~ punemp, data = sac_metro)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -2.1572 -0.8287 -0.3145  0.5179  6.4098 
+## 
+## Coefficients:
+##             Estimate Std. Error t value           Pr(&gt;|t|)    
+## (Intercept)  0.95715    0.12183   7.856 0.0000000000000375 ***
+## punemp       0.09143    0.01462   6.254 0.0000000010381178 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 1.2 on 397 degrees of freedom
+## Multiple R-squared:  0.08967,    Adjusted R-squared:  0.08738 
+## F-statistic: 39.11 on 1 and 397 DF,  p-value: 0.000000001038</code></pre>
+<p>We briefly described what these results are showing, but let’s get
+into more detail for the section providing coefficient results
+(<em>Coefficients</em>).</p>
+<ul>
+<li>The values under “Estimate” provide the coefficient estimates.</li>
+<li>The values under “Std. Error” provide the standard error of each
+coefficient. We are conducting two hypothesis tests, one for each
+coefficient.<br />
+</li>
+<li>The values under “t value” show the values of the test statistic
+<em>t</em> for these hypothesis tests. The use of the <em>t</em> value
+indicates that were going to be using the <em>t</em> distribution as the
+null distribution (hence we conduct a <em>t</em>-test). More precisely,
+if the null hypothesis is true, the test statistic has a <em>t</em>
+distribution with degrees of freedom of 175, which is denoted next to
+“Residual standard error”.</li>
+<li>The values under the column “Pr(&gt;|t|)” indicate the p-value,
+which is the probability of obtaining an effect at least as extreme as
+the one in your sample data, assuming the truth of the null
+hypothesis.<br />
+</li>
+<li>The asterisks after the p-value indicate the significance level of
+the test: 0.001, 0.01, 0.05 and 0.1.</li>
+</ul>
+<p><br></p>
+<p class="comment">
+<strong>Question 6</strong>: What is the null and alternative hypotheses
+for the t-test of the punemp coefficient shown in the output above?
+Would you reject or fail to reject the null hypothesis? Why?
+</p>
+<p><br></p>
+<p>Let’s look at our regression summary for <em>lm3</em></p>
+<pre class="r"><code>summary(lm3)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = evict ~ county, data = sac_metro)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -1.6872 -0.7748 -0.1978  0.4978  6.1428 
+## 
+## Coefficients:
+##                  Estimate Std. Error t value             Pr(&gt;|t|)    
+## (Intercept)        2.0354     0.1919  10.607 &lt; 0.0000000000000002 ***
+## countyPlacer      -1.6676     0.2714  -6.145        0.00000000196 ***
+## countySacramento  -0.2282     0.2038  -1.120                0.264    
+## countyYolo        -1.0831     0.2752  -3.935        0.00009813245 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 1.167 on 395 degrees of freedom
+## Multiple R-squared:  0.1435, Adjusted R-squared:  0.137 
+## F-statistic: 22.06 on 3 and 395 DF,  p-value: 0.0000000000003154</code></pre>
+<p><br></p>
+<p class="comment">
+<strong>Question 7</strong>: What is the null and alternative hypotheses
+for the t-test of the <em>countySacramento</em> coefficient shown in the
+output above? Would you reject or fail to reject the null hypothesis?
+Why?
+</p>
+<p><br></p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="goodness-of-fit" class="section level2">
+<h2><strong>Goodness of fit</strong></h2>
+<p><br />
+</p>
+<p>The Handout goes through measures of best fit, emphasizing that it is
+important that we assess how well this line fits the actual data. The
+most popular measure is the coefficient of determination, also known as
+<span class="math inline"><em>R</em><sup>2</sup></span>. The measure
+relies on the residual and model sum of squares. We don’t need to
+calculate the value by hand, as it is conveniently given to us when you
+use the <code>summary()</code> function. Let’s go back to the model
+<em>lm1</em></p>
+<pre class="r"><code>summary(lm1)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = evict ~ punemp, data = sac_metro)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -2.1572 -0.8287 -0.3145  0.5179  6.4098 
+## 
+## Coefficients:
+##             Estimate Std. Error t value           Pr(&gt;|t|)    
+## (Intercept)  0.95715    0.12183   7.856 0.0000000000000375 ***
+## punemp       0.09143    0.01462   6.254 0.0000000010381178 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 1.2 on 397 degrees of freedom
+## Multiple R-squared:  0.08967,    Adjusted R-squared:  0.08738 
+## F-statistic: 39.11 on 1 and 397 DF,  p-value: 0.000000001038</code></pre>
+<p>“Multiple R-squared” gives the value <span
+class="math inline"><em>R</em><sup>2</sup></span> of 0.0936.</p>
+<p><br></p>
+<p class="comment">
+<strong>Question 8</strong>: If you were trying to explain the <span
+class="math inline"><em>R</em><sup>2</sup></span> value 0.0936 to your
+friend, what would you say?
+</p>
+<p><br></p>
+<p>Another measure that the Handout goes through is the F-test, which
+also relies on the sum of squares.</p>
+<p><br></p>
+<p class="comment">
+<strong>Question 9</strong>: Interpret the F-test results (F-statistic
+and p-value) that are provided in the regression summary above.
+</p>
+<p><br></p>
+<hr />
+<p><a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a><br />This
+work is licensed under a
+<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative
+Commons Attribution-NonCommercial 4.0 International License</a>.</p>
+<p>Website created and maintained by <a
+href="https://nbrazil.faculty.ucdavis.edu/">Noli Brazil</a></p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("show" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3,h4",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+
+</body>
+</html>
