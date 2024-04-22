@@ -314,11 +314,11 @@ The Handout goes through measures of best fit, emphasizing that it is important 
 summary(lm1)
 ```
 
-"Multiple R-squared" gives the value $R^2$ of 0.0936.
+"Multiple R-squared" gives the value $R^2$ of 0.08967.
 
 <br>
 
-<p class="comment">**Question 8**: If you were trying to explain the $R^2$ value 0.0936 to your friend, what would you say? </p>
+<p class="comment">**Question 8**: If you were trying to explain the $R^2$ value 0.08967 to your friend, what would you say? </p>
 
 <br>
 

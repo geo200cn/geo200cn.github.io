@@ -499,11 +499,11 @@ summary(lm1)
 ## F-statistic: 39.11 on 1 and 397 DF,  p-value: 0.000000001038
 ```
 
-"Multiple R-squared" gives the value $R^2$ of 0.0936.
+"Multiple R-squared" gives the value $R^2$ of 0.08967.
 
 <br>
 
-<p class="comment">**Question 8**: If you were trying to explain the $R^2$ value 0.0936 to your friend, what would you say? </p>
+<p class="comment">**Question 8**: If you were trying to explain the $R^2$ value 0.08967 to your friend, what would you say? </p>
 
 <br>
 
