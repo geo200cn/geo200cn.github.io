@@ -35,8 +35,8 @@ navbar:
           href: spatialreg.html
         - text: "Prediction Modelling"
           href: prediction.html
-        - text: "Model Selection"
-          href: modelselection.html
+        - text: "Variable Selection"
+          href: variableselection.html
         - text: "Spatial Interpolation"
           href: interpolation.html
         - text: "Kriging"
