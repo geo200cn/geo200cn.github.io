@@ -379,7 +379,7 @@ div.tocify {
       <a href="prediction.html">Prediction Modelling</a>
     </li>
     <li>
-      <a href="modelselection.html">Model Selection</a>
+      <a href="variableselection.html">Variable Selection</a>
     </li>
     <li>
       <a href="interpolation.html">Spatial Interpolation</a>
@@ -712,7 +712,7 @@ null</p>
 </p>
 <p>You can use a plot of the residuals against the fitted values for
 checking both the linearity and homoscedasticity assumptions. We should
-look for two things in this plot.</p>
+look for three things in this plot.</p>
 <ul>
 <li>At any fitted value, the mean of the residuals should be roughly 0.
 If this is the case, the linearity assumption is valid. For this reason,
@@ -721,14 +721,16 @@ this point.</li>
 <li>At every fitted value, the spread of the residuals should be roughly
 the same. If this is the case, the homoscedasticity (equal variance)
 assumption is valid.</li>
+<li>There should be no pattern in the residuals.</li>
 </ul>
 <p>We know what diagnostic plots should look like when we have good
 data. But what about for bad data? Below is an example of some bad data
 that breaks the linearity assumption. Don’t worry too much about the
-intricacies of the code below - were just trying creating simulated data
-that is deliberately not normal so you can see what nonlinearity looks
-like in the context of the diagnostic tools we’ve been running.</p>
-<pre class="r"><code>set.seed(42)
+intricacies of the code below - we’re creating simulated data that is
+deliberately not normal so you can see what nonlinearity looks like in
+the context of the diagnostic tools we’ve been running.</p>
+<pre class="r"><code>#set a random seed so reproducible
+set.seed(42)
 sim_3 = function(sample_size = 500) {
   x = runif(n = sample_size) * 5
   y = 3 + 5 * x ^ 2 + rnorm(n = sample_size, mean = 0, sd = 5)
@@ -826,7 +828,7 @@ neighborhood.</p>
 ## Multiple R-squared:  0.01671,    Adjusted R-squared:  0.01423 
 ## F-statistic: 6.745 on 1 and 397 DF,  p-value: 0.009753</code></pre>
 <p>We would conclude that a one year increase in the median age of
-housing units is associated with a decrease of 0.01104 eviction cases
+housing units is associated with an increase of 0.01104 eviction cases
 per 100 renting households. The results also show that the coefficient
 has a p-value of 0.00975, which indicates that the <em>medage</em>
 coefficient is statistically significant at the 0.01 level. This means
@@ -896,12 +898,13 @@ artificially inflated.</p>
 <p>What to do? First, run a correlation matrix for all your proposed
 independent variables. Let’s say we wanted to run an OLS model including
 <em>pblk</em>, <em>phisp</em>, <em>pund18</em>, <em>totp</em>,
-<em>punemp</em>, <em>prent</em> and <em>pburden</em> as independent
-variables. One way of obtaining a correlation matrix is to use the
-<code>cor()</code> function. We use the function <code>select()</code>
-to keep the variables we need from <em>sac_metro</em>. We use the
-<code>round()</code> function to round up the correlation values to two
-significant digits after the decimal point.</p>
+<em>punemp</em>, <em>rent</em>, <em>vacancy</em>, <em>medage</em> and
+<em>pburden</em> as independent variables. One way of obtaining a
+correlation matrix is to use the <code>cor()</code> function. We use the
+function <code>select()</code> to keep the variables we need from
+<em>sac_metro</em>. We use the <code>round()</code> function to round up
+the correlation values to two significant digits after the decimal
+point.</p>
 <pre class="r"><code>round(cor(dplyr::select(sac_metro, pblk, phisp, pund18, punemp, totp, rent, vacancy, medage, pburden)),2)</code></pre>
 <pre><code>##          pblk phisp pund18 punemp  totp  rent vacancy medage pburden
 ## pblk     1.00  0.29   0.30   0.39  0.06 -0.26   -0.09   0.01    0.25
