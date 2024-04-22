@@ -280,7 +280,7 @@ The schedule is subject to revision throughout the quarter.  Please see the full
   </tr>
   <tr>
    <td style="text-align:left;width: 5em; "> 20-May </td>
-   <td style="text-align:left;"> Model Selection </td>
+   <td style="text-align:left;"> Variable Selection </td>
    <td style="text-align:left;"> HW 7 </td>
    <td style="text-align:left;width: 13em; "> Quiz 2 </td>
   </tr>
