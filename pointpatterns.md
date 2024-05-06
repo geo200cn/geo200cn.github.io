@@ -221,12 +221,12 @@ And then standard distance using equation 5.2 on page 125.
 
 ```r
 # standard distance
-sd <- sqrt(sum((xy[,1] - mc[1])^2 + (xy[,2] - mc[2])^2) / nrow(xy))
+sd <- sqrt(sum((xy$x- mc$xmean)^2 + (xy$y - mc$ymean)^2) / nrow(xy))
 sd
 ```
 
 ```
-## [1] 132.8583
+## [1] 7130.572
 ```
 
 
