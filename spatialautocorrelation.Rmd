@@ -339,7 +339,7 @@ zero.policy= TRUE)
 Looks like a fairly strong positive association - the higher your neighbors' average PM 2.5, the higher your PM 2.5.  How does it visually compare to Lead exposure?
 
 ```{r message = FALSE, warning = FALSE}
-moran.plot(sac.tracts$Lead, listw=sacw, xlab="Standardized PM 2.5", ylab="Standardized Lagged Lead Exposure",
+moran.plot(sac.tracts$Lead, listw=sacw, xlab="Standardized Lead Exposure", ylab="Standardized Lagged Lead Exposure",
 main=c("Moran Scatterplot for Lead Expsure"),
 zero.policy= TRUE)
 ```
