@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Professor Noli Brazil" />
+
+<meta name="date" content="2024-05-22" />
+
+<title>Spatial Interpolation</title>
+
+<script src="site_libs/header-attrs-2.22/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+      .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">GEO 200CN: Spring 2024</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="syllabus.html">Syllabus</a>
+</li>
+<li>
+  <a href="hw_guidelines.html">Assignment Guidelines</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Labs
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="getting_started.html">Getting Started</a>
+    </li>
+    <li>
+      <a href="eda.html">Exploratory Data Analysis</a>
+    </li>
+    <li>
+      <a href="inference.html">Statistical Inference</a>
+    </li>
+    <li>
+      <a href="hypothesis.html">Hypothesis Testing</a>
+    </li>
+    <li>
+      <a href="linearregression.html">Linear Regression</a>
+    </li>
+    <li>
+      <a href="linearregression2.html">More Linear Regression</a>
+    </li>
+    <li>
+      <a href="logistic.html">Logistic Regression</a>
+    </li>
+    <li>
+      <a href="introspatial.html">Intro to Spatial Data</a>
+    </li>
+    <li>
+      <a href="pointpatterns.html">Point Pattern Analysis</a>
+    </li>
+    <li>
+      <a href="spatialautocorrelation.html">Spatial Autocorrelation</a>
+    </li>
+    <li>
+      <a href="spatialreg.html">Spatial Regression</a>
+    </li>
+    <li>
+      <a href="prediction.html">Prediction Modelling</a>
+    </li>
+    <li>
+      <a href="variableselection.html">Variable Selection</a>
+    </li>
+    <li>
+      <a href="interpolation.html">Spatial Interpolation</a>
+    </li>
+    <li>
+      <a href="kriging.html">Kriging</a>
+    </li>
+    <li>
+      <a href="regtrees.html">Regression Trees</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Other
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="tips.html">R Tips</a>
+    </li>
+    <li>
+      <a href="data_wrangling.html">Data Wrangling</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Spatial Interpolation</h1>
+<h3 class="subtitle"><font size="4">GEO 200CN - Quantitative
+Geography</font></h3>
+<h4 class="author">Professor Noli Brazil</h4>
+<h4 class="date">May 22, 2024</h4>
+
+</div>
+
+
+<style>
+p.comment {
+background-color: #DBDBDB;
+padding: 10px;
+border: 1px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: normal;
+}
+
+.figure {
+   margin-top: 20px;
+   margin-bottom: 20px;
+}
+
+h1.title {
+  font-weight: bold;
+  font-family: Arial;  
+}
+
+h2.title {
+  font-family: Arial;  
+}
+
+</style>
+<style type="text/css">
+#TOC {
+  font-size: 13px;
+  font-family: Arial;
+}
+</style>
+<p><br />
+</p>
+<p>In this lab guide, we transition to prediction in the spatial world.
+Spatial interpolation is the prediction of exact values of attributes at
+unsampled locations from measurements made at control points in the same
+study area. We will learn how to run the deterministic spatial
+interpolation methods described in OSU Ch. 9. The objectives of this lab
+are as follows</p>
+<ol style="list-style-type: decimal">
+<li>Learn how to interpolate values using proximity polygons</li>
+<li>Learn how to interpolate values using nearest neighbor local spatial
+average interpolation</li>
+<li>Learn how to interpolate values using inverse distance weighted
+interpolation</li>
+</ol>
+<p>To help us accomplish these learning objectives, we will use
+precipitation data from weather stations in California. Our goal is to
+create a raster surface of California total precipitation values. Lab
+material has been adapted from <a
+href="https://rspatial.org/analysis/4-interpolation.html">Spatial Data
+Science</a>.</p>
+<div style="margin-bottom:25px;">
+
+</div>
+<div id="installing-and-loading-packages" class="section level2">
+<h2><strong>Installing and loading packages</strong></h2>
+<p><br />
+</p>
+<p>We’ll be using one new package in this lab. Install the package.</p>
+<pre class="r"><code>install.packages(&quot;gstat&quot;)</code></pre>
+<p>Load it and all other necessary packages.</p>
+<pre class="r"><code>library(sf)
+library(tidyverse)
+library(terra)
+library(dismo)
+library(gstat)
+library(rspat)</code></pre>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="bringing-in-the-data" class="section level2">
+<h2><strong>Bringing in the data</strong></h2>
+<p><br />
+</p>
+<p>To demonstrate spatial interpolation we’ll be relying on a dataset
+containing monthly precipitation data for weather stations in
+California. Bring in the dataset <em>precipitation</em> which is a part
+of the <strong>rspat</strong> package.</p>
+<pre class="r"><code>d &lt;- spat_data(&#39;precipitation&#39;)
+class(d)</code></pre>
+<pre><code>## [1] &quot;data.frame&quot;</code></pre>
+<p>The data is not spatial.</p>
+<pre class="r"><code>head(d)</code></pre>
+<pre><code>##      ID                 NAME   LAT    LONG ALT  JAN FEB MAR APR MAY JUN JUL
+## 1 ID741         DEATH VALLEY 36.47 -116.87 -59  7.4 9.5 7.5 3.4 1.7 1.0 3.7
+## 2 ID743  THERMAL/FAA AIRPORT 33.63 -116.17 -34  9.2 6.9 7.9 1.8 1.6 0.4 1.9
+## 3 ID744          BRAWLEY 2SW 32.96 -115.55 -31 11.3 8.3 7.6 2.0 0.8 0.1 1.9
+## 4 ID753 IMPERIAL/FAA AIRPORT 32.83 -115.57 -18 10.6 7.0 6.1 2.5 0.2 0.0 2.4
+## 5 ID754               NILAND 33.28 -115.51 -18  9.0 8.0 9.0 3.0 0.0 1.0 8.0
+## 6 ID758        EL CENTRO/NAF 32.82 -115.67 -13  9.8 1.6 3.7 3.0 0.4 0.0 3.0
+##    AUG SEP OCT NOV DEC
+## 1  2.8 4.3 2.2 4.7 3.9
+## 2  3.4 5.3 2.0 6.3 5.5
+## 3  9.2 6.5 5.0 4.8 9.7
+## 4  2.6 8.3 5.4 7.7 7.3
+## 5  9.0 7.0 8.0 7.0 9.0
+## 6 10.8 0.2 0.0 3.3 1.4</code></pre>
+<pre class="r"><code>dim(d)</code></pre>
+<pre><code>## [1] 456  17</code></pre>
+<p>We have monthly precipitation levels for 456 weather stations in
+California. Rather than monthly levels, we’ll be interpolating annual
+precipitation levels. So, we add up the 12 months using
+<code>sum()</code> and <code>c_across()</code> to create the year total
+or sum variable <em>prec</em>.</p>
+<pre class="r"><code>d &lt;- d %&gt;% 
+  group_by(ID) %&gt;%
+  mutate(prec = sum(c_across(JAN:DEC))) %&gt;%
+  ungroup()</code></pre>
+<p>Plot to see what the distribution looks like using the basic base
+plotting function <code>plot()</code>.</p>
+<pre class="r"><code>plot(sort(d$prec), ylab=&#39;Annual precipitation (mm)&#39;, las=1, xlab=&#39;Stations&#39;)</code></pre>
+<p><img
+src="interpolation_files/figure-html/unnamed-chunk-6-1.png" /><!-- --></p>
+<p>Next, let’s map the annual levels. Bring in a California county layer
+from the <strong>rspat</strong> package.</p>
+<pre class="r"><code>CA &lt;- spat_data(&quot;counties&quot;)</code></pre>
+<p>And then map the stations by levels of total precipitation. We’ll
+first need to make spatial points out of the station data using the
+<code>vect()</code> function from <strong>terra</strong>.</p>
+<pre class="r"><code>dsp &lt;- vect(d, c(&quot;LONG&quot;, &quot;LAT&quot;), crs=&quot;+proj=longlat +datum=NAD83&quot;)</code></pre>
+<p>Then mapify</p>
+<pre class="r"><code># define groups for mapping
+cuts &lt;- c(0,200,300,500,1000,3000)
+# set up a palette of interpolated colors
+blues &lt;- colorRampPalette(c(&#39;yellow&#39;, &#39;orange&#39;, &#39;blue&#39;, &#39;dark blue&#39;))
+
+ggplot(data = st_as_sf(CA)) +geom_sf() +
+          geom_sf(data = st_as_sf(dsp), aes(color = prec)) +
+      scale_colour_gradientn(breaks = cuts, colours = blues(5), name =&quot;Precipitation&quot;) + 
+    theme( axis.text =  element_blank(),
+    axis.ticks =  element_blank(),
+    panel.background = element_blank())</code></pre>
+<p><img
+src="interpolation_files/figure-html/unnamed-chunk-9-1.png" /><!-- --></p>
+<p>We’ll stay in <strong>terra</strong>’s <em>SpatVector</em> world for
+representing spatial data in this lab guide because some of the
+functions we will use later is not <strong>sf</strong> friendly.</p>
+<p>Transform longitude/latitude to planar coordinates, using the
+commonly used coordinate reference system for California (“Teale
+Albers”) to assure that our interpolation results will align with other
+data sets we have. We’ll use the function <code>project()</code> from
+**terra* to reproject the CRS.</p>
+<pre class="r"><code>TA &lt;- &quot;+proj=aea +lat_1=34 +lat_2=40.5 +lat_0=0 +lon_0=-120 +x_0=0 +y_0=-4000000 +datum=WGS84 +units=m&quot;
+
+dta &lt;- project(dsp, TA)
+cata &lt;- project(CA, TA)</code></pre>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="mean-model" class="section level2">
+<h2><strong>Mean model</strong></h2>
+<p><br />
+</p>
+<p>Our goal is to interpolate (estimate for unsampled locations) the
+station precipitation values across California. The simplest way would
+be to use the mean of all observed values. This is described on page 253
+in OSU. It’s not a great interpolator because it does not take into
+account anything spatial. We’ll consider it a “Null-model” that we can
+compare other more refined approaches to. We’ll use the Root Mean Square
+Error (RMSE) as the evaluation statistic. We created a nifty RMSE
+function in a prior lab. Let’s bring it back here.</p>
+<pre class="r"><code>RMSE &lt;- function(observed, predicted) {
+  sqrt(mean((predicted - observed)^2, na.rm=TRUE))
+}</code></pre>
+<p>Get the RMSE for the Null-model</p>
+<pre class="r"><code>null &lt;- RMSE(dsp$prec, mean(dsp$prec))
+null</code></pre>
+<pre><code>## [1] 435.3217</code></pre>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="proximity-polygons" class="section level2">
+<h2><strong>Proximity polygons</strong></h2>
+<p><br />
+</p>
+<p>OSU’s first spatial interpolator is proximity polygons, which is
+described on page 254. Another term for this is “nearest neighbour”
+interpolation. We use the function <code>vornoi()</code> to create the
+polygons surrounding the control points. Note that <code>vornoi()</code>
+is not <strong>sf</strong> friendly. <strong>sf</strong> has the
+function <code>st_voronoi()</code>, but running it takes a lot more <a
+href="https://www.jla-data.net/eng/spatial-aggregation/">work</a>. Let’s
+plot the polygons.</p>
+<pre class="r"><code>v &lt;- voronoi(dta)
+plot(v)
+points(dta)</code></pre>
+<p><img
+src="interpolation_files/figure-html/unnamed-chunk-13-1.png" /><!-- --></p>
+<p>Looks weird. Let’s confine this to California by using the
+<code>crop()</code> function from <strong>terra</strong>. Also create a
+basic choropleth map of precipitation using <code>plot()</code>.</p>
+<pre class="r"><code>vca &lt;- crop(v, cata)
+plot(vca, &quot;prec&quot;)</code></pre>
+<p><img
+src="interpolation_files/figure-html/unnamed-chunk-14-1.png" /><!-- --></p>
+<p>Much better. These are polygons. Our ultimate goal is to create a
+continuous raster surface of precipitation values. We learned about
+raster data in a <a
+href="https://geo200cn.github.io/introspatial.html#Raster_Data">prior
+lab</a>. We can ‘rasterize’ the results like this.</p>
+<pre class="r"><code>r &lt;- rast(vca, res=10000)
+vr &lt;- rasterize(vca, r, &quot;prec&quot;)
+plot(vr)</code></pre>
+<p><img
+src="interpolation_files/figure-html/unnamed-chunk-15-1.png" /><!-- --></p>
+<p>You can also plot the results using <code>ggplot()</code></p>
+<pre class="r"><code># Plot the map
+ggplot(as.data.frame(vr, xy = TRUE)) +
+  geom_raster(aes(x = x, y = y, fill = prec)) +
+    labs(fill = &quot;Predicted precipitation&quot;) +
+    scale_fill_gradient(low= &quot;white&quot;, high = &quot;red&quot;, na.value =&quot;gray&quot;) </code></pre>
+<p><img
+src="interpolation_files/figure-html/unnamed-chunk-16-1.png" /><!-- --></p>
+<p>How good is the proximity polygon model? We evaluate the RMSE using
+5-fold cross validation. We’ll use a for loop to run through the
+folds.</p>
+<pre class="r"><code>#insert comment
+set.seed(5132015)
+#insert comment
+kf &lt;- kfold(nrow(dta))
+#insert comment
+rmsepp &lt;- rep(NA, 5)
+#insert comment
+for (k in 1:5) {
+  #insert comment
+  test &lt;- dta[kf == k, ]
+  #insert comment
+  train &lt;- dta[kf != k, ]
+  #insert comment
+  v &lt;- voronoi(train)
+  #insert comment
+  p &lt;- extract(v, test)
+  #insert comment
+  rmsepp[k] &lt;- RMSE(test$prec, p$prec)
+}
+#insert comment
+rmsepp
+#insert comment
+mean(rmsepp)
+#insert comment
+1 - (mean(rmsepp) / null)</code></pre>
+<p><br></p>
+<p class="comment">
+<strong>Question 1</strong>: Add comments to the above code chunk to
+describe what each step is doing.
+</p>
+<p class="comment">
+<strong>Question 2</strong>: How does the proximity-polygon approach
+compare to the NULL model?
+</p>
+<p class="comment">
+<strong>Question 3</strong>: You would not typically use proximity
+polygons for rainfall data. Why? For what kind of data would you use
+them?
+</p>
+<p><br></p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="local-spatial-average" class="section level2">
+<h2><strong>Local Spatial Average</strong></h2>
+<p><br />
+</p>
+<p>The Local Spatial Average method (OSU page 255) generalizes the
+proximity polygon method by considering more than one neighbor. Here we
+do nearest neighbor interpolation considering five neighbors.</p>
+<p>We can use the <code>gstat()</code> function located in the
+<strong>gstat</strong> package for this. First, the function does not
+take on <em>SpatVector</em> objects, but regular data frames with (x,y)
+coordinates. So we need to convert the <em>SpatVector</em> <em>dta</em>
+to a data frame.</p>
+<pre class="r"><code>d &lt;- data.frame(geom(dta)[,c(&quot;x&quot;, &quot;y&quot;)], as.data.frame(dta))
+class(d)</code></pre>
+<pre><code>## [1] &quot;data.frame&quot;</code></pre>
+<pre class="r"><code>head(d)</code></pre>
+<pre><code>##          x         y    ID                 NAME ALT  JAN FEB MAR APR MAY JUN
+## 1 280058.6 -167265.4 ID741         DEATH VALLEY -59  7.4 9.5 7.5 3.4 1.7 1.0
+## 2 355394.7 -480020.3 ID743  THERMAL/FAA AIRPORT -34  9.2 6.9 7.9 1.8 1.6 0.4
+## 3 416370.9 -551681.2 ID744          BRAWLEY 2SW -31 11.3 8.3 7.6 2.0 0.8 0.1
+## 4 415173.4 -566152.9 ID753 IMPERIAL/FAA AIRPORT -18 10.6 7.0 6.1 2.5 0.2 0.0
+## 5 418432.1 -516087.7 ID754               NILAND -18  9.0 8.0 9.0 3.0 0.0 1.0
+## 6 405858.6 -567692.3 ID758        EL CENTRO/NAF -13  9.8 1.6 3.7 3.0 0.4 0.0
+##   JUL  AUG SEP OCT NOV DEC prec
+## 1 3.7  2.8 4.3 2.2 4.7 3.9 52.1
+## 2 1.9  3.4 5.3 2.0 6.3 5.5 52.2
+## 3 1.9  9.2 6.5 5.0 4.8 9.7 67.2
+## 4 2.4  2.6 8.3 5.4 7.7 7.3 60.1
+## 5 8.0  9.0 7.0 8.0 7.0 9.0 78.0
+## 6 3.0 10.8 0.2 0.0 3.3 1.4 37.2</code></pre>
+<p>Next we fit the following model. <code>~1</code> means “intercept
+only”. In the case of spatial data, that would be only ‘x’ and ‘y’
+coordinates are used. We set the maximum number of nearest neighbor
+points to 5, and the “inverse distance power” <code>idp</code> to zero,
+such that all five neighbors are equally weighted (so the message you
+will get that says you are running inverse distance weighting
+interpolation is not true in this case).</p>
+<pre class="r"><code>gs &lt;- gstat(formula=prec~1, 
+            locations=~x+y, 
+            data=d, 
+            nmax=5, 
+            set=list(idp = 0))</code></pre>
+<p>We then use <code>interpolate()</code> to interpolate precipitation
+values across the raster <em>r</em> using the local spatial average
+interpolator <em>gs</em>.</p>
+<pre class="r"><code>nn &lt;- interpolate(r, gs, debug.level=0)</code></pre>
+<p><code>debug.level=0</code> just eliminates the message that tells you
+what interpolation method you are using (take out
+<code>debug.level=0</code> to see this).</p>
+<p>Plot the results.</p>
+<pre class="r"><code>nnmsk &lt;- mask(nn, vr)
+plot(nnmsk, 1)</code></pre>
+<p><img
+src="interpolation_files/figure-html/unnamed-chunk-21-1.png" /><!-- --></p>
+<p>Note that the result of the interpolation provides the predicted
+value in the first column</p>
+<pre class="r"><code>names(nnmsk)</code></pre>
+<pre><code>## [1] &quot;var1.pred&quot; &quot;var1.var&quot;</code></pre>
+<p>We can also use <code>ggplot()</code> to map.</p>
+<pre class="r"><code># Plot the map
+ggplot(as.data.frame(nnmsk, xy = TRUE)) +
+  geom_raster(aes(x = x, y = y, fill = var1.pred)) +
+    labs(fill = &quot;Predicted precipitation&quot;) +
+    scale_fill_gradient(low= &quot;white&quot;, high = &quot;red&quot;, na.value =&quot;gray&quot;) </code></pre>
+<p><img
+src="interpolation_files/figure-html/unnamed-chunk-23-1.png" /><!-- --></p>
+<p>Cross validate the result (k = 5). Note that we can use the
+<code>predict()</code> method to get predictions for the locations of
+the test points.</p>
+<pre class="r"><code>rmsenn &lt;- rep(NA, 5)
+for (k in 1:5) {
+  test &lt;- d[kf == k, ]
+  train &lt;- d[kf != k, ]
+  gscv &lt;- gstat(formula=prec~1, locations=~x+y, 
+                data = train, nmax=5, 
+                set=list(idp = 0))
+  p &lt;- predict(gscv, test)$var1.pred
+  rmsenn[k] &lt;- RMSE(test$prec, p)
+}</code></pre>
+<pre><code>## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]</code></pre>
+<pre class="r"><code>rmsenn</code></pre>
+<pre><code>## [1] 200.6222 190.8336 180.3833 169.9658 237.9067</code></pre>
+<pre class="r"><code>mean(rmsenn)</code></pre>
+<pre><code>## [1] 195.9423</code></pre>
+<p>How does it compare to null model?</p>
+<pre class="r"><code>1 - (mean(rmsenn) / null)</code></pre>
+<pre><code>## [1] 0.5498908</code></pre>
+<p>Better than the null, but better than proximity polygons?</p>
+<div style="margin-bottom:25px;">
+
+</div>
+</div>
+<div id="inverse-distance-weighted" class="section level2">
+<h2><strong>Inverse Distance Weighted</strong></h2>
+<p><br />
+</p>
+<p>A more commonly used interpolation method is “inverse distance
+weighted” interpolation. This method is described starting on page 257
+in OSU. The only difference with the nearest neighbor approach is that
+points that are further away get less weight in predicting a value a
+location. In the IDW method, values at unsampled locations are estimated
+as the weighted average of values from the rest of locations with
+weights inversely proportional to the distance between the unsampled and
+the sampled locations.</p>
+<p>Use the <code>gstat()</code> function again, but this time do not set
+<code>idp</code> to 0 but to 1.</p>
+<pre class="r"><code>gs &lt;- gstat(formula=prec~1, 
+            locations=~x+y, 
+            data=d,
+            set=list(idp = 1))
+
+idw &lt;- interpolate(r, gs, debug.level = 0)</code></pre>
+<p>Plot the predictions.</p>
+<pre class="r"><code>idwr &lt;- mask(idw, vr)
+plot(idwr, 1)</code></pre>
+<p><img
+src="interpolation_files/figure-html/unnamed-chunk-27-1.png" /><!-- --></p>
+<p><br></p>
+<p class="comment">
+<strong>Question 4</strong>: IDW generated rasters tend to have a
+noticeable artifact. What is it?
+</p>
+<p><br></p>
+<p>Cross validate (k = 5). We can predict to the locations of the test
+points</p>
+<pre class="r"><code>rmseidw &lt;- rep(NA, 5)
+for (k in 1:5) {
+  test &lt;- d[kf == k, ]
+  train &lt;- d[kf != k, ]
+  gs &lt;- gstat(formula=prec~1, locations=~x+y, 
+              data=train, set=list(idp=1))
+  p &lt;- predict(gs, test)
+  rmseidw[k] &lt;- RMSE(test$prec, p$var1.pred)
+}</code></pre>
+<pre><code>## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]
+## [inverse distance weighted interpolation]</code></pre>
+<pre class="r"><code>rmseidw</code></pre>
+<pre><code>## [1] 330.0236 336.7008 314.5188 321.3067 313.4140</code></pre>
+<pre class="r"><code>mean(rmseidw)</code></pre>
+<pre><code>## [1] 323.1928</code></pre>
+<p>How does it compare to the null?</p>
+<pre class="r"><code>1 - (mean(rmseidw) / null)</code></pre>
+<pre><code>## [1] 0.2575772</code></pre>
+<p><br></p>
+<p class="comment">
+<strong>Question 5</strong>: Inspect the arguments used for and make a
+map of the IDW model below. What other name could you give to this
+method (IDW with these parameters)? Why?
+</p>
+<p><br></p>
+<pre class="r"><code>gs2 &lt;- gstat(formula=prec~1, 
+             locations=~x+y, 
+             data=d, 
+             nmax=1, 
+             set=list(idp=1))</code></pre>
+<hr />
+<p><a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a><br />This
+work is licensed under a
+<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative
+Commons Attribution-NonCommercial 4.0 International License</a>.</p>
+<p>Website created and maintained by <a
+href="https://nbrazil.faculty.ucdavis.edu/">Noli Brazil</a></p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("show" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3,h4",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+
+</body>
+</html>
