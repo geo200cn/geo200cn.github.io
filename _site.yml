@@ -1,7 +1,7 @@
 name: "GEO 200CN: Quantitative Geography"
 output_dir: "."
 navbar:
-  title: "GEO 200CN: Spring 2024"
+  title: "GEO 200CN: Spring 2026"
   left:
     - text: "Home"
       href: index.html
@@ -41,8 +41,6 @@ navbar:
           href: interpolation.html
         - text: "Kriging"
           href: kriging.html
-        - text: "Regression Trees"
-          href: regtrees.html
     - text: "Other"
       menu:
         - text: "R Tips"
