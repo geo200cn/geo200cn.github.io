@@ -41,7 +41,7 @@ Note that we've already provided a detailed list of common R Markdown issues in 
 \
 
 * **Check for typos.** One of the most common causes of errors are typos, which usually throw an error such as `Error in _____ : could not find function “_____”` due to a function being misspelled.  What kinds of typos are the most common?
-  -You failed to load the package containing this function.
+  - You failed to load the package containing this function.
   - Misspellings
   - Capitalization: You typed an uppercase letter when you should have typed a lowercase letter (vice versa).
   - Closing punctuation: You forgot a closing parentheses, bracket, or quotation. All too often have I forgotten to add an additional parenthesis at the end of a line. You’ll know that you’ve done this if you see a red X on the left side of your R Markdown document. The red X will appear as you are typing, so wait until you’re finished to assess these warnings.
@@ -111,7 +111,7 @@ The [assignment guidelines](https://geo200cn.github.io/hw_guidelines.html) goes 
 
 * You should ask your peers for help before you ask your instructor or TA. Relying on a single person to solve all of your problems is dangerous, because that person won’t be available throughout your career.
 
-* Read the textbooks [R for Data Science](http://r4ds.had.co.nz/index.html) and [Geocomputation with R](https://geocompr.robinlovelace.net/)
+* Read the textbooks [R for Data Science](https://r4ds.hadley.nz/) and [Geocomputation with R](https://geocompr.robinlovelace.net/)
 
 * Look through the R Cheat Sheets we posted on Canvas (Files -> Other Resources -> R Cheatsheets)
 
@@ -120,6 +120,8 @@ The [assignment guidelines](https://geo200cn.github.io/hw_guidelines.html) goes 
 * Google is your friend. Copy the error message, maybe strip out anything highly specific, such as the name of your R objects, surround with quotes and Google it!
 
 * Finding answers on Google are not always quick. Add as much context as possible to your search query. For example, let's say that I want to know how to rename a column in my dataset. I could Google: “How to rename a column in R with dplyr/tidyverse” and read the answers posted in Stacked Overflow (www.stackoverflow.com). Notice how I covered the following in my google search: (1) The specific action (how to rename a column); (2) The programming language (R statistics); (3) The specific style/technique for coding (dplyr or tidyverse package).
+
+* **GenAI Policy**: Check the class syllabus for our GenAI usage policy.
 
 * The following online resources are great for getting help.
 
@@ -132,7 +134,7 @@ The [assignment guidelines](https://geo200cn.github.io/hw_guidelines.html) goes 
 
 <br>
 
-Still having trouble? Maybe you need to take a break.  Go for a walk. Eat a cookie. Pet your dog. And then come back to your code.
+Still having trouble? Maybe you need to take a break.  Go for a walk. Eat a cookie. Pet your [animal](https://www.youtube.com/watch?v=s50vvwTystA). And then come back to your code.
 
 
 ***

@@ -23,8 +23,8 @@ navbar:
           href: linearregression.html
         - text: "More Linear Regression"
           href: linearregression2.html
-        - text: "Logistic Regression"
-          href: logistic.html
+        - text: "Generalized Linear Models"
+          href: glm.html
         - text: "Intro to Spatial Data"
           href: introspatial.html
         - text: "Point Pattern Analysis"
@@ -35,12 +35,14 @@ navbar:
           href: spatialreg.html
         - text: "Prediction Modelling"
           href: prediction.html
-        - text: "Variable Selection"
-          href: variableselection.html
         - text: "Spatial Interpolation"
           href: interpolation.html
         - text: "Kriging"
           href: kriging.html
+        - text: "Regression Trees"
+          href: regtrees.html
+        - text: "Variable Selection"
+          href: variableselection.html
     - text: "Other"
       menu:
         - text: "R Tips"

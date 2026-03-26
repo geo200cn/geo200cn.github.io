@@ -13,7 +13,7 @@
 
 <title>Assignment Guidelines</title>
 
-<script src="site_libs/header-attrs-2.22/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.30/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
@@ -316,7 +316,7 @@ div.tocify {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="index.html">GEO 200CN: Spring 2024</a>
+      <a class="navbar-brand" href="index.html">GEO 200CN: Spring 2026</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
@@ -355,7 +355,7 @@ div.tocify {
       <a href="linearregression2.html">More Linear Regression</a>
     </li>
     <li>
-      <a href="logistic.html">Logistic Regression</a>
+      <a href="glm.html">Generalized Linear Models</a>
     </li>
     <li>
       <a href="introspatial.html">Intro to Spatial Data</a>
@@ -373,9 +373,6 @@ div.tocify {
       <a href="prediction.html">Prediction Modelling</a>
     </li>
     <li>
-      <a href="variableselection.html">Variable Selection</a>
-    </li>
-    <li>
       <a href="interpolation.html">Spatial Interpolation</a>
     </li>
     <li>
@@ -383,6 +380,9 @@ div.tocify {
     </li>
     <li>
       <a href="regtrees.html">Regression Trees</a>
+    </li>
+    <li>
+      <a href="variableselection.html">Variable Selection</a>
     </li>
   </ul>
 </li>
@@ -497,7 +497,8 @@ the script is ready for text entry.</p>
 your code and comments. You write your code. Execute that code from your
 R script. Results are produced in your R console window. In this class,
 we won’t be using regular R Scripts for homework assignments. Instead,
-we’ll be using R Markdown.</p>
+we’ll be using <a href="https://rmarkdown.rstudio.com/">R
+Markdown</a>.</p>
 <p>R Markdown documents take script files to a new level by allowing you
 to mix R commands with explanatory text. Think of an R Markdown document
 as an R script on steroids. Your R Markdown source document is compiled
@@ -625,8 +626,8 @@ syntax</a></li>
 </p>
 <p>The YAML header controls how R Markdown renders your
 <code>.Rmd</code> file. A YAML header is a section of key:value pairs
-surrounded by - - - marks and is **always located at the top of your Rmd
-file*.</p>
+surrounded by - - - marks and is <strong>always located at the top of
+your Rmd file</strong>.</p>
 <p>In the assignment’s YAML, add your name, assignment number, and the
 date. These are the only necessary items, but you can change other
 options, most of which are detailed <a
@@ -696,7 +697,8 @@ states that everything inside the chunk will be in R code. Next to the
 <p>Here, I named the chunk <code>q1chunk1</code> which indicates this is
 question 1, chunk 1. You can name the chunk whatever you like (jenny,
 sara). The chunk name is not required; however, it is good practice to
-give each chunk a unique name.</p>
+give each chunk a unique name (we’ll see its value later when we talk
+about knitting).</p>
 <p>In the R Markdown you created and saved, you will notice the
 following R code chunk after the YAML.</p>
 <pre><code>```{r}
@@ -715,7 +717,7 @@ knitr::opts_chunk$set(warning=FALSE, message = FALSE)
 <p>The above code hides non error messages for every single R code chunk
 in your file. These non error messages are unnecessary for the purposes
 of this class. Other chunk options can be found <a
-href="https://r4ds.had.co.nz/r-markdown.html#chunk-options">here</a>.</p>
+href="https://rmarkdown.rstudio.com/lesson-3.html">here</a>.</p>
 <p>You can also set options for individual chunks. These are local
 options - local to that chunk - and won’t be applied to other chunks in
 your file. For example, you can add the options
@@ -752,7 +754,7 @@ from above</p>
 1+1
 ```
 
-This yields two</code></pre>
+The operation yields two</code></pre>
 <p><br></p>
 <p>The question and text explaining the result reside outside of the R
 chunk. There is nothing special about the text in terms of its format or
@@ -944,6 +946,10 @@ knitting, R will stop and give you an error. Hopefully, the error
 statement reveals why you were not able to knit. If it is not
 illuminating (oh oh), you’ll need to figure out what you did wrong. See
 the <strong>Having problems knitting?</strong> section below.</p>
+<p>Note that when you are knitting, progress and any errors will be
+shown not in the regular R console window, but in the Render window. To
+toggle back to the Console (and back to the Render window), just click
+on the Console (or R Markdown) tab</p>
 <p>If you encounter no errors, a preview of your knitted document will
 pop up in a new window and the <code>.html</code> (or pdf or docx) file
 will be saved in the folder where your Rmd file resides. I recommend not
@@ -1123,7 +1129,7 @@ chunks.</li>
 it is working. Note that there are multiple ways to get to an answer in
 R. <strong>We will not grade on how efficient your code is unless stated
 so in the question</strong>.</li>
-<li>Make sure to comment your code.</li>
+<li>Make sure to comment all your code in as much detail as needed.</li>
 </ul></li>
 <li>Most of the questions will ask you to explain your results. Write
 your explanations outside of the R code chunks. Please - <em>please</em>
@@ -1213,6 +1219,8 @@ telling you.<br />
 </li>
 <li>You must submit both an Rmd and knitted file. If you don’t, we will
 take significant points off.</li>
+<li><strong>GenAI Policy</strong>: Check the class syllabus for our
+GenAI usage policy.</li>
 </ul>
 <div style="margin-bottom:25px;">
 
@@ -1235,6 +1243,8 @@ stuck a lot). We can’t read minds, so if you don’t tell us that you are
 confused, we won’t know.</li>
 <li>You should try and solve problems before you ask for help.</li>
 <li>Trying includes an Internet search (a crucial skill!)</li>
+<li><strong>GenAI Policy</strong>: Check the class syllabus for our
+GenAI usage policy.</li>
 <li>All homework should be submitted on Canvas.</li>
 </ul>
 <div style="margin-bottom:25px;">

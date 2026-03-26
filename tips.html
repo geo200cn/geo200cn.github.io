@@ -14,7 +14,7 @@
 
 <title>R Tips and Fixes</title>
 
-<script src="site_libs/header-attrs-2.22/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.30/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
@@ -317,7 +317,7 @@ div.tocify {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="index.html">GEO 200CN: Spring 2024</a>
+      <a class="navbar-brand" href="index.html">GEO 200CN: Spring 2026</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
@@ -356,7 +356,7 @@ div.tocify {
       <a href="linearregression2.html">More Linear Regression</a>
     </li>
     <li>
-      <a href="logistic.html">Logistic Regression</a>
+      <a href="glm.html">Generalized Linear Models</a>
     </li>
     <li>
       <a href="introspatial.html">Intro to Spatial Data</a>
@@ -374,9 +374,6 @@ div.tocify {
       <a href="prediction.html">Prediction Modelling</a>
     </li>
     <li>
-      <a href="variableselection.html">Variable Selection</a>
-    </li>
-    <li>
       <a href="interpolation.html">Spatial Interpolation</a>
     </li>
     <li>
@@ -384,6 +381,9 @@ div.tocify {
     </li>
     <li>
       <a href="regtrees.html">Regression Trees</a>
+    </li>
+    <li>
+      <a href="variableselection.html">Variable Selection</a>
     </li>
   </ul>
 </li>
@@ -462,9 +462,9 @@ tips and fixes, including those for general R coding.</p>
 <li><strong>Check for typos.</strong> One of the most common causes of
 errors are typos, which usually throw an error such as
 <code>Error in _____ : could not find function “_____”</code> due to a
-function being misspelled. What kinds of typos are the most common? -You
-failed to load the package containing this function.
+function being misspelled. What kinds of typos are the most common?
 <ul>
+<li>You failed to load the package containing this function.</li>
 <li>Misspellings</li>
 <li>Capitalization: You typed an uppercase letter when you should have
 typed a lowercase letter (vice versa).</li>
@@ -594,8 +594,8 @@ resolve the issue on your own</li>
 or TA. Relying on a single person to solve all of your problems is
 dangerous, because that person won’t be available throughout your
 career.</p></li>
-<li><p>Read the textbooks <a href="http://r4ds.had.co.nz/index.html">R
-for Data Science</a> and <a
+<li><p>Read the textbooks <a href="https://r4ds.hadley.nz/">R for Data
+Science</a> and <a
 href="https://geocompr.robinlovelace.net/">Geocomputation with
 R</a></p></li>
 <li><p>Look through the R Cheat Sheets we posted on Canvas (Files -&gt;
@@ -617,6 +617,8 @@ the following in my google search: (1) The specific action (how to
 rename a column); (2) The programming language (R statistics); (3) The
 specific style/technique for coding (dplyr or tidyverse
 package).</p></li>
+<li><p><strong>GenAI Policy</strong>: Check the class syllabus for our
+GenAI usage policy.</p></li>
 <li><p>The following online resources are great for getting help.</p>
 <ul>
 <li><a href="https://rstudio.com/resources/cheatsheets/">RStudio
@@ -637,7 +639,9 @@ to get help</a></li>
 </ul>
 <p><br></p>
 <p>Still having trouble? Maybe you need to take a break. Go for a walk.
-Eat a cookie. Pet your dog. And then come back to your code.</p>
+Eat a cookie. Pet your <a
+href="https://www.youtube.com/watch?v=s50vvwTystA">animal</a>. And then
+come back to your code.</p>
 <hr />
 <p><a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a><br />This
 work is licensed under a
