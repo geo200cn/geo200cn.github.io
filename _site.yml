@@ -13,6 +13,8 @@ navbar:
       menu:
         - text: "Getting Started"
           href: getting_started.html
+        - text: "Data Wrangling"
+          href: data_wrangling.html
         - text: "Exploratory Data Analysis"
           href: eda.html
         - text: "Statistical Inference"
@@ -47,8 +49,6 @@ navbar:
       menu:
         - text: "R Tips"
           href: tips.html
-        - text: "Data Wrangling"
-          href: data_wrangling.html
 output:
   html_document:
     theme: cosmo
