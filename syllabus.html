@@ -14,7 +14,7 @@
 
 <title>Syllabus</title>
 
-<script src="site_libs/header-attrs-2.22/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.30/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
@@ -323,7 +323,7 @@ div.tocify {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="index.html">GEO 200CN: Spring 2024</a>
+      <a class="navbar-brand" href="index.html">GEO 200CN: Spring 2026</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
@@ -347,6 +347,9 @@ div.tocify {
       <a href="getting_started.html">Getting Started</a>
     </li>
     <li>
+      <a href="data_wrangling.html">Data Wrangling</a>
+    </li>
+    <li>
       <a href="eda.html">Exploratory Data Analysis</a>
     </li>
     <li>
@@ -362,7 +365,7 @@ div.tocify {
       <a href="linearregression2.html">More Linear Regression</a>
     </li>
     <li>
-      <a href="logistic.html">Logistic Regression</a>
+      <a href="glm.html">Generalized Linear Models</a>
     </li>
     <li>
       <a href="introspatial.html">Intro to Spatial Data</a>
@@ -380,9 +383,6 @@ div.tocify {
       <a href="prediction.html">Prediction Modelling</a>
     </li>
     <li>
-      <a href="variableselection.html">Variable Selection</a>
-    </li>
-    <li>
       <a href="interpolation.html">Spatial Interpolation</a>
     </li>
     <li>
@@ -390,6 +390,9 @@ div.tocify {
     </li>
     <li>
       <a href="regtrees.html">Regression Trees</a>
+    </li>
+    <li>
+      <a href="variableselection.html">Variable Selection</a>
     </li>
   </ul>
 </li>
@@ -402,9 +405,6 @@ div.tocify {
   <ul class="dropdown-menu" role="menu">
     <li>
       <a href="tips.html">R Tips</a>
-    </li>
-    <li>
-      <a href="data_wrangling.html">Data Wrangling</a>
     </li>
   </ul>
 </li>
@@ -479,13 +479,13 @@ course syllabus can be found on the Canvas class website.</p>
 <ul>
 <li>Lecture:
 <ul>
-<li>Monday and Wednesday, 9:00-9:50, in-person</li>
-<li>1007 Giedt</li>
+<li>Monday and Wednesday, 9:00-10:20, in-person</li>
+<li>251 Olson</li>
 </ul></li>
 <li>Labs:
 <ul>
-<li>Monday and Wednesday, 11:00-12:50, in-person</li>
-<li>2212 Teaching and Learning Complex</li>
+<li>Monday and Wednesday, 12:10-2:00, in-person</li>
+<li>2216 Teaching and Learning Complex</li>
 </ul></li>
 </ul>
 <div style="margin-bottom:25px;">
@@ -496,24 +496,19 @@ course syllabus can be found on the Canvas class website.</p>
 <h2><strong>Instructor</strong></h2>
 <p>Dr. Noli Brazil</p>
 <p><em>Contact</em>: nbrazil.at.ucdavis.edu<br />
-<em>Office hours</em>: Monday and Wednesday from 4:10-5:10 pm or by
-appointment, Zoom or in-person. 2325 Hart Hall. Please sign up for a
-slot <a href="https://www.wejoinin.com/sheets/vwzry">here</a>. Out of
-courtesy to other students, please do not sign up for more than two
-10-minute blocks. If you do, I will keep only the first two blocks. The
-last 20 minutes are open drop in. Zoom link is located <a
-href="https://ucdavis.zoom.us/j/93537642124?pwd=NENYZGlGd2s1NVFvWGF3OFhuSmxBdz09">here</a>
-and on the Canvas home page.</p>
+<em>Office hours</em>: Wednesday from 3:30-5:00 pm or by appointment
+(in-person or Zoom). Zoom link is located on Canvas and pdf
+syllabus.</p>
 <div style="margin-bottom:25px;">
 
 </div>
 </div>
 <div id="teaching-assistant" class="section level2">
 <h2><strong>Teaching Assistant</strong></h2>
-<p>Sara Ludwick</p>
-<p><em>Contact</em>: scludwick.at.ucdavis.edu<br />
-<em>Office hours</em>: Friday, 1:00-3:00 (in-person or Zoom). 2420 Hart
-Hall. Zoom link is located on Canvas and pdf syllabus.</p>
+<p>Jenny Cribbs</p>
+<p><em>Contact</em>: jecribbs.at.ucdavis.edu<br />
+<em>Office hours</em>: Friday, 2:00-4:00 (in-person or Zoom). PES 2004.
+Zoom link is located on Canvas and pdf syllabus.</p>
 <div style="margin-bottom:25px;">
 
 </div>
@@ -563,7 +558,7 @@ topics in Geostatistics.</p></li>
 </div>
 <div id="lecture" class="section level3">
 <h3><strong>Lecture</strong></h3>
-<p>The Monday/Wednesday 9:00-9:50 am classes will be a combination of
+<p>The Monday/Wednesday 9:00-10:20 am classes will be a combination of
 lecture and discussion covering the substantive topics from the week’s
 readings. There are readings for each lecture and they generally cover
 the mathematical underpinnings of the topics for that lecture</p>
@@ -573,11 +568,11 @@ the mathematical underpinnings of the topics for that lecture</p>
 </div>
 <div id="lab" class="section level3">
 <h3><strong>Lab</strong></h3>
-<p>The Monday/Wednesday 11:00-12:50 pm labs will provide students the
+<p>The Monday/Wednesday 12:10-2:00 pm labs will provide students the
 opportunity to apply the methods from the week’s readings on real data
-using the statistical software program R. Attendance is not mandatory.
-However, labs will provide an opportunity to gain assistance with lab
-guides and assignments from the TA and your classmates.</p>
+using the statistical software program R. Labs will provide an
+opportunity to gain assistance with lab guides and assignments from the
+TA and your classmates.</p>
 <div style="margin-bottom:25px;">
 
 </div>
@@ -646,20 +641,19 @@ be graded.</p>
 <ol start="2" style="list-style-type: decimal">
 <li>Quizzes (20%)</li>
 </ol>
-<p>There will be <strong>two</strong> 25 minute quizzes that will test
-conceptual material covered in lecture and readings. The quizzes are
-closed book and will be taken in class during their designated dates and
-will cover only the material covered since the last quiz. They will
-consist of short computational, multiple choice and short answer
-questions. You will not be expected to write or interpret R code.
-Make-up quizzes will be given ONLY in the case of extreme emergencies
-(severe illness, death in the immediate family) and when accompanied by
-appropriate documentation (e.g. doctor’s note). In the case of unexcused
-absences (travel plans, overslept, etc.), there are no make-up quizzes.
-If you have been tested or have been exposed to COVID, and cannot take
-the test in class but can take it at home, we will provide online
-accommodations to take the quiz during the same time as the rest of the
-class.</p>
+<p>There will be <strong>two</strong> quizzes that will test conceptual
+material covered in lecture and readings. The quizzes are closed book
+and will be taken in class during their designated dates and will cover
+only the material covered since the last quiz. They will consist of
+short computational, multiple choice and short answer questions. You
+will not be expected to write or interpret R code. Make-up quizzes will
+be given ONLY in the case of extreme emergencies (severe illness, death
+in the immediate family) and when accompanied by appropriate
+documentation (e.g. doctor’s note). In the case of unexcused absences
+(travel plans, overslept, etc.), there are no make-up quizzes. If you
+have been tested or have been exposed to COVID, and cannot take the test
+in class but can take it at home, we will provide online accommodations
+to take the quiz during the same time as the rest of the class.</p>
 <ol start="2" style="list-style-type: decimal">
 <li>Final (20%)</li>
 </ol>
@@ -682,7 +676,8 @@ proposal to answer the research question.</li>
 <p><br />
 </p>
 <p>Please see the full syllabus on the Canvas website for information
-regarding course communication, code of conduct, and grades.</p>
+regarding course communication, code of conduct, grades and the course
+AI policy.</p>
 <div style="margin-bottom:25px;">
 
 </div>
@@ -713,7 +708,7 @@ Quiz
 <tbody>
 <tr>
 <td style="text-align:left;width: 5em; ">
-1-Apr
+30-Mar
 </td>
 <td style="text-align:left;">
 Introduction to Class
@@ -725,7 +720,7 @@ Introduction to Class
 </tr>
 <tr>
 <td style="text-align:left;width: 5em; ">
-3-Apr
+1-Apr
 </td>
 <td style="text-align:left;">
 Qunatitative Research Framework
@@ -737,7 +732,7 @@ Qunatitative Research Framework
 </tr>
 <tr>
 <td style="text-align:left;width: 5em; ">
-8-Apr
+6-Apr
 </td>
 <td style="text-align:left;">
 Exploratory Data Analysis
@@ -750,7 +745,7 @@ HW 1
 </tr>
 <tr>
 <td style="text-align:left;width: 5em; ">
-10-Apr
+8-Apr
 </td>
 <td style="text-align:left;">
 Statistical Inference
@@ -762,7 +757,7 @@ Statistical Inference
 </tr>
 <tr>
 <td style="text-align:left;width: 5em; ">
-15-Apr
+13-Apr
 </td>
 <td style="text-align:left;">
 Hypothesis Testing
@@ -775,7 +770,7 @@ HW 2
 </tr>
 <tr>
 <td style="text-align:left;width: 5em; ">
-17-Apr
+15-Apr
 </td>
 <td style="text-align:left;">
 Linear Regression
@@ -787,7 +782,7 @@ Linear Regression
 </tr>
 <tr>
 <td style="text-align:left;width: 5em; ">
-22-Apr
+20-Apr
 </td>
 <td style="text-align:left;">
 Linear Regression
@@ -800,10 +795,10 @@ HW 3
 </tr>
 <tr>
 <td style="text-align:left;width: 5em; ">
-24-Apr
+22-Apr
 </td>
 <td style="text-align:left;">
-Logistic Regression
+Generalized Linear Models
 </td>
 <td style="text-align:left;">
 </td>
@@ -812,7 +807,7 @@ Logistic Regression
 </tr>
 <tr>
 <td style="text-align:left;width: 5em; ">
-29-Apr
+27-Apr
 </td>
 <td style="text-align:left;">
 Intro to Spatial Data
@@ -826,7 +821,7 @@ Quiz 1
 </tr>
 <tr>
 <td style="text-align:left;width: 5em; ">
-1-May
+29-Apr
 </td>
 <td style="text-align:left;">
 Maps, Patterns and Processes
@@ -838,7 +833,7 @@ Maps, Patterns and Processes
 </tr>
 <tr>
 <td style="text-align:left;width: 5em; ">
-6-May
+4-May
 </td>
 <td style="text-align:left;">
 Point Pattern Analysis
@@ -851,7 +846,7 @@ HW 5
 </tr>
 <tr>
 <td style="text-align:left;width: 5em; ">
-8-May
+6-May
 </td>
 <td style="text-align:left;">
 Spatial Autocorrelation
@@ -863,7 +858,7 @@ Spatial Autocorrelation
 </tr>
 <tr>
 <td style="text-align:left;width: 5em; ">
-13-May
+11-May
 </td>
 <td style="text-align:left;">
 Spatial Regression
@@ -876,7 +871,7 @@ HW 6
 </tr>
 <tr>
 <td style="text-align:left;width: 5em; ">
-15-May
+13-May
 </td>
 <td style="text-align:left;">
 Predictive Modelling
@@ -888,21 +883,20 @@ Predictive Modelling
 </tr>
 <tr>
 <td style="text-align:left;width: 5em; ">
-20-May
+18-May
 </td>
 <td style="text-align:left;">
-Variable Selection
+Spatial Interpolation
 </td>
 <td style="text-align:left;">
 HW 7
 </td>
 <td style="text-align:left;width: 13em; ">
-Quiz 2
 </td>
 </tr>
 <tr>
 <td style="text-align:left;width: 5em; ">
-22-May
+20-May
 </td>
 <td style="text-align:left;">
 Spatial Interpolation
@@ -914,22 +908,10 @@ Spatial Interpolation
 </tr>
 <tr>
 <td style="text-align:left;width: 5em; ">
-27-May
+25-May
 </td>
 <td style="text-align:left;">
 Holiday, no class
-</td>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;width: 13em; ">
-</td>
-</tr>
-<tr>
-<td style="text-align:left;width: 5em; ">
-29-May
-</td>
-<td style="text-align:left;">
-Spatial Interpolation
 </td>
 <td style="text-align:left;">
 HW 8
@@ -939,7 +921,7 @@ HW 8
 </tr>
 <tr>
 <td style="text-align:left;width: 5em; ">
-3-Jun
+27-May
 </td>
 <td style="text-align:left;">
 Regression Trees
@@ -951,15 +933,28 @@ Regression Trees
 </tr>
 <tr>
 <td style="text-align:left;width: 5em; ">
-5-Jun
+1-Jun
 </td>
 <td style="text-align:left;">
-No Class
+Variable Selection
 </td>
 <td style="text-align:left;">
 HW 9
 </td>
 <td style="text-align:left;width: 13em; ">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 5em; ">
+3-Jun
+</td>
+<td style="text-align:left;">
+Conclusion
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;width: 13em; ">
+Quiz 2
 </td>
 </tr>
 </tbody>

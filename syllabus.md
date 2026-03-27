@@ -59,11 +59,11 @@ The following is an abridged version of the course syllabus.  A full course syll
 ## **Lecture and Lab Times**
 
 * Lecture: 
-    + Monday and Wednesday, 9:00-9:50, in-person
-    + 1007 Giedt
+    + Monday and Wednesday, 9:00-10:20, in-person
+    + 251 Olson
 * Labs: 
-    + Monday and Wednesday, 11:00-12:50, in-person 
-    + 2212 Teaching and Learning Complex
+    + Monday and Wednesday, 12:10-2:00, in-person 
+    + 2216 Teaching and Learning Complex
 
 <div style="margin-bottom:25px;">
 </div>
@@ -72,18 +72,18 @@ The following is an abridged version of the course syllabus.  A full course syll
 Dr. Noli Brazil  
 
 *Contact*: nbrazil.at.ucdavis.edu  
-*Office hours*: Monday and Wednesday from 4:10-5:10 pm or by appointment, Zoom or in-person.  2325 Hart Hall. Please sign up for a slot [here](https://www.wejoinin.com/sheets/vwzry). Out of courtesy to other students, please do not sign up for more than two 10-minute blocks.  If you do, I will keep only the first two blocks. The last 20 minutes are open drop in. Zoom link is located [here](https://ucdavis.zoom.us/j/93537642124?pwd=NENYZGlGd2s1NVFvWGF3OFhuSmxBdz09) and on the Canvas home page.
-
+*Office hours*: Wednesday from 3:30-5:00 pm or by appointment (in-person or Zoom). 
+Zoom link is located on Canvas and pdf syllabus.
 
 
 <div style="margin-bottom:25px;">
 </div>
 ## **Teaching Assistant**
 
-Sara Ludwick
+Jenny Cribbs
 
-*Contact*: scludwick.at.ucdavis.edu  
-*Office hours*: Friday, 1:00-3:00 (in-person or Zoom). 2420 Hart Hall.
+*Contact*: jecribbs.at.ucdavis.edu  
+*Office hours*: Friday, 2:00-4:00 (in-person or Zoom). PES 2004.
 Zoom link is located on Canvas and pdf syllabus.
 
 <div style="margin-bottom:25px;">
@@ -118,13 +118,13 @@ The course is organized into the following phases.
 </div>
 ### **Lecture**
 
-The Monday/Wednesday 9:00-9:50 am classes will be a combination of lecture and discussion covering the substantive topics from the week’s readings.  There are readings for each lecture and they generally cover the mathematical underpinnings of the topics for that lecture 
+The Monday/Wednesday 9:00-10:20 am classes will be a combination of lecture and discussion covering the substantive topics from the week’s readings.  There are readings for each lecture and they generally cover the mathematical underpinnings of the topics for that lecture 
 
 <div style="margin-bottom:25px;">
 </div>
 ### **Lab**
 
-The Monday/Wednesday 11:00-12:50 pm labs will provide students the opportunity to apply the methods from the week’s readings on real data using the statistical software program R.  Attendance is not mandatory.  However, labs will provide an opportunity to gain assistance with lab guides and assignments from the TA and your classmates.
+The Monday/Wednesday 12:10-2:00 pm labs will provide students the opportunity to apply the methods from the week’s readings on real data using the statistical software program R.  Labs will provide an opportunity to gain assistance with lab guides and assignments from the TA and your classmates.
 
 <div style="margin-bottom:25px;">
 </div>
@@ -161,7 +161,7 @@ Late submissions will be deducted 10% per 24 hours until 72 hours after the subm
 
 2. Quizzes (20%)
 
-There will be **two** 25 minute quizzes that will test conceptual material covered in lecture and readings.  The quizzes are closed book and will be taken in class during their designated dates and will cover only the material covered since the last quiz. They will consist of short computational, multiple choice and short answer questions.  You will not be expected to write or interpret R code. Make-up quizzes will be given ONLY in the case of extreme emergencies (severe illness, death in the immediate family) and when accompanied by appropriate documentation (e.g. doctor’s note). In the case of unexcused absences (travel plans, overslept, etc.), there are no make-up quizzes.  If you have been tested or have been exposed to COVID, and cannot take the test in class but can take it at home, we will provide online accommodations to take the quiz during the same time as the rest of the class.
+There will be **two** quizzes that will test conceptual material covered in lecture and readings.  The quizzes are closed book and will be taken in class during their designated dates and will cover only the material covered since the last quiz. They will consist of short computational, multiple choice and short answer questions.  You will not be expected to write or interpret R code. Make-up quizzes will be given ONLY in the case of extreme emergencies (severe illness, death in the immediate family) and when accompanied by appropriate documentation (e.g. doctor’s note). In the case of unexcused absences (travel plans, overslept, etc.), there are no make-up quizzes.  If you have been tested or have been exposed to COVID, and cannot take the test in class but can take it at home, we will provide online accommodations to take the quiz during the same time as the rest of the class.
 
 2. Final (20%)
 
@@ -175,7 +175,7 @@ You will choose one of two options to fulfill your final submission (for full de
 ## **Other Information**
 \
 
-Please see the full syllabus on the Canvas website for information regarding course communication, code of conduct, and grades.
+Please see the full syllabus on the Canvas website for information regarding course communication, code of conduct, grades and the course AI policy.
 
 <div style="margin-bottom:25px;">
 </div>	
@@ -195,124 +195,124 @@ The schedule is subject to revision throughout the quarter.  Please see the full
  </thead>
 <tbody>
   <tr>
-   <td style="text-align:left;width: 5em; "> 1-Apr </td>
+   <td style="text-align:left;width: 5em; "> 30-Mar </td>
    <td style="text-align:left;"> Introduction to Class </td>
    <td style="text-align:left;">  </td>
    <td style="text-align:left;width: 13em; ">  </td>
   </tr>
   <tr>
-   <td style="text-align:left;width: 5em; "> 3-Apr </td>
+   <td style="text-align:left;width: 5em; "> 1-Apr </td>
    <td style="text-align:left;"> Qunatitative Research Framework </td>
    <td style="text-align:left;">  </td>
    <td style="text-align:left;width: 13em; ">  </td>
   </tr>
   <tr>
-   <td style="text-align:left;width: 5em; "> 8-Apr </td>
+   <td style="text-align:left;width: 5em; "> 6-Apr </td>
    <td style="text-align:left;"> Exploratory Data Analysis </td>
    <td style="text-align:left;"> HW 1 </td>
    <td style="text-align:left;width: 13em; ">  </td>
   </tr>
   <tr>
-   <td style="text-align:left;width: 5em; "> 10-Apr </td>
+   <td style="text-align:left;width: 5em; "> 8-Apr </td>
    <td style="text-align:left;"> Statistical Inference </td>
    <td style="text-align:left;">  </td>
    <td style="text-align:left;width: 13em; ">  </td>
   </tr>
   <tr>
-   <td style="text-align:left;width: 5em; "> 15-Apr </td>
+   <td style="text-align:left;width: 5em; "> 13-Apr </td>
    <td style="text-align:left;"> Hypothesis Testing </td>
    <td style="text-align:left;"> HW 2 </td>
    <td style="text-align:left;width: 13em; ">  </td>
   </tr>
   <tr>
-   <td style="text-align:left;width: 5em; "> 17-Apr </td>
+   <td style="text-align:left;width: 5em; "> 15-Apr </td>
    <td style="text-align:left;"> Linear Regression </td>
    <td style="text-align:left;">  </td>
    <td style="text-align:left;width: 13em; ">  </td>
   </tr>
   <tr>
-   <td style="text-align:left;width: 5em; "> 22-Apr </td>
+   <td style="text-align:left;width: 5em; "> 20-Apr </td>
    <td style="text-align:left;"> Linear Regression </td>
    <td style="text-align:left;"> HW 3 </td>
    <td style="text-align:left;width: 13em; ">  </td>
   </tr>
   <tr>
-   <td style="text-align:left;width: 5em; "> 24-Apr </td>
-   <td style="text-align:left;"> Logistic Regression </td>
+   <td style="text-align:left;width: 5em; "> 22-Apr </td>
+   <td style="text-align:left;"> Generalized Linear Models </td>
    <td style="text-align:left;">  </td>
    <td style="text-align:left;width: 13em; ">  </td>
   </tr>
   <tr>
-   <td style="text-align:left;width: 5em; "> 29-Apr </td>
+   <td style="text-align:left;width: 5em; "> 27-Apr </td>
    <td style="text-align:left;"> Intro to Spatial Data </td>
    <td style="text-align:left;"> HW 4 </td>
    <td style="text-align:left;width: 13em; "> Quiz 1 </td>
   </tr>
   <tr>
-   <td style="text-align:left;width: 5em; "> 1-May </td>
+   <td style="text-align:left;width: 5em; "> 29-Apr </td>
    <td style="text-align:left;"> Maps, Patterns and Processes </td>
    <td style="text-align:left;">  </td>
    <td style="text-align:left;width: 13em; ">  </td>
   </tr>
   <tr>
-   <td style="text-align:left;width: 5em; "> 6-May </td>
+   <td style="text-align:left;width: 5em; "> 4-May </td>
    <td style="text-align:left;"> Point Pattern Analysis </td>
    <td style="text-align:left;"> HW 5 </td>
    <td style="text-align:left;width: 13em; ">  </td>
   </tr>
   <tr>
-   <td style="text-align:left;width: 5em; "> 8-May </td>
+   <td style="text-align:left;width: 5em; "> 6-May </td>
    <td style="text-align:left;"> Spatial Autocorrelation </td>
    <td style="text-align:left;">  </td>
    <td style="text-align:left;width: 13em; ">  </td>
   </tr>
   <tr>
-   <td style="text-align:left;width: 5em; "> 13-May </td>
+   <td style="text-align:left;width: 5em; "> 11-May </td>
    <td style="text-align:left;"> Spatial Regression </td>
    <td style="text-align:left;"> HW 6 </td>
    <td style="text-align:left;width: 13em; ">  </td>
   </tr>
   <tr>
-   <td style="text-align:left;width: 5em; "> 15-May </td>
+   <td style="text-align:left;width: 5em; "> 13-May </td>
    <td style="text-align:left;"> Predictive Modelling </td>
    <td style="text-align:left;">  </td>
    <td style="text-align:left;width: 13em; ">  </td>
   </tr>
   <tr>
-   <td style="text-align:left;width: 5em; "> 20-May </td>
-   <td style="text-align:left;"> Variable Selection </td>
+   <td style="text-align:left;width: 5em; "> 18-May </td>
+   <td style="text-align:left;"> Spatial Interpolation </td>
    <td style="text-align:left;"> HW 7 </td>
-   <td style="text-align:left;width: 13em; "> Quiz 2 </td>
+   <td style="text-align:left;width: 13em; ">  </td>
   </tr>
   <tr>
-   <td style="text-align:left;width: 5em; "> 22-May </td>
+   <td style="text-align:left;width: 5em; "> 20-May </td>
    <td style="text-align:left;"> Spatial Interpolation </td>
    <td style="text-align:left;">  </td>
    <td style="text-align:left;width: 13em; ">  </td>
   </tr>
   <tr>
-   <td style="text-align:left;width: 5em; "> 27-May </td>
+   <td style="text-align:left;width: 5em; "> 25-May </td>
    <td style="text-align:left;"> Holiday, no class </td>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;width: 13em; ">  </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;width: 5em; "> 29-May </td>
-   <td style="text-align:left;"> Spatial Interpolation </td>
    <td style="text-align:left;"> HW 8 </td>
    <td style="text-align:left;width: 13em; ">  </td>
   </tr>
   <tr>
-   <td style="text-align:left;width: 5em; "> 3-Jun </td>
+   <td style="text-align:left;width: 5em; "> 27-May </td>
    <td style="text-align:left;"> Regression Trees </td>
    <td style="text-align:left;">  </td>
    <td style="text-align:left;width: 13em; ">  </td>
   </tr>
   <tr>
-   <td style="text-align:left;width: 5em; "> 5-Jun </td>
-   <td style="text-align:left;"> No Class </td>
+   <td style="text-align:left;width: 5em; "> 1-Jun </td>
+   <td style="text-align:left;"> Variable Selection </td>
    <td style="text-align:left;"> HW 9 </td>
    <td style="text-align:left;width: 13em; ">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;width: 5em; "> 3-Jun </td>
+   <td style="text-align:left;"> Conclusion </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;width: 13em; "> Quiz 2 </td>
   </tr>
 </tbody>
 </table>
