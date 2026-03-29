@@ -13,8 +13,8 @@ navbar:
       menu:
         - text: "Getting Started"
           href: getting_started.html
-        - text: "Data Wrangling"
-          href: data_wrangling.html
+        - text: "Data Transformation"
+          href: data_transformation.html
         - text: "Exploratory Data Analysis"
           href: eda.html
         - text: "Statistical Inference"
