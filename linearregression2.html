@@ -488,14 +488,16 @@ closely following the material presented in Handout 4.</p>
 <div style="margin-bottom:25px;">
 
 </div>
-<div id="loading-packages" class="section level2">
-<h2><strong>Loading packages</strong></h2>
+<div id="installing-and-loading-packages" class="section level2">
+<h2><strong>Installing and loading packages</strong></h2>
 <p><br />
 </p>
-<p>We don’t need to install any new packages for this lab. Load the
-packages we need.</p>
+<p>We need to install one new package.</p>
+<pre class="r"><code>install.packages(&quot;factoextra&quot;)</code></pre>
+<p>Load this package and other packages we need.</p>
 <pre class="r"><code>library(MASS)
-library(tidyverse)</code></pre>
+library(tidyverse)
+library(factoextra)</code></pre>
 <div style="margin-bottom:25px;">
 
 </div>
@@ -627,7 +629,7 @@ href="https://geo200cn.github.io/eda.html#Data_visualization">Week
   geom_histogram(mapping = (aes(x=resid))) + 
   xlab(&quot;Absolute Residuals&quot;)</code></pre>
 <p><img
-src="linearregression2_files/figure-html/unnamed-chunk-6-1.png" /><!-- --></p>
+src="linearregression2_files/figure-html/unnamed-chunk-7-1.png" /><!-- --></p>
 <p>We’re trying to see if its shape is that of a normal distribution
 (bell curve). This is a histogram of absolute residuals. To get a
 histogram of standardized residuals use the function
@@ -638,21 +640,21 @@ histogram of standardized residuals use the function
   geom_histogram((aes(x=stdres(lm1)))) + 
   xlab(&quot;Standardized Residuals&quot;)</code></pre>
 <p><img
-src="linearregression2_files/figure-html/unnamed-chunk-7-1.png" /><!-- --></p>
+src="linearregression2_files/figure-html/unnamed-chunk-8-1.png" /><!-- --></p>
 <p>You can also plot a histogram of the studentized residuals using the
 function <code>rstudent()</code></p>
 <pre class="r"><code>sac_metro %&gt;% ggplot() + 
   geom_histogram((aes(x=rstudent(lm1)))) + 
   xlab(&quot;Studentized Residuals&quot;)</code></pre>
 <p><img
-src="linearregression2_files/figure-html/unnamed-chunk-8-1.png" /><!-- --></p>
+src="linearregression2_files/figure-html/unnamed-chunk-9-1.png" /><!-- --></p>
 <p>For comparison, the following is what the residuals from our
 simulated good data look like</p>
 <pre class="r"><code>ggplot() + geom_histogram(aes(x = stdres(goodreg))) +
   xlab(&quot;Standardized Residuals&quot;) +
   ggtitle(&quot;Distribution of Residuals - Simulated Data&quot;)</code></pre>
 <p><img
-src="linearregression2_files/figure-html/unnamed-chunk-9-1.png" /><!-- --></p>
+src="linearregression2_files/figure-html/unnamed-chunk-10-1.png" /><!-- --></p>
 <p>You can also examine a normal probability plot, also known as a Q-Q
 plot, to check error normality. Use the function <code>qqnorm()</code>
 and just plug in the model residuals. The function <code>qqline()</code>
@@ -661,14 +663,14 @@ follow.</p>
 <pre class="r"><code>qqnorm(sac_metro$resid)
 qqline(sac_metro$resid,col=&quot;red&quot;)</code></pre>
 <p><img
-src="linearregression2_files/figure-html/unnamed-chunk-10-1.png" /><!-- --></p>
+src="linearregression2_files/figure-html/unnamed-chunk-11-1.png" /><!-- --></p>
 <p>In short, if the points of the plot do not closely follow a straight
 line, this would suggest that the data do not come from a normal
 distribution. What does the Q-Q plot look like for our good model?</p>
 <pre class="r"><code>qqnorm(stdres(goodreg))
 qqline(stdres(goodreg),col=&quot;red&quot;)</code></pre>
 <p><img
-src="linearregression2_files/figure-html/unnamed-chunk-11-1.png" /><!-- --></p>
+src="linearregression2_files/figure-html/unnamed-chunk-12-1.png" /><!-- --></p>
 <p><br></p>
 <p class="comment">
 <strong>Question 1</strong>: What do you conclude by visually examining
@@ -740,7 +742,7 @@ do you see that let’s you know this model breaks OLS assumptions?</p>
      xlab = &quot;Fitted&quot;, ylab = &quot;Residuals&quot;, main = &quot;Data from Bad Model&quot;)
 abline(h = 0, col = &quot;darkorange&quot;, lwd = 2)</code></pre>
 <p><img
-src="linearregression2_files/figure-html/unnamed-chunk-15-1.png" /><!-- --></p>
+src="linearregression2_files/figure-html/unnamed-chunk-16-1.png" /><!-- --></p>
 <p><br></p>
 <p class="comment">
 <strong>Question 2</strong>: Create a residual against fitted value plot
@@ -1088,7 +1090,7 @@ can visualize the first five components with <code>ggplot()</code>:</p>
   labs(y = NULL, x = &quot;Value&quot;) + 
   theme_minimal()</code></pre>
 <p><img
-src="linearregression2_files/figure-html/unnamed-chunk-25-1.png" /><!-- --></p>
+src="linearregression2_files/figure-html/unnamed-chunk-26-1.png" /><!-- --></p>
 <p>With respect to PC1, which explains nearly 38 percent of the variance
 in the overall predictor set, the variables <em>totp</em>,
 <em>rent</em>, <em>pund18</em>, <em>percent_ooh</em>,

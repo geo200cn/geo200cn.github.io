@@ -66,17 +66,24 @@ To help us accomplish these learning objectives, we will continue examining the 
 
 <div style="margin-bottom:25px;">
 </div>
-## **Loading packages**
+## **Installing and loading packages**
 \
 
-We don't need to install any new packages for this lab. Load the packages we need.
+We need to install one new package.
+
+
+``` r
+install.packages("factoextra")
+```
+
+Load this package and other packages we need.
 
 
 ``` r
 library(MASS)
 library(tidyverse)
+library(factoextra)
 ```
-
 
 
 <div style="margin-bottom:25px;">
@@ -203,7 +210,7 @@ sac_metro %>%
   xlab("Absolute Residuals")
 ```
 
-![](linearregression2_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
+![](linearregression2_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
 
 
 We're trying to see if its shape is that of a normal distribution (bell curve). This is a histogram of absolute residuals. To get a histogram of standardized residuals use the function `stdres()`, where the main argument is our model results *lm1*
@@ -216,7 +223,7 @@ sac_metro %>%
   xlab("Standardized Residuals")
 ```
 
-![](linearregression2_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
+![](linearregression2_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
 
 You can also plot a histogram of the studentized residuals using the function `rstudent()`
 
@@ -227,7 +234,7 @@ sac_metro %>% ggplot() +
   xlab("Studentized Residuals")
 ```
 
-![](linearregression2_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
+![](linearregression2_files/figure-html/unnamed-chunk-9-1.png)<!-- -->
 
 For comparison, the following is what the residuals from our simulated good data look like 
 
@@ -238,7 +245,7 @@ ggplot() + geom_histogram(aes(x = stdres(goodreg))) +
   ggtitle("Distribution of Residuals - Simulated Data")
 ```
 
-![](linearregression2_files/figure-html/unnamed-chunk-9-1.png)<!-- -->
+![](linearregression2_files/figure-html/unnamed-chunk-10-1.png)<!-- -->
 
 
 You can also examine a normal probability plot, also known as a Q-Q plot, to check error normality. Use the function `qqnorm()` and just plug in the model residuals. The function `qqline()` adds the line for what normally distributed data should theoretically follow.
@@ -250,7 +257,7 @@ qqnorm(sac_metro$resid)
 qqline(sac_metro$resid,col="red")
 ```
 
-![](linearregression2_files/figure-html/unnamed-chunk-10-1.png)<!-- -->
+![](linearregression2_files/figure-html/unnamed-chunk-11-1.png)<!-- -->
 
 In short, if the points of the plot do not closely follow a straight line, this would suggest that the data do not come from a normal distribution.  What does the Q-Q plot look like for our good model?
 
@@ -260,7 +267,7 @@ qqnorm(stdres(goodreg))
 qqline(stdres(goodreg),col="red")
 ```
 
-![](linearregression2_files/figure-html/unnamed-chunk-11-1.png)<!-- -->
+![](linearregression2_files/figure-html/unnamed-chunk-12-1.png)<!-- -->
 
 <br>
 
@@ -337,7 +344,7 @@ plot(fitted(badreg), resid(badreg), col = "grey", pch = 20,
 abline(h = 0, col = "darkorange", lwd = 2)
 ```
 
-![](linearregression2_files/figure-html/unnamed-chunk-15-1.png)<!-- -->
+![](linearregression2_files/figure-html/unnamed-chunk-16-1.png)<!-- -->
 
 <br>
 
@@ -648,7 +655,7 @@ pca_tibble %>%
   theme_minimal()
 ```
 
-![](linearregression2_files/figure-html/unnamed-chunk-25-1.png)<!-- -->
+![](linearregression2_files/figure-html/unnamed-chunk-26-1.png)<!-- -->
 
 With respect to PC1, which explains nearly 38 percent of the variance in the overall predictor set, the variables *totp*, *rent*, *pund18*, *percent_ooh*, *pct_foreign_born*, *medincome*, and *median_rooms* load negatively, whereas the rest load positively. We can attach these principal components to our original data with `predict()` and `cbind()`.
 

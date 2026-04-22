@@ -68,16 +68,22 @@ To help us accomplish these learning objectives, we will continue examining the 
 
 <div style="margin-bottom:25px;">
 </div>
-## **Loading packages**
+## **Installing and loading packages**
 \
 
-We don't need to install any new packages for this lab. Load the packages we need.
+We need to install one new package.
+
+```{r eval = FALSE}
+install.packages("factoextra")
+```
+
+Load this package and other packages we need.
 
 ```{r warning=FALSE, message=FALSE}
 library(MASS)
 library(tidyverse)
+library(factoextra)
 ```
-
 
 
 <div style="margin-bottom:25px;">
