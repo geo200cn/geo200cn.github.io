@@ -89,7 +89,7 @@ library(terra)
 ## **Bringing in the data**
 \
 
-We will use the [airqual dataset](https://ww2.arb.ca.gov/capp/cst/rdi/air-quality-and-emissions-data) to interpolate [ozone](https://oehha.ca.gov/calenviroscreen/indicator/air-quality-ozone) levels for California (averages for 1980-2009). Download the  file *kriging.zip* from Canvas in the Week 9 Lab and Assignment folder. It contains all the files that will be used in this guide. Bring in the file *airqual.shp*, which contains ozone levels (among many other variables, which we will not use) for control points scattered throughout California. We'll keep spatial objects in **sf** form since many of the kriging functions work with them.
+We will use the [airqual dataset](https://ww2.arb.ca.gov/capp/cst/rdi/air-quality-and-emissions-data) to interpolate [ozone](https://oehha.ca.gov/calenviroscreen/indicator/air-quality-ozone) levels for California (averages for 1980-2009). Download the  file *kriging.zip* from Canvas in the Week 8 Lab and Assignment folder. It contains all the files that will be used in this guide. Bring in the file *airqual.shp*, which contains ozone levels (among many other variables, which we will not use) for control points scattered throughout California. We'll keep spatial objects in **sf** form since many of the kriging functions work with them.
 
 ```{r results='hide'}
 aq <- st_read("airquality.shp")
