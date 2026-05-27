@@ -460,7 +460,7 @@ The misclassification error rate is the training error rate, which is around 10%
 
 <br>
 
-<p class="comment">**Question 1**: Plot the decision tree diagram, like the one shown in Figure 8.6 in ISLR, and described in detail on pages 312-314. How many terminal nodes are there?</p>
+<p class="comment">**Question 1**: Plot the decision tree diagram, like the one shown in Figure 8.6 in ISLR, and described in detail on pages 336-338 How many terminal nodes are there?</p>
 
 <p class="comment">**Question 2**: Which variable is the most important indicator of where our species might be located? </p>
 
